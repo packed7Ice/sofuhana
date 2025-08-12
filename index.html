@@ -7,67 +7,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>花札「こいこい」</h1>
-        
-        <div id="start-screen">
-            <p>回戦数を選んでください</p>
-            <button class="round-button" data-rounds="3">3回戦</button>
-            <button class="round-button" data-rounds="6">6回戦</button>
-            <button class="round-button" data-rounds="12">12回戦</button>
+    <div id="app">
         </div>
 
-        <div id="game-screen" style="display: none;">
-            <div id="game-info">
-                <span id="current-round">第1回戦</span> |
-                あなたの点数: <span id="player-score">0</span>点 |
-                相手の点数: <span id="cpu-score">0</span>点
-            </div>
-            
-            <div id="message">ゲームを開始するには、カードをクリックしてください。</div>
-            
-            <div id="action-buttons" style="display: none;">
-                <button id="koikoi-button">こいこい</button>
-                <button id="shobu-button">勝負</button>
-            </div>
-
-            <div class="hand-container">
-                <h2>場</h2>
-                <div id="board-area" class="board"></div>
-            </div>
-
-            <div class="hand-container">
-                <h2>あなたの手札</h2>
-                <div id="player-hand-area" class="hand"></div>
-            </div>
-
-            <div class="hand-container">
-                <h2>あなたの持ち札</h2>
-                <div id="player-captured-area" class="captured-cards-container">
-                    <div id="player-light-area" class="captured-row"></div>
-                    <div id="player-tane-area" class="captured-row"></div>
-                    <div id="player-tan-area" class="captured-row"></div>
-                    <div id="player-kasu-area" class="captured-row"></div>
-                </div>
-            </div>
-
-            <div class="hand-container">
-                <h2>相手の手札</h2>
-                <div id="cpu-hand-area" class="hand"></div>
-            </div>
-            
-            <div class="hand-container">
-                <h2>相手の持ち札</h2>
-                <div id="cpu-captured-area" class="captured-cards-container">
-                    <div id="cpu-light-area" class="captured-row"></div>
-                    <div id="cpu-tane-area" class="captured-row"></div>
-                    <div id="cpu-tan-area" class="captured-row"></div>
-                    <div id="cpu-kasu-area" class="captured-row"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+    <script src="game_manager.js"></script>
 </body>
 </html>

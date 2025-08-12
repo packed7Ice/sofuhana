@@ -1,3 +1,5 @@
+// game/game.js
+
 document.addEventListener('DOMContentLoaded', () => {
     // DOM要素の取得
     const boardArea = document.getElementById('board-area');
@@ -7,14 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const koikoiButton = document.getElementById('koikoi-button');
     const shobuButton = document.getElementById('shobu-button');
     const actionButtons = document.getElementById('action-buttons');
-    const startScreen = document.getElementById('start-screen');
-    const gameScreen = document.getElementById('game-screen');
-    const roundButtons = document.querySelectorAll('.round-button');
     const playerScoreSpan = document.getElementById('player-score');
     const cpuScoreSpan = document.getElementById('cpu-score');
     const currentRoundSpan = document.getElementById('current-round');
-
-    // 獲得札の新しいDOM要素
     const playerLightArea = document.getElementById('player-light-area');
     const playerTaneArea = document.getElementById('player-tane-area');
     const playerTanArea = document.getElementById('player-tan-area');
@@ -62,6 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let playerKoikoi = false;
     let cpuKoikoi = false;
 
+    // カード名からファイル名を生成するヘルパー関数
+    function getCardImage(cardName) {
+        const fileName = cardName
+            .replace(/に/g, '_')
+            .replace(/ /g, '_')
+            .toLowerCase();
+        return `images/cards/${fileName}.png`;
+    }
+
     // シャッフル関数
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -87,7 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
         cards.forEach(card => {
             const cardElement = document.createElement('div');
             cardElement.classList.add('card');
-            cardElement.textContent = isFaceDown ? '花札' : card;
+            
+            if (isFaceDown) {
+                cardElement.classList.add('back');
+            } else {
+                cardElement.style.backgroundImage = `url('${getCardImage(card)}')`;
+                cardElement.textContent = card;
+            }
+            
             area.appendChild(cardElement);
         });
     }
@@ -227,24 +240,19 @@ document.addEventListener('DOMContentLoaded', () => {
             messageArea.textContent = '引き分けです。';
         }
         
-        // 最終回戦かどうかの判定
-        if (currentRound >= totalRounds) {
-            endGame();
-        } else {
+    if (currentRound >= totalRounds) {
+        setTimeout(() => {
+            const gameData = {
+                totalRounds: totalRounds,
+                playerScore: playerScore,
+                cpuScore: cpuScore
+            };
+            window.switchScreen('result', gameData);
+        }, 3000);
+    } else {
             currentRound++;
             setTimeout(startGame, 3000);
         }
-    }
-
-    function endGame() {
-        if (playerScore > cpuScore) {
-            messageArea.textContent = `最終結果：あなたの勝利です！ ${playerScore}対${cpuScore}`;
-        } else if (cpuScore > playerScore) {
-            messageArea.textContent = `最終結果：相手の勝利です！ ${cpuScore}対${playerScore}`;
-        } else {
-            messageArea.textContent = `最終結果：引き分けです！ ${playerScore}対${cpuScore}`;
-        }
-        // TODO: ゲーム終了後の画面表示など
     }
 
     // プレイヤーのターン進行処理
@@ -281,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const yakuList = checkYaku(playerCaptured);
             if (yakuList.length > 0) {
                 messageArea.textContent = `役ができました！(${yakuList.join(', ')}) こいこいしますか？`;
-                actionButtons.style.display = 'block';
+                actionButtons.style.display = 'flex';
                 playerHandArea.removeEventListener('click', playerHandClickHandler);
                 return;
             }
@@ -347,8 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cpuCaptured.push(...cpuMatchedCards);
             const yakuList = checkYaku(cpuCaptured);
             if (yakuList.length > 0) {
-                // CPUが役を作った場合、こいこいせずに勝負するロジック（暫定）
-                const score = calculateScore(yakuList);
+                // CPUは役ができたら必ず勝負するロジック（暫定）
                 endRound('cpu');
                 return;
             }
@@ -374,7 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
         playerTurnHandler(selectedCard);
     }
 
-    // イベントリスナーの設定
     playerHandArea.addEventListener('click', playerHandClickHandler);
 
     koikoiButton.addEventListener('click', () => {
@@ -402,16 +408,13 @@ document.addEventListener('DOMContentLoaded', () => {
         playerHandArea.addEventListener('click', playerHandClickHandler);
     }
 
-    // 回戦数のボタンにイベントリスナーを設定
-    roundButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            totalRounds = parseInt(e.target.dataset.rounds, 10);
-            startScreen.style.display = 'none';
-            gameScreen.style.display = 'block';
-            startGame();
-        });
-    });
+    // グローバルスコープのデータ取得と関数呼び出し
+    const gameData = window.gameData || {};
+    totalRounds = gameData.totalRounds || 3;
+    playerScore = gameData.playerScore || 0;
+    cpuScore = gameData.cpuScore || 0;
+    currentRound = gameData.currentRound || 1;
 
-    // 画面の初期表示
-    gameScreen.style.display = 'none';
+    // ゲームを初期化
+    startGame();
 });

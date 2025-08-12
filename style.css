@@ -1,76 +1,232 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f0f0f0;
+    font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
     margin: 0;
-    padding: 20px;
-}
-.game-container {
-    width: 800px;
-    margin: 0 auto;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-.hand-container {
-    margin-bottom: 20px;
-}
-.board {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    min-height: 200px;
-    border: 2px dashed #ccc;
-    padding: 10px;
-}
-.card {
-    width: 80px;
-    height: 120px;
-    background-color: #4CAF50;
-    border: 2px solid #388E3C;
-    border-radius: 5px;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
+    height: 100vh;
+    background-color: #333;
+    color: #fff;
+    overflow: hidden;
 }
-.card:hover {
-    transform: translateY(-5px);
+
+#app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    max-width: 1920px;
+    max-height: 1080px;
+    transform-origin: center;
+    background-color: #556b2f;
+    background-image: url('images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* --- タイトル画面 --- */
+#title-screen {
+    background-image: url('images/title_background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+#title-screen h1 {
+    font-size: 5vw;
+    margin-bottom: 2vh;
+    text-shadow: 2px 2px 4px #000;
+}
+#start-game-button, .round-button, #restart-button, #return-to-title-button {
+    padding: 1.5vh 3vw;
+    font-size: 2vw;
+    cursor: pointer;
+    background-color: #d35400;
+    color: white;
+    border: none;
+    border-radius: 1vh;
+    margin: 1vh;
+    transition: background-color 0.3s;
+}
+#start-game-button:hover, .round-button:hover, #restart-button:hover, #return-to-title-button:hover {
+    background-color: #e67e22;
+}
+.credits {
+    position: absolute;
+    bottom: 2vh;
+    font-size: 1.5vw;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- 回戦数選択画面 --- */
+#rounds-screen h2 {
+    font-size: 3vw;
+}
+.round-buttons-container {
+    display: flex;
+    gap: 2vw;
+    margin-top: 2vh;
+}
+
+/* --- ゲーム画面 --- */
+#game-screen {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+    gap: 1vh;
+    padding: 2vh;
+}
+#game-info {
+    position: absolute;
+    top: 2vh;
+    left: 2vh;
+    font-size: 1.5vw;
+    grid-column: 1 / span 3;
+    text-align: left;
+}
+#message {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    align-self: center;
+    font-size: 2vw;
+    text-align: center;
+}
+.hand-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.hand-container h2 {
+    font-size: 1.5vw;
+    margin: 1vh 0;
+}
+#cpu-hand-area {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    align-self: flex-start;
+}
+#board-area {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    align-self: center;
+    border: 2px dashed #999;
+    padding: 1vh;
+    background-color: rgba(0,0,0,0.2);
+    min-height: 10vh;
+}
+#player-hand-area {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+    align-self: flex-end;
 }
 .hand {
     display: flex;
     justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 1vw;
+    margin: 2vh auto;
 }
-#message {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
+.card {
+    width: 5vw;
+    height: 8vw;
+    background-color: #f0f0f0;
+    border: 1px solid #333;
+    border-radius: 0.5vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 1vw;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: transparent;
 }
-/* style.css の既存コードに以下を追加・修正 */
-
+.card:hover {
+    transform: translateY(-0.5vw);
+}
+.card.back {
+    background-image: url('images/back.png');
+}
+.captured-container {
+    grid-column: 1 / span 3;
+    grid-row: 4 / 5;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1vh;
+}
+.captured-player, .captured-cpu {
+    width: 48%;
+}
+.captured-player h3, .captured-cpu h3 {
+    font-size: 1.2vw;
+    margin-bottom: 1vh;
+}
 .captured-cards-container {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 1vh;
+    background-color: rgba(0,0,0,0.1);
+    min-height: 10vh;
 }
-
 .captured-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 5px;
+    gap: 0.5vw;
+    margin-bottom: 0.5vh;
+}
+.captured-row .card {
+    width: 3vw;
+    height: 4.5vw;
+    font-size: 0.7vw;
+}
+#action-buttons {
+    grid-column: 2 / 3;
+    grid-row: 3 / 4;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
 }
 
-.captured-row:last-child {
-    margin-bottom: 0;
+/* --- リザルト画面 --- */
+#result-screen {
+    background-image: url('images/result_background.jpg');
+    background-size: cover;
+    background-position: center;
+}
+#result-screen h2 {
+    font-size: 4vw;
+    margin-bottom: 3vh;
+    text-shadow: 2px 2px 4px #000;
+}
+.result-info {
+    font-size: 2vw;
+    margin-top: 5vh;
+    padding: 2vh;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 1vh;
+}
+.result-actions {
+    margin-top: 5vh;
 }
