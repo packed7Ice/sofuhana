@@ -1,7 +1,16 @@
-// game/game.js
-
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM要素の取得
+    // 画面要素の取得
+    const titleScreen = document.getElementById('title-screen');
+    const roundsScreen = document.getElementById('rounds-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const resultScreen = document.getElementById('result-screen');
+
+    const startGameButton = document.getElementById('start-game-button');
+    const roundButtons = document.querySelectorAll('.round-button');
+    const restartButton = document.getElementById('restart-button');
+    const returnToTitleButton = document.getElementById('return-to-title-button');
+
+    // ゲーム画面の要素
     const boardArea = document.getElementById('board-area');
     const playerHandArea = document.getElementById('player-hand-area');
     const cpuHandArea = document.getElementById('cpu-hand-area');
@@ -20,6 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const cpuTaneArea = document.getElementById('cpu-tane-area');
     const cpuTanArea = document.getElementById('cpu-tan-area');
     const cpuKasuArea = document.getElementById('cpu-kasu-area');
+
+    // リザルト画面の要素
+    const resultMessageElement = document.getElementById('result-message');
+    const finalPlayerScoreElement = document.getElementById('final-player-score');
+    const finalCpuScoreElement = document.getElementById('final-cpu-score');
 
     // 花札の定義
     const allCards = [
@@ -211,8 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return score;
     }
-
-    // ゲーム終了処理
+    
     function endRound(winner, isKoikoi = false) {
         const playerYakuList = checkYaku(playerCaptured);
         const cpuYakuList = checkYaku(cpuCaptured);
@@ -240,16 +253,23 @@ document.addEventListener('DOMContentLoaded', () => {
             messageArea.textContent = '引き分けです。';
         }
         
-    if (currentRound >= totalRounds) {
-        setTimeout(() => {
-            const gameData = {
-                totalRounds: totalRounds,
-                playerScore: playerScore,
-                cpuScore: cpuScore
-            };
-            window.switchScreen('result', gameData);
-        }, 3000);
-    } else {
+        if (currentRound >= totalRounds) {
+            setTimeout(() => {
+                showScreen('result-screen');
+                finalPlayerScoreElement.textContent = playerScore;
+                finalCpuScoreElement.textContent = cpuScore;
+                if (playerScore > cpuScore) {
+                    resultMessageElement.textContent = 'あなたの勝利！';
+                } else if (cpuScore > playerScore) {
+                    resultMessageElement.textContent = 'あなたの敗北...';
+                } else {
+                    resultMessageElement.textContent = '引き分けです。';
+                }
+                playerScore = 0;
+                cpuScore = 0;
+                currentRound = 1;
+            }, 3000);
+        } else {
             currentRound++;
             setTimeout(startGame, 3000);
         }
@@ -355,7 +375,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cpuCaptured.push(...cpuMatchedCards);
             const yakuList = checkYaku(cpuCaptured);
             if (yakuList.length > 0) {
-                // CPUは役ができたら必ず勝負するロジック（暫定）
                 endRound('cpu');
                 return;
             }
@@ -380,8 +399,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCard = e.target.textContent;
         playerTurnHandler(selectedCard);
     }
+    
+    // 画面切り替え関数
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+        });
+        document.getElementById(screenId).classList.add('active');
+    }
 
-    playerHandArea.addEventListener('click', playerHandClickHandler);
+    // ゲーム開始
+    function startGame() {
+        dealCards();
+        updateUI();
+        messageArea.textContent = `第${currentRound}回戦：あなたの番です。`;
+        playerTurn = true;
+        playerKoikoi = false;
+        cpuKoikoi = false;
+        playerHandArea.addEventListener('click', playerHandClickHandler);
+    }
+
+    // イベントリスナー
+    startGameButton.addEventListener('click', () => {
+        showScreen('rounds-screen');
+    });
+
+    roundButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            totalRounds = parseInt(e.target.dataset.rounds, 10);
+            showScreen('game-screen');
+            startGame();
+        });
+    });
 
     koikoiButton.addEventListener('click', () => {
         actionButtons.style.display = 'none';
@@ -396,25 +445,26 @@ document.addEventListener('DOMContentLoaded', () => {
         actionButtons.style.display = 'none';
         endRound('player');
     });
+    
+    restartButton.addEventListener('click', () => {
+        showScreen('rounds-screen');
+    });
 
-    // ゲーム開始
-    function startGame() {
-        dealCards();
-        updateUI();
-        messageArea.textContent = `第${currentRound}回戦：あなたの番です。`;
-        playerTurn = true;
-        playerKoikoi = false;
-        cpuKoikoi = false;
-        playerHandArea.addEventListener('click', playerHandClickHandler);
-    }
+    returnToTitleButton.addEventListener('click', () => {
+        showScreen('title-screen');
+    });
 
-    // グローバルスコープのデータ取得と関数呼び出し
-    const gameData = window.gameData || {};
-    totalRounds = gameData.totalRounds || 3;
-    playerScore = gameData.playerScore || 0;
-    cpuScore = gameData.cpuScore || 0;
-    currentRound = gameData.currentRound || 1;
+    // ページロード時にタイトル画面を表示
+    showScreen('title-screen');
 
-    // ゲームを初期化
-    startGame();
+    // 画面サイズ変更時の調整
+    window.addEventListener('resize', () => {
+        const app = document.getElementById('app');
+        const scaleX = window.innerWidth / 1920;
+        const scaleY = window.innerHeight / 1080;
+        const scale = Math.min(scaleX, scaleY);
+        app.style.transform = `scale(${scale})`;
+    });
+
+    window.dispatchEvent(new Event('resize'));
 });
