@@ -30,6 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const cpuTanArea = document.getElementById('cpu-tan-area');
     const cpuKasuArea = document.getElementById('cpu-kasu-area');
 
+    // script.js の DOM要素の取得部分に追加
+    const cardInfoBox = document.getElementById('card-info-box');
+    const cardInfoMonth = document.getElementById('card-info-month');
+    const cardInfoName = document.getElementById('card-info-name');
+    const cardInfoType = document.getElementById('card-info-type');
+
     // リザルト画面の要素
     const resultMessageElement = document.getElementById('result-message');
     const finalPlayerScoreElement = document.getElementById('final-player-score');
@@ -82,6 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return `images/cards/${fileName}.png`;
     }
 
+    // script.js のどこかに、ヘルパー関数として追加
+    function getCardMonth(cardName) {
+        // 例: '松に鶴' -> '松', '桜' -> '桜'
+        const parts = cardName.split('に');
+        return parts[0];
+    }
+
     // シャッフル関数
     function shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -102,22 +115,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 画面の札を再描画する関数
-    function renderCards(area, cards, isFaceDown = false) {
-        area.innerHTML = '';
-        cards.forEach(card => {
-            const cardElement = document.createElement('div');
-            cardElement.classList.add('card');
+/* script.js の renderCards 関数の抜粋 */
+function renderCards(area, cards, isFaceDown = false) {
+    area.innerHTML = '';
+    cards.forEach(card => {
+        const cardElement = document.createElement('div');
+        cardElement.classList.add('card');
+        
+        if (isFaceDown) {
+            cardElement.classList.add('back');
+        } else {
+            cardElement.style.backgroundImage = `url('${getCardImage(card)}')`;
+            cardElement.textContent = card;
             
-            if (isFaceDown) {
-                cardElement.classList.add('back');
-            } else {
-                cardElement.style.backgroundImage = `url('${getCardImage(card)}')`;
-                cardElement.textContent = card;
-            }
-            
-            area.appendChild(cardElement);
-        });
-    }
+            // マウスオーバーイベントを追加
+            cardElement.addEventListener('mouseover', () => {
+                const month = getCardMonth(card);
+                const type = getCardType(card);
+                
+                cardInfoMonth.textContent = `月: ${month}`;
+                cardInfoName.textContent = `札: ${card}`;
+                cardInfoType.textContent = `種類: ${type}`;
+                cardInfoBox.style.display = 'block';
+            });
+
+            // マウスアウトイベントを追加
+            cardElement.addEventListener('mouseout', () => {
+                cardInfoBox.style.display = 'none';
+            });
+        }
+        
+        area.appendChild(cardElement);
+    });
+}
 
     // UIをまとめて更新する関数
     function updateUI() {
@@ -226,54 +256,65 @@ document.addEventListener('DOMContentLoaded', () => {
         return score;
     }
     
-    function endRound(winner, isKoikoi = false) {
-        const playerYakuList = checkYaku(playerCaptured);
-        const cpuYakuList = checkYaku(cpuCaptured);
-        
-        let playerScoreForRound = calculateScore(playerYakuList);
-        let cpuScoreForRound = calculateScore(cpuYakuList);
+// script.js の endRound 関数を以下に書き換え
 
-        if (winner === 'player') {
-            if (cpuKoikoi) {
-                playerScoreForRound *= 2;
-            } else if (playerKoikoi && playerScoreForRound > 0) {
-                playerScoreForRound *= 2;
-            }
-            playerScore += playerScoreForRound;
-            messageArea.textContent = `勝負！あなたの勝ちです！${playerScoreForRound}点獲得しました。`;
-        } else if (winner === 'cpu') {
-            if (playerKoikoi) {
-                cpuScoreForRound *= 2;
-            } else if (cpuKoikoi && cpuScoreForRound > 0) {
-                cpuScoreForRound *= 2;
-            }
-            cpuScore += cpuScoreForRound;
-            messageArea.textContent = `勝負！相手の勝ちです！${cpuScoreForRound}点獲得しました。`;
-        } else {
-            messageArea.textContent = '引き分けです。';
+function endRound(winner) {
+    const playerYakuList = checkYaku(playerCaptured);
+    const cpuYakuList = checkYaku(cpuCaptured);
+    
+    let playerScoreForRound = calculateScore(playerYakuList);
+    let cpuScoreForRound = calculateScore(cpuYakuList);
+    
+    // 次の親を決定する変数
+    let nextTurn = null;
+
+    if (winner === 'player') {
+        if (cpuKoikoi) {
+            playerScoreForRound *= 2;
+        } else if (playerKoikoi && playerScoreForRound > 0) {
+            playerScoreForRound *= 2;
         }
-        
-        if (currentRound >= totalRounds) {
-            setTimeout(() => {
-                showScreen('result-screen');
-                finalPlayerScoreElement.textContent = playerScore;
-                finalCpuScoreElement.textContent = cpuScore;
-                if (playerScore > cpuScore) {
-                    resultMessageElement.textContent = 'あなたの勝利！';
-                } else if (cpuScore > playerScore) {
-                    resultMessageElement.textContent = 'あなたの敗北...';
-                } else {
-                    resultMessageElement.textContent = '引き分けです。';
-                }
-                playerScore = 0;
-                cpuScore = 0;
-                currentRound = 1;
-            }, 3000);
-        } else {
-            currentRound++;
-            setTimeout(startGame, 3000);
+        playerScore += playerScoreForRound;
+        messageArea.textContent = `勝負！あなたの勝ちです！${playerScoreForRound}点獲得しました。`;
+        nextTurn = 'player'; // プレイヤーが勝利したので、次の親はプレイヤー
+    } else if (winner === 'cpu') {
+        if (playerKoikoi) {
+            cpuScoreForRound *= 2;
+        } else if (cpuKoikoi && cpuScoreForRound > 0) {
+            cpuScoreForRound *= 2;
         }
+        cpuScore += cpuScoreForRound;
+        messageArea.textContent = `勝負！相手の勝ちです！${cpuScoreForRound}点獲得しました。`;
+        nextTurn = 'cpu'; // CPUが勝利したので、次の親はCPU
+    } else {
+        messageArea.textContent = '引き分けです。';
+        // 引き分けの場合は親を交代しない
+        nextTurn = 'current'; // ここは現状維持
     }
+    
+    if (currentRound >= totalRounds) {
+        setTimeout(() => {
+            showScreen('result-screen');
+            finalPlayerScoreElement.textContent = playerScore;
+            finalCpuScoreElement.textContent = cpuScore;
+            if (playerScore > cpuScore) {
+                resultMessageElement.textContent = 'あなたの勝利！';
+            } else if (cpuScore > playerScore) {
+                resultMessageElement.textContent = 'あなたの敗北...';
+            } else {
+                resultMessageElement.textContent = '引き分けです。';
+            }
+            playerScore = 0;
+            cpuScore = 0;
+            currentRound = 1;
+        }, 3000);
+    } else {
+        currentRound++;
+        setTimeout(() => {
+            startGame(nextTurn); // 次の親を引数として渡す
+        }, 3000);
+    }
+}
 
     // プレイヤーのターン進行処理
     function playerTurnHandler(playerCard) {
@@ -324,7 +365,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         playerTurn = false;
         messageArea.textContent = '相手の番です。';
-        setTimeout(cpuTurnHandler, 1500);
+        setTimeout(() => {
+            cpuTurnHandler();
+        }, 1500);
     }
 
     // CPUのターン進行処理
@@ -401,23 +444,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // 画面切り替え関数
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(screen => {
-            screen.classList.remove('active');
-        });
-        document.getElementById(screenId).classList.add('active');
-    }
+// script.js の showScreen 関数を以下に書き換え
+
+function showScreen(screenId) {
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => {
+        screen.classList.remove('active');
+        screen.style.opacity = '0'; // フェードアウト
+        screen.style.zIndex = '1';
+    });
+
+    const activeScreen = document.getElementById(screenId);
+    activeScreen.classList.add('active');
+    activeScreen.style.opacity = '1'; // フェードイン
+    activeScreen.style.zIndex = '100';
+}
 
     // ゲーム開始
-    function startGame() {
-        dealCards();
-        updateUI();
-        messageArea.textContent = `第${currentRound}回戦：あなたの番です。`;
+// script.js の startGame 関数を以下に書き換え
+
+function startGame(startingPlayer = 'player') { // デフォルトはプレイヤーが先手
+    dealCards();
+    updateUI();
+    
+    // 親の決定
+    if (startingPlayer === 'player') {
         playerTurn = true;
-        playerKoikoi = false;
-        cpuKoikoi = false;
-        playerHandArea.addEventListener('click', playerHandClickHandler);
+        messageArea.textContent = `第${currentRound}回戦：あなたの番です。`;
+    } else if (startingPlayer === 'cpu') {
+        playerTurn = false;
+        messageArea.textContent = `第${currentRound}回戦：相手の番です。`;
+        setTimeout(cpuTurnHandler, 1500);
+    } else { // 'current'の場合、親は交代しない
+        // 前のターンの親が続行
     }
+
+    playerKoikoi = false;
+    cpuKoikoi = false;
+    playerHandArea.addEventListener('click', playerHandClickHandler);
+}
 
     // イベントリスナー
     startGameButton.addEventListener('click', () => {
@@ -438,7 +503,9 @@ document.addEventListener('DOMContentLoaded', () => {
         playerHandArea.addEventListener('click', playerHandClickHandler);
         messageArea.textContent = 'こいこいを宣言しました。続行します。';
         playerTurn = false;
-        setTimeout(cpuTurnHandler, 1500);
+        setTimeout(() => {
+            cpuTurnHandler();
+        }, 1500);
     });
 
     shobuButton.addEventListener('click', () => {
@@ -467,4 +534,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.dispatchEvent(new Event('resize'));
+       // イベントリスナーをDOMロード時に一度だけ設定
+    playerHandArea.addEventListener('click', playerHandClickHandler);
 });
