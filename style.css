@@ -192,28 +192,25 @@ body {
 
 /* 持ち札エリアのコンテナ */
 .captured-container {
+    position: absolute;
+    bottom: 2vh;
+    left: 2vh;
+    right: 2vh;
     display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 1vh 0;
-    margin-top: auto; /* 下部に寄せる */
+    justify-content: space-between; /* 左右端へ */
+    align-items: flex-start;
+    gap: 2vw;
 }
 
 .captured-player, .captured-cpu {
-    width: 20%; /* 持ち札エリアの幅を調整 */
+    width: 20%;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
 }
 
-.captured-cpu {
-    align-items: flex-end;
-}
+.captured-player { align-items: flex-start; } /* 左端 */
+.captured-cpu    { align-items: flex-end;   } /* 右端 */
 
-.captured-player h3, .captured-cpu h3 {
-    font-size: 1.2vw;
-    margin-bottom: 1vh;
-}
 
 .captured-cards-container {
     border: 1px solid #ccc;
@@ -273,18 +270,21 @@ body {
 }
 /* style.css の末尾に追加 */
 #card-info-box {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;           /* 画面固定（親のtransform影響を受けない） */
+    background-color: rgba(0, 0, 0, 0.85);
     color: white;
-    padding: 2vw;
-    border-radius: 1vw;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
     text-align: center;
-    z-index: 20;
-    font-size: 2vw;
+    z-index: 9999;             /* 最前面 */
+    font-size: 1rem;
+    pointer-events: none;      /* マウス操作を邪魔しない */
+    display: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
 }
-#card-info-box p {
-    margin: 0.5vh 0;
+#card-info-box p { margin: 0.15rem 0; }
+
+.card.selectable {
+    outline: 0.35vw solid rgba(255, 215, 0, 0.9);
+    transform: translateY(-0.4vw) scale(1.03);
 }
