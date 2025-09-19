@@ -29,12 +29,15 @@
 
       <!-- ゲーム -->
       <div id="game-screen" class="screen">
-        <div id="game-info">
-          <span id="current-round" class="game-stat">第1回戦</span> |
-          あなたの点数: <span id="player-score" class="game-stat">0</span>点 |
-          相手の点数: <span id="cpu-score" class="game-stat">0</span>点
+        <!-- HUD（上部バー） -->
+        <div id="hud">
+          <div id="game-info">
+            <span id="current-round" class="game-stat">第1回戦</span> |
+            あなたの点数: <span id="player-score" class="game-stat">0</span>点 |
+            相手の点数: <span id="cpu-score" class="game-stat">0</span>点
+          </div>
+          <button id="help-button-game" class="action-button">ヘルプ</button>
         </div>
-        <button id="help-button-game" class="action-button" style="position:absolute; top:2vh; right:2vh;">ヘルプ</button>
 
         <!-- ツールチップ（JSがbody直下にも生成するが、初期描画用） -->
         <div id="card-info-box" style="display:none;">

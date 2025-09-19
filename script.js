@@ -326,8 +326,10 @@ document.addEventListener('DOMContentLoaded', () => {
       captured.push(...taken);
       const y = checkYaku(captured);
       if (captured===playerCaptured && y.length>0){
+        hideTooltip(); // ← 追加：ボタンの上に残らないよう確実に消す
         messageArea.textContent = `役ができました！(${y.join(', ')}) こいこいしますか？`;
         actionButtons.style.display='flex';
+        // actionButtons.classList.add('active'); // 好みでクラス運用にしてもOK
         playerHandArea.removeEventListener('click', playerHandClickHandler);
         updateUI(); return true;
       }
@@ -487,14 +489,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // 初期画面
   showScreen('title-screen');
 
-// レイアウトスケール（1920x1080 を最小倍率で等倍縮小）
+// ==== ここから置き換え ====
+
+// 好みの「標準スケール」を決めます（例: 0.75 → 1440x810 相当）
+// ここを変えれば“見やすい大きさ”を簡単に調整できます。
+const PREFERRED_SCALE = 0.75;   // 0.70〜0.85 あたりがノートPCで見やすい目安
+// （任意）あまりに小さくなりすぎるのを防ぐ下限。画面が超狭い場合は無視されます。
+const MIN_COMFORT_SCALE = 0.60; // お好みで
+
 function fitApp() {
   const baseW = 1920, baseH = 1080;
   const scaleX = window.innerWidth  / baseW;
   const scaleY = window.innerHeight / baseH;
-  const scale  = Math.min(scaleX, scaleY);      // ちょうど収まる最小倍率
+
+  // その画面で「物理的に収まる最大スケール」
+  const maxFit = Math.min(scaleX, scaleY);
+
+  // ふだんは“見やすい一定サイズ”（PREFERRED_SCALE）で表示。
+  // ただし画面が狭くて入りきらない場合だけ maxFit まで自動で下げる。
+  // さらに、あまり小さくしたくないなら MIN_COMFORT_SCALE で下限をかける。
+  let scale;
+  if (maxFit >= PREFERRED_SCALE) {
+    scale = PREFERRED_SCALE;                // 余裕がある → 固定サイズ
+  } else {
+    scale = Math.max(maxFit, MIN_COMFORT_SCALE); // 狭い → 収まる範囲でなるべく大きく
+  }
+
   document.getElementById('fit').style.setProperty('--scale', scale);
 }
+
 window.addEventListener('resize', fitApp);
 fitApp();
+
+// ==== 置き換えここまで ====
 });
