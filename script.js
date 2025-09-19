@@ -498,28 +498,29 @@ const PREFERRED_SCALE = 0.75;   // 0.70〜0.85 あたりがノートPCで見や�
 const MIN_COMFORT_SCALE = 0.60; // お好みで
 
 function fitApp() {
+  const app = document.getElementById('app');
   const baseW = 1920, baseH = 1080;
+
   const scaleX = window.innerWidth  / baseW;
   const scaleY = window.innerHeight / baseH;
+  const scale  = Math.min(scaleX, scaleY);
 
-  // その画面で「物理的に収まる最大スケール」
-  const maxFit = Math.min(scaleX, scaleY);
+  // 既存のスケール（中央寄せなど）はそのまま
+  app.style.transform = `scale(${scale})`;
+  app.style.transformOrigin = 'center center';
 
-  // ふだんは“見やすい一定サイズ”（PREFERRED_SCALE）で表示。
-  // ただし画面が狭くて入りきらない場合だけ maxFit まで自動で下げる。
-  // さらに、あまり小さくしたくないなら MIN_COMFORT_SCALE で下限をかける。
-  let scale;
-  if (maxFit >= PREFERRED_SCALE) {
-    scale = PREFERRED_SCALE;                // 余裕がある → 固定サイズ
-  } else {
-    scale = Math.max(maxFit, MIN_COMFORT_SCALE); // 狭い → 収まる範囲でなるべく大きく
+  // ここだけ変更：カードのサイズは #app にクラスで一括指定
+  app.classList.remove('size-small', 'size-tiny');
+  if (window.innerWidth < 1400 || window.innerHeight < 800) {
+    app.classList.add('size-small');
   }
-
-  document.getElementById('fit').style.setProperty('--scale', scale);
+  if (window.innerWidth < 1100 || window.innerHeight < 650) {
+    app.classList.remove('size-small');
+    app.classList.add('size-tiny');
+  }
 }
 
 window.addEventListener('resize', fitApp);
 fitApp();
 
-// ==== 置き換えここまで ====
 });

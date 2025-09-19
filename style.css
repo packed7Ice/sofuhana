@@ -20,12 +20,13 @@ body {
   --scale: 1;
 }
 
+/* ここだけ置き換え（または追記） */
 #app {
   position: relative;
-  width: 1920px;
-  height: 1080px;
+  width: var(--appW, 1920px);   /* ← 可変 */
+  height: var(--appH, 1080px);  /* ← 可変 */
   transform-origin: center center;
-  transform: scale(var(--scale));
+  transform: scale(var(--scale, 1));
   background-image: url('images/background.jpg');
   background-size: cover;
   background-position: center;
@@ -34,6 +35,18 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+/* きつい画面用：余白を少し詰める */
+#app.compact #hud { height: 64px; padding: 8px 12px; }
+#app.compact #game-screen { padding: 12px; padding-top: 76px; }
+#app.compact .board { gap: 14px; padding: 14px; margin-bottom: 18px; }
+#app.compact .hand { gap: 14px; margin: 12px auto; }
+#app.compact .action-button { font-size: 32px; padding: 16px 28px; }
+#app.compact #game-info { font-size: 21px; }
+#app.compact .area-title, 
+#app.compact .game-message, 
+#app.compact .result-info { font-size: 24px; }
+#app.compact .captured-container { bottom: 8px; left: 12px; right: 12px; gap: 16px; }
 
 /* ==== Help Modal ==== */
 #help-modal {
@@ -210,7 +223,7 @@ body.modal-open {
 /* --- カード --- */
 .card {
   width: 96px;
-  height: 153.6px;
+  height: 160px;
   background-color: #f0f0f0;
   border: 1px solid #333;
   border-radius: 10px;
@@ -219,13 +232,21 @@ body.modal-open {
   align-items: center;
   box-sizing: border-box;
   cursor: pointer;
-  font-size: 19px;
+  font-size: 14px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   color: transparent;
   padding: 19px;
 }
+
+
+/* 画面が小さいとき：親 #app にクラスを付けて一括で小さくする */
+#app.size-small .card         { width: 80px;  height: 128px;  font-size: 16px; }
+#app.size-small .captured-row .card { width: 48px;  height: 72px;   font-size: 12px; }
+
+#app.size-tiny .card          { width: 64px;  height: 102px;  font-size: 13px; }
+#app.size-tiny .captured-row .card  { width: 40px;  height: 60px;   font-size: 11px; }
 
 .card:hover {
   transform: translateY(-10px);
