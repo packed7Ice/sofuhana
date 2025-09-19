@@ -7,85 +7,86 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <div id="app">
-    <!-- タイトル -->
-    <div id="title-screen" class="screen">
-      <h1 class="game-title">花札「こいこい」</h1>
-      <button id="start-game-button" class="action-button">ゲームスタート</button>
-      <button id="help-button" class="action-button">ヘルプ</button>
-      <p class="credits">©Yorikawa Aise</p>
-    </div>
-
-    <!-- 回戦選択 -->
-    <div id="rounds-screen" class="screen">
-      <h2 class="scene-title">回戦数を選んでください</h2>
-      <div class="round-buttons-container">
-        <button class="round-button action-button" data-rounds="3">3回戦</button>
-        <button class="round-button action-button" data-rounds="6">6回戦</button>
-        <button class="round-button action-button" data-rounds="12">12回戦</button>
-      </div>
-    </div>
-
-    <!-- ゲーム -->
-    <div id="game-screen" class="screen">
-      <div id="game-info">
-        <span id="current-round" class="game-stat">第1回戦</span> |
-        あなたの点数: <span id="player-score" class="game-stat">0</span>点 |
-        相手の点数: <span id="cpu-score" class="game-stat">0</span>点
-      </div>
-      <button id="help-button-game" class="action-button" style="position:absolute; top:2vh; right:2vh;">ヘルプ</button>
-
-      <!-- ツールチップ（JSがbody直下にも生成するが、初期描画用） -->
-      <div id="card-info-box" style="display:none;">
-        <p id="card-info-month"></p>
-        <p id="card-info-name"></p>
-        <p id="card-info-type"></p>
+  <div id="fit">
+    <div id="app">
+      <!-- タイトル -->
+      <div id="title-screen" class="screen">
+        <h1 class="game-title">花札「こいこい」</h1>
+        <button id="start-game-button" class="action-button">ゲームスタート</button>
+        <button id="help-button" class="action-button">ヘルプ</button>
+        <p class="credits">©Yorikawa Aise</p>
       </div>
 
-      <div class="game-container-inner">
-        <div class="main-game-area">
-          <div class="hand-area player-cpu-area">
-            <h2 class="area-title">相手の手札</h2>
-            <div id="cpu-hand-area" class="hand"></div>
+      <!-- 回戦選択 -->
+      <div id="rounds-screen" class="screen">
+        <h2 class="scene-title">回戦数を選んでください</h2>
+        <div class="round-buttons-container">
+          <button class="round-button action-button" data-rounds="3">3回戦</button>
+          <button class="round-button action-button" data-rounds="6">6回戦</button>
+          <button class="round-button action-button" data-rounds="12">12回戦</button>
+        </div>
+      </div>
+
+      <!-- ゲーム -->
+      <div id="game-screen" class="screen">
+        <div id="game-info">
+          <span id="current-round" class="game-stat">第1回戦</span> |
+          あなたの点数: <span id="player-score" class="game-stat">0</span>点 |
+          相手の点数: <span id="cpu-score" class="game-stat">0</span>点
+        </div>
+        <button id="help-button-game" class="action-button" style="position:absolute; top:2vh; right:2vh;">ヘルプ</button>
+
+        <!-- ツールチップ（JSがbody直下にも生成するが、初期描画用） -->
+        <div id="card-info-box" style="display:none;">
+          <p id="card-info-month"></p>
+          <p id="card-info-name"></p>
+          <p id="card-info-type"></p>
+        </div>
+
+        <div class="game-container-inner">
+          <div class="main-game-area">
+            <div class="hand-area player-cpu-area">
+              <h2 class="area-title">相手の手札</h2>
+              <div id="cpu-hand-area" class="hand"></div>
+            </div>
+
+            <div id="board-area" class="board"></div>
+
+            <div class="player-controls-container">
+              <div class="hand-area player-area">
+                <h2 class="area-title">あなたの手札</h2>
+                <div id="player-hand-area" class="hand"></div>
+              </div>
+              <div id="action-buttons" class="action-buttons-container">
+                <button id="koikoi-button" class="action-button">こいこい</button>
+                <button id="shobu-button" class="action-button">勝負</button>
+              </div>
+            </div>
           </div>
 
-          <div id="board-area" class="board"></div>
-
-          <div class="player-controls-container">
-            <div class="hand-area player-area">
-              <h2 class="area-title">あなたの手札</h2>
-              <div id="player-hand-area" class="hand"></div>
+          <div class="captured-container">
+            <div class="captured-player">
+              <h3 class="area-title">あなたの持ち札</h3>
+              <div id="player-captured-area" class="captured-cards-container">
+                <div id="player-light-area" class="captured-row"></div>
+                <div id="player-tane-area" class="captured-row"></div>
+                <div id="player-tan-area" class="captured-row"></div>
+                <div id="player-kasu-area" class="captured-row"></div>
+              </div>
             </div>
-            <div id="action-buttons" class="action-buttons-container">
-              <button id="koikoi-button" class="action-button">こいこい</button>
-              <button id="shobu-button" class="action-button">勝負</button>
+            <div class="captured-cpu">
+              <h3 class="area-title">相手の持ち札</h3>
+              <div id="cpu-captured-area" class="captured-cards-container">
+                <div id="cpu-light-area" class="captured-row"></div>
+                <div id="cpu-tane-area" class="captured-row"></div>
+                <div id="cpu-tan-area" class="captured-row"></div>
+                <div id="cpu-kasu-area" class="captured-row"></div>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="captured-container">
-          <div class="captured-player">
-            <h3 class="area-title">あなたの持ち札</h3>
-            <div id="player-captured-area" class="captured-cards-container">
-              <div id="player-light-area" class="captured-row"></div>
-              <div id="player-tane-area" class="captured-row"></div>
-              <div id="player-tan-area" class="captured-row"></div>
-              <div id="player-kasu-area" class="captured-row"></div>
-            </div>
-          </div>
-          <div class="captured-cpu">
-            <h3 class="area-title">相手の持ち札</h3>
-            <div id="cpu-captured-area" class="captured-cards-container">
-              <div id="cpu-light-area" class="captured-row"></div>
-              <div id="cpu-tane-area" class="captured-row"></div>
-              <div id="cpu-tan-area" class="captured-row"></div>
-              <div id="cpu-kasu-area" class="captured-row"></div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
-
     <!-- リザルト -->
     <div id="result-screen" class="screen">
       <h2 id="result-message" class="scene-title"></h2>

@@ -487,11 +487,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // 初期画面
   showScreen('title-screen');
 
-  // スケール
-  window.addEventListener('resize', ()=>{
-    const app=document.getElementById('app');
-    const sx=window.innerWidth/1920, sy=window.innerHeight/1080;
-    app.style.transform=`scale(${Math.min(sx,sy)})`;
-  });
-  window.dispatchEvent(new Event('resize'));
+// レイアウトスケール（1920x1080 を最小倍率で等倍縮小）
+function fitApp() {
+  const baseW = 1920, baseH = 1080;
+  const scaleX = window.innerWidth  / baseW;
+  const scaleY = window.innerHeight / baseH;
+  const scale  = Math.min(scaleX, scaleY);      // ちょうど収まる最小倍率
+  document.getElementById('fit').style.setProperty('--scale', scale);
+}
+window.addEventListener('resize', fitApp);
+fitApp();
 });

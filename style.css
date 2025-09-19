@@ -6,16 +6,27 @@ body {
   height: 100vh; background-color: #333; color: #fff; overflow: hidden;
 }
 
+/* ビューポート全体の“器”（ここで中央寄せ＆scaleだけを適用） */
+#fit {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* JS で --scale を更新します */
+  --scale: 1;
+}
+
 #app {
   position: relative;
-  width: 100vw; height: 100vh;
-  max-width: 1920px; max-height: 1080px;
-  transform-origin: center;
-  background-image: url('images/background.jpg');
-  background-size: cover; background-position: center;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  display: flex; justify-content: center; align-items: center;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: center center;
+  transform: scale(var(--scale)); /* ← 縮小はここ1か所のみ */
 }
+
+/* もし以前の #app に「width:100vw;height:100vh;max-width/max-height」などが
+   残っていたら必ず削除/上書きしてください（二重縮小の原因になります） */
 
 /* 画面 */
 .screen {
@@ -32,13 +43,18 @@ body {
   background-size: cover; background-position: center;
   padding: 20vh 0; justify-content: space-around;
 }
-.game-title { font-size: 5vw; text-shadow: 2px 2px 4px #000; }
+.game-title { font-size: 96px; text-shadow: 2px 2px 4px #000; }
 
 /* ボタン（色：#288d1f） */
 .action-button {
-  padding: 1.5vh 3vw; font-size: 2vw; cursor: pointer;
-  background-color: #288d1f; color: #fff;
-  border: none; border-radius: 1vh; margin: 1vh;
+  padding: 29px 58px;                      /* 1.5vh→約16pxだったが視認性重視でpx固定 */
+  font-size: 38px;                         /* 2vw → 38.4px */
+  cursor: pointer;
+  background-color: #288d1f;
+  color: #fff;
+  border: none;
+  border-radius: 20px;                     /* 1vh → 20px相当 */
+  margin: 19px;
   transition: transform .05s ease, opacity .2s ease;
 }
 .action-button:hover { opacity: .9; }
@@ -63,31 +79,46 @@ body {
   flex-grow: 1;
 }
 #game-info, .game-message, .hand-area { position: relative; z-index: 2; }
-#game-info { position: absolute; top: 2vh; left: 2vh; font-size: 1.5vw; }
+#game-info { position: absolute; top: 2vh; left: 2vh; font-size: 29px; }
 
 .game-message {
-  font-size: 2vw; text-align: center; min-height: 5vh; padding-top: 1vh; margin-top: 5vh;
+  font-size: 38px; text-align: center; min-height: 5vh; padding-top: 1vh; margin-top: 5vh;
 }
 
 .hand-area { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.area-title { font-size: 1.5vw; margin: 1vh 0; }
+.area-title { font-size: 29px; margin: 1vh 0; }
 
 /* 盤面 */
 .board {
-  display: flex; justify-content: center; flex-wrap: wrap; gap: 1vw;
-  border: 2px dashed #999; padding: 1vh; background-color: rgba(0,0,0,0.2);
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 19px;
+  border: 2px dashed #999; padding: 19px; background-color: rgba(0,0,0,0.2);
   min-height: 15vh; margin-top: 2vh; margin-bottom: 2vh;
 }
 
 /* 手牌/カード */
-.hand { display: flex; justify-content: center; gap: 1vw; margin: 2vh auto; }
+.hand { display: flex; justify-content: center; gap: 19px; margin: 2vh auto; }
+/* ---- カードサイズ（1920×1080 ベースの実寸） ---- */
+/* 以前: width: 5vw; height: 8vw; だったので、
+   1920px の 5% = 96px、8% = 153.6px に固定 */
 .card {
-  width: 5vw; height: 8vw; background-color: #f0f0f0; border: 1px solid #333; border-radius: 0.5vw;
-  display: flex; justify-content: center; align-items: center; box-sizing: border-box; cursor: pointer;
-  font-size: 1vw; background-size: cover; background-position: center; background-repeat: no-repeat;
-  color: transparent; padding: 1vw;
+  width: 96px;
+  height: 153.6px;
+  background-color: #f0f0f0;
+  border: 1px solid #333;
+  border-radius: 10px;           /* 0.5vw ≒ 10px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  font-size: 19px;               /* 1vw ≒ 19.2px → 19px */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: transparent;
+  padding: 19px;                  /* 1vw ≒ 19px */
 }
-.card:hover { transform: translateY(-0.5vw); }
+.card:hover { transform: translateY(-10px); } /* 0.5vw ≒ 10px */
 .card.back { background-image: url('images/back.png'); }
 .card.selectable { outline: 0.35vw solid rgba(255,215,0,0.9); transform: translateY(-0.4vw) scale(1.03); }
 
@@ -107,7 +138,12 @@ body {
   border: 1px solid #ccc; padding: 1vh; background-color: rgba(0,0,0,0.1);
   min-height: 10vh; width: 100%;
 }
-.captured-row { display: flex; flex-wrap: wrap; gap: 0.5vw; margin-bottom: 0.5vh; }
+/* 取得札（小さいカード） 3vw×4.5vw → 57.6px × 86.4px */
+.captured-row .card {
+  width: 57.6px;
+  height: 86.4px;
+  font-size: 13px;               /* 0.7vw ≒ 13.4px */
+}
 .captured-row .card { width: 3vw; height: 4.5vw; font-size: 0.7vw; }
 
 /* こいこい/勝負ボタン */
