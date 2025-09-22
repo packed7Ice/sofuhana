@@ -179,19 +179,76 @@ document.addEventListener('DOMContentLoaded', () => {
     return yakuList;
   }
 
+  // ▼ これを script.js に追加（checkYakuの下あたり）し、calculateScoreは使わないようにします。
+function scoreFromCaptured(cards){
+  const yakuList = [];
+
+  // セット役
+  const has = (name) => cards.includes(name);
+  const type = (c) => getCardType(c);
+
+  if (['萩に猪','紅葉に鹿','牡丹に蝶'].every(has)) yakuList.push('猪鹿蝶');
+  if (['松に短冊','梅に短冊','桜に短冊'].every(has)) yakuList.push('赤短');
+  if (['牡丹に短冊','菊に短冊','紅葉に短冊'].every(has)) yakuList.push('青短');
+  if (has('芒に月') && has('菊に杯')) yakuList.push('月見酒');
+  if (has('桜に幕') && has('菊に杯')) yakuList.push('花見酒');
+
+  // 光
+  const lights = cards.filter(c => type(c)==='光' || type(c)==='雨光');
+  const hasRain = lights.some(c => type(c)==='雨光');
+  if (lights.length===5) yakuList.push('五光');
+  else if (lights.length===4) yakuList.push(hasRain ? '雨四光' : '四光');
+  else if (lights.length===3 && !hasRain) yakuList.push('三光');
+
+  // 枚数系（段階加点）
+  const tan  = cards.filter(c => type(c)==='短冊').length;
+  const tane = cards.filter(c => type(c)==='タネ').length;
+  let kasu  = cards.filter(c => type(c)==='カス').length + (has('菊に杯') ? 1 : 0); // 菊に杯はカスにも数える
+
+  let pts = 0;
+  // 固定点の役
+  const FIX = { '五光':15, '四光':8, '雨四光':7, '三光':5, '猪鹿蝶':5, '赤短':5, '青短':5, '月見酒':5, '花見酒':5 };
+  yakuList.forEach(y => { if (FIX[y]) pts += FIX[y]; });
+
+  // 段階加点
+  if (tan  >= 5) { yakuList.push('短冊'); pts += (tan - 4); }
+  if (tane >= 5) { yakuList.push('タネ');  pts += (tane - 4); }
+  if (kasu >= 10){ yakuList.push('カス');  pts += (kasu - 9); }
+
+  return { yakuList, basePoints: pts };
+}
+
   function calculateScore(yakuList){
     return yakuList.reduce((s,y)=> s + (YAKU_POINTS[y]||0), 0);
   }
 
   // ===== 配り =====
-  function dealCards(){
+// ▼ dealCards を配り直し対応に強化
+function dealCards(){
+  do {
     deck = shuffle([...allCards]);
     playerHand = deck.splice(0,8);
     cpuHand    = deck.splice(0,8);
     board      = deck.splice(0,8);
-    playerCaptured = [];
-    cpuCaptured    = [];
-  }
+  } while (hasFourOfSameMonth(board)); // 場札4枚同月 → 配り直し
+
+  playerCaptured = [];
+  cpuCaptured    = [];
+}
+
+function hasFourOfSameMonth(arr){
+  const cnt = {};
+  arr.forEach(c => { const m=getCardMonth(c); cnt[m]=(cnt[m]||0)+1; });
+  return Object.values(cnt).some(n => n===4);
+}
+
+function initialHandBonus(hand){
+  const cnt = {};
+  hand.forEach(c => { const m=getCardMonth(c); cnt[m]=(cnt[m]||0)+1; });
+  const fourOfKind = Object.values(cnt).some(n=>n===4);
+  const fourPairs  = Object.values(cnt).filter(n=>n>=2).length >= 4;
+  return (fourOfKind || fourPairs);
+}
 
   // ===== 描画 =====
   function renderCards(area, cards, isFaceDown=false){
@@ -248,46 +305,57 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
-  function endRound(winner){
-    const pY = checkYaku(playerCaptured);
-    const cY = checkYaku(cpuCaptured);
-    let pPts = calculateScore(pY);
-    let cPts = calculateScore(cY);
+// ▼ endRound を丸ごと差し替え
+function endRound(winner){
+  const P = scoreFromCaptured(playerCaptured);
+  const C = scoreFromCaptured(cpuCaptured);
 
-    let nextDealer = currentDealer; // 流れ時は据え置き
+  let playerGain = 0, cpuGain = 0;
+  let nextDealer = currentDealer;
 
-    if (winner==='player'){
-      if (cpuKoikoi) pPts *= 2;
-      else if (playerKoikoi && pPts>0) pPts *= 2;
-      playerScore += pPts;
-      messageArea.textContent = `勝負！あなたの勝ちです！${pPts}点獲得。`;
-      // 勝敗に応じて親移動を採用するなら次行を有効化
-      // nextDealer = 'player';
-    } else if (winner==='cpu'){
-      if (playerKoikoi) cPts *= 2;
-      else if (cpuKoikoi && cPts>0) cPts *= 2;
-      cpuScore += cPts;
-      messageArea.textContent = `勝負！相手の勝ちです！${cPts}点獲得。`;
-      // nextDealer = 'cpu';
-    } else {
-      messageArea.textContent = '流れ（どちらも手札が無くなりました）。';
-    }
+  if (winner === 'player') {
+    playerGain = P.basePoints;
 
-    if (currentRound >= totalRounds){
-      setTimeout(()=>{
-        showScreen('result-screen');
-        finalPlayerScoreElement.textContent = playerScore;
-        finalCpuScoreElement.textContent    = cpuScore;
-        resultMessageElement.textContent = (playerScore>cpuScore) ? 'あなたの勝利！'
-          : (cpuScore>playerScore) ? 'あなたの敗北...' : '引き分けです。';
-        playerScore=0; cpuScore=0; currentRound=1;
-      }, 1200);
-    } else {
-      currentRound++;
-      currentDealer = nextDealer;
-      setTimeout(()=> startGame(currentDealer), 1200);
-    }
+    // 7点以上なら倍
+    if (playerGain >= 7) playerGain *= 2; // 任天堂ルール
+    // 相手が「こいこい」宣言していたら、さらに倍（自分の宣言では倍にしない）
+    if (cpuKoikoi) playerGain *= 2;
+
+    playerScore += playerGain;
+    messageArea.textContent = `勝負！あなたの勝ち。${playerGain}点獲得（役: ${P.yakuList.join('、') || 'なし'}）。`;
+    nextDealer = 'player';
+
+  } else if (winner === 'cpu') {
+    cpuGain = C.basePoints;
+
+    if (cpuGain >= 7) cpuGain *= 2;
+    if (playerKoikoi) cpuGain *= 2;
+
+    cpuScore += cpuGain;
+    messageArea.textContent = `勝負！相手の勝ち。${cpuGain}点獲得（役: ${C.yakuList.join('、') || 'なし'}）。`;
+    nextDealer = 'cpu';
+
+  } else {
+    // ノーゲーム：親交代
+    messageArea.textContent = 'ノーゲーム（流れ）。親を交代します。';
+    nextDealer = (currentDealer === 'player') ? 'cpu' : 'player';
   }
+
+  if (currentRound >= totalRounds){
+    setTimeout(()=>{
+      showScreen('result-screen');
+      finalPlayerScoreElement.textContent = playerScore;
+      finalCpuScoreElement.textContent    = cpuScore;
+      resultMessageElement.textContent = (playerScore>cpuScore) ? 'あなたの勝利！'
+        : (cpuScore>playerScore) ? 'あなたの敗北...' : '引き分け';
+      playerScore=0; cpuScore=0; currentRound=1;
+    }, 1200);
+  } else {
+    currentRound++;
+    currentDealer = nextDealer;
+    setTimeout(()=> startGame(currentDealer), 1200);
+  }
+}
 
   // ===== プレイヤー手番 =====
   function playerTurnHandler(card){
@@ -337,23 +405,32 @@ document.addEventListener('DOMContentLoaded', () => {
     return false;
   }
 
-  function drawAndResolve(){
-    if (deck.length===0) return;
-    const d = deck.shift();
-    const m = getCardMonth(d);
-    const idxs = []; board.forEach((b,i)=>{ if(getCardMonth(b)===m) idxs.push(i); });
+// ▼ drawAndResolve 内の分岐を修正
+function drawAndResolve(){
+  if (deck.length===0) return;
+  const d = deck.shift();
+  const m = getCardMonth(d);
+  const idxs = [];
+  board.forEach((b,i)=>{ if(getCardMonth(b)===m) idxs.push(i); });
 
-    if (idxs.length===0){
-      board.push(d);
-    } else if (idxs.length===1){
-      const taken=[d, board.splice(idxs[0],1)[0]];
-      resolveCapture(playerTurn ? playerCaptured : cpuCaptured, taken);
-    } else {
-      const same = board.filter(c=>getCardMonth(c)===m);
-      board = board.filter(c=>getCardMonth(c)!==m);
-      resolveCapture(playerTurn ? playerCaptured : cpuCaptured, [d, ...same]);
-    }
+  if (idxs.length===0){
+    board.push(d);
+  } else if (idxs.length===1){
+    const taken=[d, board.splice(idxs[0],1)[0]];
+    resolveCapture(playerTurn ? playerCaptured : cpuCaptured, taken);
+  } else if (idxs.length===2){
+    // ← 修正：2枚なら“どちらか1枚”だけ取る
+    const chosen = idxs[0]; // （任意で選択UIにすることも可）
+    const taken=[d, board.splice(chosen,1)[0]];
+    resolveCapture(playerTurn ? playerCaptured : cpuCaptured, taken);
+  } else {
+    // 3枚以上は総取り
+    const same = board.filter(c=>getCardMonth(c)===m);
+    board = board.filter(c=>getCardMonth(c)!==m);
+    resolveCapture(playerTurn ? playerCaptured : cpuCaptured, [d, ...same]);
   }
+}
+
 
   function postPlayerAction(){
     updateUI();
@@ -441,6 +518,28 @@ document.addEventListener('DOMContentLoaded', () => {
   function startGame(startingPlayer='player'){
     dealCards(); updateUI();
 
+      // ▼ 初手配ボーナス 6点
+  const pBonus = initialHandBonus(playerHand);
+  const cBonus = initialHandBonus(cpuHand);
+  if (pBonus || cBonus){
+    if (pBonus && !cBonus){ playerScore += 6; currentDealer='player'; messageArea.textContent='初手配ボーナス（あなた）：6点'; }
+    else if (cBonus && !pBonus){ cpuScore += 6; currentDealer='cpu'; messageArea.textContent='初手配ボーナス（相手）：6点'; }
+    else { messageArea.textContent='両者初手配ボーナス：6点ずつ'; } // まれな同時発生
+
+    // 即終了 → 次回戦へ
+    if (currentRound >= totalRounds){
+      setTimeout(()=>{ showScreen('result-screen');
+        finalPlayerScoreElement.textContent = playerScore;
+        finalCpuScoreElement.textContent = cpuScore;
+        resultMessageElement.textContent = (playerScore>cpuScore)?'あなたの勝利！':(cpuScore>playerScore)?'あなたの敗北...':'引き分け';
+        playerScore=0; cpuScore=0; currentRound=1;
+      }, 800);
+    } else {
+      currentRound++; setTimeout(()=> startGame(currentDealer), 800);
+    }
+    return;
+  }
+  
     if (startingPlayer==='player' || startingPlayer==='cpu') currentDealer=startingPlayer;
     if (currentDealer==='player'){
       playerTurn=true; messageArea.textContent=`第${currentRound}回戦：あなたの番です。`;
