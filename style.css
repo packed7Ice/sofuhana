@@ -240,6 +240,16 @@ body.modal-open {
   padding: 19px;
 }
 
+.card.selectable {
+  border-color: #288d1f;
+  box-shadow: 0 0 0 4px #288d1f, 0 0 16px rgba(40, 141, 31, 0.75);
+  transform: translateY(-8px);
+}
+
+.card.selectable:hover {
+  transform: translateY(-12px);
+}
+
 
 /* 画面が小さいとき：親 #app にクラスを付けて一括で小さくする */
 #app.size-small .card         { width: 80px;  height: 128px;  font-size: 16px; }
