@@ -240,13 +240,38 @@ body.modal-open {
   padding: 19px;
 }
 
+.card.selectable {
+  border-color: #288d1f;
+  box-shadow: 0 0 0 4px #288d1f, 0 0 16px rgba(40, 141, 31, 0.75);
+  transform: translateY(-8px);
+}
+
+.card.selectable:hover {
+  transform: translateY(-12px);
+}
 
 /* 画面が小さいとき：親 #app にクラスを付けて一括で小さくする */
-#app.size-small .card         { width: 80px;  height: 128px;  font-size: 16px; }
-#app.size-small .captured-row .card { width: 48px;  height: 72px;   font-size: 12px; }
+#app.size-small .card　{
+  width: 80px;  
+  height: 128px;  
+  font-size: 16px;
+}
+#app.size-small .captured-row .card {
+ width: 48px;  
+ height: 72px;   
+ font-size: 12px;
+}
 
-#app.size-tiny .card          { width: 64px;  height: 102px;  font-size: 13px; }
-#app.size-tiny .captured-row .card  { width: 40px;  height: 60px;   font-size: 11px; }
+#app.size-tiny .card { 
+  width: 64px;  
+  height: 102px;  
+  font-size: 13px; 
+}
+#app.size-tiny .captured-row .card { 
+  width: 40px;  
+  height: 60px;   
+  font-size: 11px; 
+}
 
 .card:hover {
   transform: translateY(-10px);
@@ -338,7 +363,9 @@ body.modal-open {
   font-size: 28px;
   pointer-events: none;
 }
-#card-info-box p { margin: 8px 0; }
+#card-info-box p { 
+  margin: 8px 0; 
+}
 
 /* ==== リンク色をボタンと統一 ==== */
 a {
