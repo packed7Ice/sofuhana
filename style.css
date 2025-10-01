@@ -223,7 +223,8 @@ body.modal-open {
 /* --- カード --- */
 .card {
   width: 96px;
-  height: 160px;
+  aspect-ratio: 660 / 1080;
+  height: auto;
   background-color: #f0f0f0;
   border: 1px solid #333;
   border-radius: 10px;
@@ -251,26 +252,22 @@ body.modal-open {
 }
 
 /* 画面が小さいとき：親 #app にクラスを付けて一括で小さくする */
-#app.size-small .card　{
-  width: 80px;  
-  height: 128px;  
+#app.size-small .card {
+  width: 80px;
   font-size: 16px;
 }
 #app.size-small .captured-row .card {
- width: 48px;  
- height: 72px;   
- font-size: 12px;
+  width: 48px;
+  font-size: 12px;
 }
 
-#app.size-tiny .card { 
-  width: 64px;  
-  height: 102px;  
-  font-size: 13px; 
+#app.size-tiny .card {
+  width: 64px;
+  font-size: 13px;
 }
-#app.size-tiny .captured-row .card { 
-  width: 40px;  
-  height: 60px;   
-  font-size: 11px; 
+#app.size-tiny .captured-row .card {
+  width: 40px;
+  font-size: 11px;
 }
 
 .card:hover {
