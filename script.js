@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * 各札ごとの明示的なパス。必要な札だけ指定してください。
      * 例: '松に鶴': 'assets/matsu_crane.webp'
      */
-    overrides: {},
+    overrides: {'松': 'images/cards/matsu_kasu1.png'},
     /**
      * 裏面画像。
      */
