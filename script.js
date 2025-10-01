@@ -58,7 +58,51 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeHelp(); });
 
   // --- 花札定義 ---
-  const allCards = [
+  const DEFAULT_CARD_IMAGE_CONFIG = {
+    /**
+     * 札画像のベースディレクトリ。
+     * ここを変更することで既定の検索先をまとめて差し替えできます。
+     */
+    basePath: 'images/cards',
+    /**
+     * 既定の拡張子。拡張子を含むフルパスを overrides で指定する場合は不要です。
+     */
+    defaultExtension: 'png',
+    /**
+     * 各札ごとの明示的なパス。必要な札だけ指定してください。
+     * 例: '松に鶴': 'assets/matsu_crane.webp'
+     */
+    overrides: {},
+    /**
+     * 裏面画像。
+     */
+    backImage: 'images/back.png'
+  };
+
+  const externalCardImageConfig = window.__HANAFUDA_CARD_IMAGE_CONFIG__ || window.hanafudaCardImages?.config || {};
+  const CARD_IMAGE_CONFIG = {
+    ...DEFAULT_CARD_IMAGE_CONFIG,
+    ...externalCardImageConfig,
+    overrides: {
+      ...DEFAULT_CARD_IMAGE_CONFIG.overrides,
+      ...(externalCardImageConfig?.overrides || {})
+    }
+  };
+
+  const cardImageApi = window.hanafudaCardImages || {};
+  Object.assign(cardImageApi, {
+    config: CARD_IMAGE_CONFIG,
+    setBasePath(path){ CARD_IMAGE_CONFIG.basePath = path ?? ''; },
+    setDefaultExtension(ext){ CARD_IMAGE_CONFIG.defaultExtension = ext ?? ''; },
+    setOverride(name, imagePath){ if(!name) return; CARD_IMAGE_CONFIG.overrides[name] = imagePath; },
+    removeOverride(name){ if(!name) return; delete CARD_IMAGE_CONFIG.overrides[name]; },
+    clearOverrides(){ CARD_IMAGE_CONFIG.overrides = {}; },
+    setBackImage(path){ CARD_IMAGE_CONFIG.backImage = path ?? ''; }
+  });
+  window.hanafudaCardImages = cardImageApi;
+  window.__HANAFUDA_CARD_IMAGE_CONFIG__ = CARD_IMAGE_CONFIG;
+
+  const CARD_NAMES = [
     '松に鶴','松に短冊','松','松',
     '梅に鶯','梅に短冊','梅','梅',
     '桜に幕','桜に短冊','桜','桜',
@@ -72,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
     '柳に小野道風','柳に燕','柳に短冊','柳',
     '桐に鳳凰','桐','桐','桐'
   ];
+
+  const allCards = [...CARD_NAMES];
 
   // --- 役点（任天堂準拠/代表値） ---
   const YAKU_POINTS = {
@@ -100,9 +146,43 @@ document.addEventListener('DOMContentLoaded', () => {
     el.className = 'game-message'; el.id = 'message';
     gameScreen.appendChild(el); return el;
   }
+  function normalizeCardFileName(cardName){
+    return cardName
+      .normalize('NFKC')
+      .replace(/\s+/g, '_')
+      .replace(/に/g, '_')
+      .replace(/[（）()・、,]/g, '')
+      .toLowerCase();
+  }
+
   function getCardImage(cardName){
-    const fileName = cardName.replace(/に/g,'_').replace(/ /g,'_').toLowerCase();
-    return `images/cards/${fileName}.png`;
+    const overrides = CARD_IMAGE_CONFIG.overrides || {};
+    const basePath = (CARD_IMAGE_CONFIG.basePath || '').replace(/\/$/, '');
+    const ext = CARD_IMAGE_CONFIG.defaultExtension ? `.${CARD_IMAGE_CONFIG.defaultExtension.replace(/^\./, '')}` : '';
+    const override = overrides[cardName];
+    if (override) {
+      const isAbsolute = /^(?:[a-z]+:)?\/\//i.test(override) || override.startsWith('/') || override.startsWith('./') || override.startsWith('../');
+      if (isAbsolute) return override;
+
+      const hasDirectory = override.includes('/');
+      const hasExtension = /\.[a-z0-9]+$/i.test(override);
+      const file = hasExtension ? override : `${override}${ext}`;
+
+      if (!basePath || hasDirectory) {
+        return file;
+      }
+      return `${basePath}/${file}`;
+    }
+
+    const fileName = normalizeCardFileName(cardName);
+    if (!basePath) {
+      return `${fileName}${ext}`;
+    }
+    return `${basePath}/${fileName}${ext}`;
+  }
+
+  function getCardBackImage(){
+    return CARD_IMAGE_CONFIG.backImage || '';
   }
   function getCardMonth(cardName){ return cardName.split('に')[0]; }
   function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -258,6 +338,9 @@ function initialHandBonus(hand){
       el.classList.add('card');
       if(isFaceDown){
         el.classList.add('back');
+        const backImage = getCardBackImage();
+        el.style.backgroundImage = backImage ? `url('${backImage}')` : '';
+        el.textContent = '';
       }else{
         el.style.backgroundImage = `url('${getCardImage(card)}')`;
         el.textContent = card;
