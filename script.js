@@ -72,12 +72,80 @@ document.addEventListener('DOMContentLoaded', () => {
      * 各札ごとの明示的なパス。必要な札だけ指定してください。
      * 例: '松に鶴': 'assets/matsu_crane.webp'
      */
-    overrides: {'松': 'images/cards/matsu_kasu1.png','松に鶴': 'images/cards/matsu_turu'},
+overrides: {
+      // 1月 松
+      '松に鶴': 'images/cards/1/Matsu_kou.png',
+      '松に短冊': 'images/cards/1/Matsu_tan.png',
+      '松': 'images/cards/1/Matsu_kasu1.png',
+      // 2月 梅
+      '梅に鶯': 'images/cards/2/Ume_tane.png',
+      '梅に短冊': 'images/cards/2/Ume_tan.png',
+      '梅': 'images/cards/2/Ume_kasu1.png',
+      // 3月 桜
+      '桜に幕': 'images/cards/3/Sakura_kou.png',
+      '桜に短冊': 'images/cards/3/Sakura_tan.png',
+      '桜': 'images/cards/3/Sakura_kasu1.png',
+      // 4月 藤
+      '藤に不如帰': 'images/cards/4/Fuji_tane.png',
+      '藤に短冊': 'images/cards/4/Fuji_tan.png',
+      '藤': 'images/cards/4/Fuji_kasu1.png',
+      // 5月 菖蒲
+      '菖蒲に八ツ橋': 'images/cards/5/Ayame_tane.png',
+      '菖蒲に短冊': 'images/cards/5/Ayame_tan.png',
+      '菖蒲': 'images/cards/5/Ayame_kasu1.png',
+      // 6月 牡丹
+      '牡丹に蝶': 'images/cards/6/Botan_tane.png',
+      '牡丹に短冊': 'images/cards/6/Botan_tan.png',
+      '牡丹': 'images/cards/6/Botan_kasu1.png',
+      // 7月 萩
+      '萩に猪': 'images/cards/7/Hagi_tane.png',
+      '萩に短冊': 'images/cards/7/Hagi_tan.png',
+      '萩': 'images/cards/7/Hagi_kasu1.png',
+      // 8月 芒
+      '芒に月': 'images/cards/8/Susuki_kou.png',
+      '芒に雁': 'images/cards/8/Susuki_tane.png',
+      '芒': 'images/cards/8/Susuki_kasu1.png',
+      // 9月 菊
+      '菊に杯': 'images/cards/9/Kiku_tane.png',
+      '菊に短冊': 'images/cards/9/Kiku_tan.png',
+      '菊': 'images/cards/9/Kiku_kasu1.png',
+      // 10月 紅葉
+      '紅葉に鹿': 'images/cards/10/Momiji_tane.png',
+      '紅葉に短冊': 'images/cards/10/Momiji_tan.png',
+      '紅葉': 'images/cards/10/Momiji_kasu1.png',
+      // 11月 柳
+      '柳に小野道風': 'images/cards/11/Yanagi_kou.png',
+      '柳に燕': 'images/cards/11/Yanagi_tane.png',
+      '柳に短冊': 'images/cards/11/Yanagi_tan.png',
+      '柳': 'images/cards/11/Yanagi_kasu.png',
+      // 12月 桐
+      '桐に鳳凰': 'images/cards/12/Kiri_kou.png',
+      '桐': 'images/cards/12/Kiri_kasu1.png'
+    },
     /**
      * 裏面画像。
      */
     backImage: 'images/back.png'
   };
+
+  // 重複カス札の画像を明示的に割り当て（デフォルト設定に追加）
+  (function addKasuDuplicateOverrides(cfg){
+    if (!cfg || !cfg.overrides) return;
+    Object.assign(cfg.overrides, {
+      '松(2)': 'images/cards/1/Matsu_kasu2.png',
+      '梅(2)': 'images/cards/2/Ume_kasu2.png',
+      '桜(2)': 'images/cards/3/Sakura_kasu2.png',
+      '藤(2)': 'images/cards/4/Fuji_kasu2.png',
+      '菖蒲(2)': 'images/cards/5/Ayame_kasu2.png',
+      '牡丹(2)': 'images/cards/6/Botan_kasu2.png',
+      '萩(2)': 'images/cards/7/Hagi_kasu2.png',
+      '芒(2)': 'images/cards/8/Susuki_kasu2.png',
+      '菊(2)': 'images/cards/9/Kiku_kasu2.png',
+      '紅葉(2)': 'images/cards/10/Momiji_kasu2.png',
+      '桐(2)': 'images/cards/12/Kiri_kasu2.png',
+      '桐(3)': 'images/cards/12/Kiri_kasu3.png'
+    });
+  })(DEFAULT_CARD_IMAGE_CONFIG);
 
   const externalCardImageConfig = window.__HANAFUDA_CARD_IMAGE_CONFIG__ || window.hanafudaCardImages?.config || {};
   const CARD_IMAGE_CONFIG = {
@@ -117,7 +185,20 @@ document.addEventListener('DOMContentLoaded', () => {
     '桐に鳳凰','桐','桐','桐'
   ];
 
-  const allCards = [...CARD_NAMES];
+  // 重複カス札に識別子を付与した配列を用意（例: 松 → 松, 松(2)）
+  const RENAMED_CARD_NAMES = (() => {
+    const counts = Object.create(null);
+    return CARD_NAMES.map(name => {
+      const isPlainMonth = !name.includes('に') && !name.includes('短冊');
+      if (!isPlainMonth) return name;
+      const month = name;
+      counts[month] = (counts[month] || 0) + 1;
+      if (counts[month] === 1) return name; // 1枚目はそのまま
+      return `${month}(${counts[month]})`;   // 2枚目以降は (2), (3) を付与
+    });
+  })();
+
+  const allCards = [...RENAMED_CARD_NAMES];
 
   // --- 役点（任天堂準拠/代表値） ---
   const YAKU_POINTS = {
@@ -184,7 +265,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function getCardBackImage(){
     return CARD_IMAGE_CONFIG.backImage || '';
   }
-  function getCardMonth(cardName){ return cardName.split('に')[0]; }
+  function getCardMonth(cardName){
+    if (!cardName) return '';
+    const base = String(cardName).replace(/\s*\(\d+\)$/, '');
+    return base.split('に')[0];
+  }
   function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
   // Tooltip
