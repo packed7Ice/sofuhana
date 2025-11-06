@@ -101,7 +101,7 @@ body.modal-open {
 
 /* --- タイトル画面 --- */
 #title-screen {
-  background-image: url('images/Back_1.png');
+  background-image: url('images/Back_title.png');
   background-size: cover;
   background-position: center;
   padding: 20vh 0;
@@ -133,10 +133,17 @@ body.modal-open {
   position: absolute;
   bottom: 2vh;
   font-size: 20px;
+  margin-right: 40px;
   color: rgba(255, 255, 255, 0.7);
 }
 
 /* --- 回戦数選択画面 --- */
+#rounds-screen {
+  background-image: url('images/Back_1.png');
+  background-size: cover;
+  background-position: center;
+}
+
 #rounds-screen h2 {
   font-size: 38px;
 }
@@ -302,6 +309,11 @@ body.modal-open {
 
 .captured-player, .captured-cpu {
   width: 20%;
+}
+
+/* 相手の持ち札エリアを少し中央側へ */
+.captured-cpu {
+  margin-right: 20px; /* わずかに内側へ */
 }
 
 .captured-player h3, .captured-cpu h3 {
