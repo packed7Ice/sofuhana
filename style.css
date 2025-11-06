@@ -101,7 +101,7 @@ body.modal-open {
 
 /* --- タイトル画面 --- */
 #title-screen {
-  background-image: url('images/title_background.jpg');
+  background-image: url('images/Back_1.png');
   background-size: cover;
   background-position: center;
   padding: 20vh 0;
