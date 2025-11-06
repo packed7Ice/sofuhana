@@ -475,6 +475,7 @@ function initialHandBonus(hand){
 
 // ▼ endRound を丸ごと差し替え
 function endRound(winner){
+  if (actionButtons) actionButtons.style.display='none';
   const P = scoreFromCaptured(playerCaptured);
   const C = scoreFromCaptured(cpuCaptured);
 
@@ -634,6 +635,7 @@ function drawAndResolve(){
   // ===== CPU手番（簡易） =====
   function cpuTurnHandler(){
     hideTooltip();
+    if (actionButtons) actionButtons.style.display='none';
     messageArea.textContent='相手が考えています...';
 
     let played=null, matches=[];
@@ -648,6 +650,26 @@ function drawAndResolve(){
       board.push(played);
       drawAndResolve(); updateUI();
       if (maybeNagare()) return;
+
+      // CPU: 役判定 → あがり or こいこい
+      const C1 = scoreFromCaptured(cpuCaptured);
+      if (C1.basePoints > 0){
+        let cpuEnds = false;
+        if (C1.basePoints >= 7) cpuEnds = true;                    // 高得点は確実に上がる
+        else if (deck.length <= 8 && C1.basePoints >= 5) cpuEnds = true; // 終盤の中得点は上がる
+        else cpuEnds = Math.random() < 0.5;                        // それ以外は五分で判断
+
+        if (cpuEnds){
+          messageArea.textContent = `相手が勝負をかけました（役: ${C1.yakuList.join('、') || 'なし'}）。`;
+          endRound('cpu');
+          return;
+        } else {
+          cpuKoikoi = true;
+          messageArea.textContent='相手がこいこいを宣言しました。あなたの番です。';
+          playerTurn=true; return;
+        }
+      }
+
       playerTurn=true; messageArea.textContent='あなたの番です。手札から札を選んでください。';
       return;
     }
@@ -671,6 +693,25 @@ function drawAndResolve(){
     drawAndResolve(); updateUI();
     if (maybeNagare()) return;
 
+    // CPU: 役判定 → あがり or こいこい
+    const C2 = scoreFromCaptured(cpuCaptured);
+    if (C2.basePoints > 0){
+      let cpuEnds = false;
+      if (C2.basePoints >= 7) cpuEnds = true;
+      else if (deck.length <= 8 && C2.basePoints >= 5) cpuEnds = true;
+      else cpuEnds = Math.random() < 0.5;
+
+      if (cpuEnds){
+        messageArea.textContent = `相手が勝負をかけました（役: ${C2.yakuList.join('、') || 'なし'}）。`;
+        endRound('cpu');
+        return;
+      } else {
+        cpuKoikoi = true;
+        messageArea.textContent='相手がこいこいを宣言しました。あなたの番です。';
+        playerTurn=true; return;
+      }
+    }
+
     playerTurn=true; messageArea.textContent='あなたの番です。手札から札を選んでください。';
   }
 
@@ -684,6 +725,7 @@ function drawAndResolve(){
   }
 
   function startGame(startingPlayer='player'){
+    if (actionButtons) actionButtons.style.display='none';
     dealCards(); updateUI();
 
       // ▼ 初手配ボーナス 6点
