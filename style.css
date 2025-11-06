@@ -337,6 +337,14 @@ body.modal-open {
   background-position: center;
 }
 
+/* --- ゲームプレイ背景 --- */
+#game-screen {
+  background-image: url('images/Back_1.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 #result-screen h2 {
   font-size: 64px;
   margin-bottom: 3vh;
