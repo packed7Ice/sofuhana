@@ -1,0 +1,69 @@
+/* ==== Help: 月別カードと役の例 ==== */
+.months-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+  margin: 12px 0 20px;
+}
+
+.month-row {
+  background: rgba(255,255,255,0.04);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.month-title {
+  font-weight: 600;
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.month-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.card.help-card {
+  width: 58px;
+  aspect-ratio: 660 / 1080;
+  height: auto;
+  border-radius: 8px;
+}
+
+.yaku-examples {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 12px 0 20px;
+}
+
+.yaku-example {
+  background: rgba(255,255,255,0.04);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.yaku-example-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.yaku-example-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.yaku-example-points {
+  font-weight: 700;
+  color: #ffde70;
+  background: rgba(255, 222, 112, 0.12);
+  border: 1px solid rgba(255, 222, 112, 0.35);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.9em;
+}

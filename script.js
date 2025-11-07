@@ -36,7 +36,7 @@ function initGame(){
 
   function maybeNagare(){
     if (state.playerHand.length === 0 && state.cpuHand.length === 0){
-      messageArea.textContent = '流れ（どちらも手札がなくなりました）。';
+      showBottomMessage('\u6d41\u308c\uff08\u30ce\u30fc\u30b2\u30fc\u30e0\uff09');
       endRound('none');
       return true;
     }
@@ -49,7 +49,7 @@ function initGame(){
     const yaku = checkYaku(captured);
     if (captured === state.playerCaptured && yaku.length > 0){
       hideTooltip();
-      messageArea.textContent = `役ができました（${yaku.join('、')}）。進行方法を選んでください。`;
+      showBottomMessage(`役ができました（${yaku.join('、')}）。進行方法を選んでください。`);
       if (actionButtons) actionButtons.style.display = 'flex';
       playerHandArea?.removeEventListener('click', playerHandClickHandler);
       updateUI();
@@ -101,7 +101,7 @@ function initGame(){
     if (maybeNagare()) return;
     if (actionButtons && actionButtons.style.display !== 'flex'){
       state.playerTurn = false;
-      messageArea.textContent = '相手の番です。';
+      showBottomMessage('\u76f8\u624b\u306e\u756a\u3067\u3059');
       setTimeout(cpuTurnHandler, 900);
     }
   }
@@ -182,7 +182,7 @@ function initGame(){
   async function cpuTurnHandler(){
     hideTooltip();
     if (actionButtons) actionButtons.style.display = 'none';
-    messageArea.textContent = '相手が考えています...';
+    showBottomMessage('\u76f8\u624b\u304c\u601d\u8003\u4e2d...');
 
     let played = null;
     let matches = [];
@@ -217,20 +217,20 @@ function initGame(){
         else cpuEnds = Math.random() < 0.5;
 
         if (cpuEnds){
-          messageArea.textContent = `相手が勝負を宣言しました（役: ${cpuEvaluation.yakuList.join('、') || 'なし'}）。`;
+          showBottomMessage('\u76f8\u624b\u304c\u52dd\u8ca0\u3092\u304b\u3051\u307e\u3057\u305f');
           endRound('cpu');
           return;
         }
 
         state.cpuKoikoi = true;
         showBottomMessage('相手は「こいこい」！');
-        messageArea.textContent = '相手は続行を選びました。あなたの番です。';
+        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
         state.playerTurn = true;
         return;
       }
 
       state.playerTurn = true;
-      messageArea.textContent = 'あなたの番です。';
+        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
       return;
     }
 
@@ -264,20 +264,20 @@ function initGame(){
       else cpuEnds = Math.random() < 0.5;
 
       if (cpuEnds){
-        messageArea.textContent = `相手が勝負を宣言しました（役: ${cpuEvaluation.yakuList.join('、') || 'なし'}）。`;
+          showBottomMessage('\u76f8\u624b\u304c\u52dd\u8ca0\u3092\u304b\u3051\u307e\u3057\u305f');
         endRound('cpu');
         return;
       }
 
       state.cpuKoikoi = true;
       showBottomMessage('相手は「こいこい」！');
-      messageArea.textContent = '相手は続行を選びました。あなたの番です。';
+        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
       state.playerTurn = true;
       return;
     }
 
     state.playerTurn = true;
-    messageArea.textContent = 'あなたの番です。';
+        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
   }
 
   function endRound(winner){
@@ -297,7 +297,7 @@ function initGame(){
       messageArea.textContent = `あなたの勝ち！ ${playerGain}点獲得（役: ${playerResult.yakuList.join('、') || 'なし'}）。`;
       nextDealer = 'player';
     } else if (winner === 'cpu'){
-      showBottomMessage('相手が勝ちました。');
+       showBottomMessage('\u76f8\u624b\u304c\u4e0a\u304c\u308a\u307e\u3057\u305f');
       cpuGain = cpuResult.basePoints;
       if (cpuGain >= 7) cpuGain *= 2;
       if (state.playerKoikoi) cpuGain *= 2;
@@ -309,6 +309,7 @@ function initGame(){
       nextDealer = state.currentDealer === 'player' ? 'cpu' : 'player';
     }
 
+    const nextDelay = (winner === 'cpu') ? 2200 : 1200;
     if (state.currentRound >= state.totalRounds){
       setTimeout(() => {
         showScreen('result-screen');
@@ -322,11 +323,11 @@ function initGame(){
         state.playerScore = 0;
         state.cpuScore = 0;
         state.currentRound = 1;
-      }, 1200);
+      }, nextDelay);
     } else {
       state.currentRound += 1;
       state.currentDealer = nextDealer;
-      setTimeout(() => startGame(state.currentDealer), 1200);
+      setTimeout(() => startGame(state.currentDealer), nextDelay);
     }
   }
 
@@ -431,3 +432,5 @@ function initGame(){
   restartButton?.addEventListener('click', () => showScreen('rounds-screen'));
   returnToTitleButton?.addEventListener('click', () => showScreen('title-screen'));
 }
+
+
