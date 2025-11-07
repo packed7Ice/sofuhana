@@ -1,0 +1,190 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // --- 隕∫ｴ蜿門ｾ・---
+  const titleScreen = document.getElementById('title-screen');
+  const roundsScreen = document.getElementById('rounds-screen');
+  const gameScreen = document.getElementById('game-screen');
+  const resultScreen = document.getElementById('result-screen');
+
+  const startGameButton = document.getElementById('start-game-button');
+  const roundButtons = document.querySelectorAll('.round-button');
+  const restartButton = document.getElementById('restart-button');
+  const returnToTitleButton = document.getElementById('return-to-title-button');
+
+  const boardArea = document.getElementById('board-area');
+  const playerHandArea = document.getElementById('player-hand-area');
+  const cpuHandArea = document.getElementById('cpu-hand-area');
+
+  const koikoiButton = document.getElementById('koikoi-button');
+  const shobuButton = document.getElementById('shobu-button');
+  const actionButtons = document.getElementById('action-buttons');
+
+  const playerScoreSpan = document.getElementById('player-score');
+  const cpuScoreSpan = document.getElementById('cpu-score');
+  const currentRoundSpan = document.getElementById('current-round');
+
+  const playerLightArea = document.getElementById('player-light-area');
+  const playerTaneArea = document.getElementById('player-tane-area');
+  const playerTanArea = document.getElementById('player-tan-area');
+  const playerKasuArea = document.getElementById('player-kasu-area');
+  const cpuLightArea = document.getElementById('cpu-light-area');
+  const cpuTaneArea = document.getElementById('cpu-tane-area');
+  const cpuTanArea = document.getElementById('cpu-tan-area');
+  const cpuKasuArea = document.getElementById('cpu-kasu-area');
+
+  const messageArea = document.getElementById('message') || createMessageArea();
+
+  // 繝ｪ繧ｶ繝ｫ繝・
+  const resultMessageElement = document.getElementById('result-message');
+  const finalPlayerScoreElement = document.getElementById('final-player-score');
+  const finalCpuScoreElement = document.getElementById('final-cpu-score');
+
+  // 繝・・繝ｫ繝√ャ繝・
+  const cardInfoBox = ensureTooltip();
+  const cardInfoMonth = cardInfoBox.querySelector('#card-info-month');
+  const cardInfoName  = cardInfoBox.querySelector('#card-info-name');
+  const cardInfoType  = cardInfoBox.querySelector('#card-info-type');
+
+  // 繝倥Ν繝・
+  const helpBtn = document.getElementById('help-button');
+  const helpBtnGame = document.getElementById('help-button-game');
+  const helpModal = document.getElementById('help-modal');
+  const helpClose = document.getElementById('help-close');
+  function openHelp(){ helpModal.style.display = 'flex'; }
+  function closeHelp(){ helpModal.style.display = 'none'; }
+  helpBtn?.addEventListener('click', openHelp);
+  helpBtnGame?.addEventListener('click', openHelp);
+  helpClose?.addEventListener('click', closeHelp);
+  helpModal?.addEventListener('click', (e)=>{ if(e.target===helpModal) closeHelp(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeHelp(); });
+
+  // --- 闃ｱ譛ｭ螳夂ｾｩ ---
+  const DEFAULT_CARD_IMAGE_CONFIG = {
+    /**
+     * 譛ｭ逕ｻ蜒上・繝吶・繧ｹ繝・ぅ繝ｬ繧ｯ繝医Μ縲・
+     * 縺薙％繧貞､画峩縺吶ｋ縺薙→縺ｧ譌｢螳壹・讀懃ｴ｢蜈医ｒ縺ｾ縺ｨ繧√※蟾ｮ縺玲崛縺医〒縺阪∪縺吶・
+     */
+    basePath: 'images/cards',
+    /**
+     * 譌｢螳壹・諡｡蠑ｵ蟄舌よ僑蠑ｵ蟄舌ｒ蜷ｫ繧繝輔Ν繝代せ繧・overrides 縺ｧ謖・ｮ壹☆繧句ｴ蜷医・荳崎ｦ√〒縺吶・
+     */
+    defaultExtension: 'png',
+    /**
+     * 蜷・惆縺斐→縺ｮ譏守､ｺ逧・↑繝代せ縲ょｿ・ｦ√↑譛ｭ縺縺第欠螳壹＠縺ｦ縺上□縺輔＞縲・
+     * 萓・ '譚ｾ縺ｫ鮓ｴ': 'assets/matsu_crane.webp'
+     */
+overrides: {
+      // 1譛・譚ｾ
+      '譚ｾ縺ｫ鮓ｴ': 'images/cards/1/Matsu_kou.png',
+      '譚ｾ縺ｫ遏ｭ蜀・: 'images/cards/1/Matsu_tan.png',
+      '譚ｾ': 'images/cards/1/Matsu_kasu1.png',
+      // 2譛・譴・
+      '譴・↓鮓ｯ': 'images/cards/2/Ume_tane.png',
+      '譴・↓遏ｭ蜀・: 'images/cards/2/Ume_tan.png',
+      '譴・: 'images/cards/2/Ume_kasu1.png',
+      // 3譛・譯・
+      '譯懊↓蟷・: 'images/cards/3/Sakura_kou.png',
+      '譯懊↓遏ｭ蜀・: 'images/cards/3/Sakura_tan.png',
+      '譯・: 'images/cards/3/Sakura_kasu1.png',
+      // 4譛・阯､
+      '阯､縺ｫ荳榊ｦょｸｰ': 'images/cards/4/Fuji_tane.png',
+      '阯､縺ｫ遏ｭ蜀・: 'images/cards/4/Fuji_tan.png',
+      '阯､': 'images/cards/4/Fuji_kasu1.png',
+      // 5譛・闖冶調
+      '闖冶調縺ｫ蜈ｫ繝・ｩ・: 'images/cards/5/Ayame_tane.png',
+      '闖冶調縺ｫ遏ｭ蜀・: 'images/cards/5/Ayame_tan.png',
+      '闖冶調': 'images/cards/5/Ayame_kasu1.png',
+      // 6譛・迚｡荳ｹ
+      '迚｡荳ｹ縺ｫ陜ｶ': 'images/cards/6/Botan_tane.png',
+      '迚｡荳ｹ縺ｫ遏ｭ蜀・: 'images/cards/6/Botan_tan.png',
+      '迚｡荳ｹ': 'images/cards/6/Botan_kasu1.png',
+      // 7譛・關ｩ
+      '關ｩ縺ｫ迪ｪ': 'images/cards/7/Hagi_tane.png',
+      '關ｩ縺ｫ遏ｭ蜀・: 'images/cards/7/Hagi_tan.png',
+      '關ｩ': 'images/cards/7/Hagi_kasu1.png',
+      // 8譛・闃・
+      '闃偵↓譛・: 'images/cards/8/Susuki_kou.png',
+      '闃偵↓髮・: 'images/cards/8/Susuki_tane.png',
+      '闃・: 'images/cards/8/Susuki_kasu1.png',
+      // 9譛・闖・
+      '闖翫↓譚ｯ': 'images/cards/9/Kiku_tane.png',
+      '闖翫↓遏ｭ蜀・: 'images/cards/9/Kiku_tan.png',
+      '闖・: 'images/cards/9/Kiku_kasu1.png',
+      // 10譛・邏・痩
+      '邏・痩縺ｫ鮖ｿ': 'images/cards/10/Momiji_tane.png',
+      '邏・痩縺ｫ遏ｭ蜀・: 'images/cards/10/Momiji_tan.png',
+      '邏・痩': 'images/cards/10/Momiji_kasu1.png',
+      // 11譛・譟ｳ
+      '譟ｳ縺ｫ蟆城㍽驕馴｢ｨ': 'images/cards/11/Yanagi_kou.png',
+      '譟ｳ縺ｫ辯・: 'images/cards/11/Yanagi_tane.png',
+      '譟ｳ縺ｫ遏ｭ蜀・: 'images/cards/11/Yanagi_tan.png',
+      '譟ｳ': 'images/cards/11/Yanagi_kasu.png',
+      // 12譛・譯・
+      '譯舌↓魑ｳ蜃ｰ': 'images/cards/12/Kiri_kou.png',
+      '譯・: 'images/cards/12/Kiri_kasu1.png'
+    },
+    /**
+     * 陬城擇逕ｻ蜒上・
+     */
+    backImage: 'images/back.png'
+  };
+
+  // 驥崎､・き繧ｹ譛ｭ縺ｮ逕ｻ蜒上ｒ譏守､ｺ逧・↓蜑ｲ繧雁ｽ薙※・医ョ繝輔か繝ｫ繝郁ｨｭ螳壹↓霑ｽ蜉・・
+  (function addKasuDuplicateOverrides(cfg){
+    if (!cfg || !cfg.overrides) return;
+    Object.assign(cfg.overrides, {
+      '譚ｾ(2)': 'images/cards/1/Matsu_kasu2.png',
+      '譴・2)': 'images/cards/2/Ume_kasu2.png',
+      '譯・2)': 'images/cards/3/Sakura_kasu2.png',
+      '阯､(2)': 'images/cards/4/Fuji_kasu2.png',
+      '闖冶調(2)': 'images/cards/5/Ayame_kasu2.png',
+      '迚｡荳ｹ(2)': 'images/cards/6/Botan_kasu2.png',
+      '關ｩ(2)': 'images/cards/7/Hagi_kasu2.png',
+      '闃・2)': 'images/cards/8/Susuki_kasu2.png',
+      '闖・2)': 'images/cards/9/Kiku_kasu2.png',
+      '邏・痩(2)': 'images/cards/10/Momiji_kasu2.png',
+      '譯・2)': 'images/cards/12/Kiri_kasu2.png',
+      '譯・3)': 'images/cards/12/Kiri_kasu3.png'
+    });
+  })(DEFAULT_CARD_IMAGE_CONFIG);
+
+  const externalCardImageConfig = window.__HANAFUDA_CARD_IMAGE_CONFIG__ || window.hanafudaCardImages?.config || {};
+  const CARD_IMAGE_CONFIG = {
+    ...DEFAULT_CARD_IMAGE_CONFIG,
+    ...externalCardImageConfig,
+    overrides: {
+      ...DEFAULT_CARD_IMAGE_CONFIG.overrides,
+      ...(externalCardImageConfig?.overrides || {})
+    }
+  };
+
+  const cardImageApi = window.hanafudaCardImages || {};
+  Object.assign(cardImageApi, {
+    config: CARD_IMAGE_CONFIG,
+    setBasePath(path){ CARD_IMAGE_CONFIG.basePath = path ?? ''; },
+    setDefaultExtension(ext){ CARD_IMAGE_CONFIG.defaultExtension = ext ?? ''; },
+    setOverride(name, imagePath){ if(!name) return; CARD_IMAGE_CONFIG.overrides[name] = imagePath; },
+    removeOverride(name){ if(!name) return; delete CARD_IMAGE_CONFIG.overrides[name]; },
+    clearOverrides(){ CARD_IMAGE_CONFIG.overrides = {}; },
+    setBackImage(path){ CARD_IMAGE_CONFIG.backImage = path ?? ''; }
+  });
+  window.hanafudaCardImages = cardImageApi;
+  window.__HANAFUDA_CARD_IMAGE_CONFIG__ = CARD_IMAGE_CONFIG;
+
+  const CARD_NAMES = [
+    '譚ｾ縺ｫ鮓ｴ','譚ｾ縺ｫ遏ｭ蜀・,'譚ｾ','譚ｾ',
+    '譴・↓鮓ｯ','譴・↓遏ｭ蜀・,'譴・,'譴・,
+    '譯懊↓蟷・,'譯懊↓遏ｭ蜀・,'譯・,'譯・,
+    '阯､縺ｫ荳榊ｦょｸｰ','阯､縺ｫ遏ｭ蜀・,'阯､','阯､',
+    '闖冶調縺ｫ蜈ｫ繝・ｩ・,'闖冶調縺ｫ遏ｭ蜀・,'闖冶調','闖冶調',
+    '迚｡荳ｹ縺ｫ陜ｶ','迚｡荳ｹ縺ｫ遏ｭ蜀・,'迚｡荳ｹ','迚｡荳ｹ',
+    '關ｩ縺ｫ迪ｪ','關ｩ縺ｫ遏ｭ蜀・,'關ｩ','關ｩ',
+    '闃偵↓譛・,'闃偵↓髮・,'闃・,'闃・,
+    '闖翫↓譚ｯ','闖翫↓遏ｭ蜀・,'闖・,'闖・,
+    '邏・痩縺ｫ鮖ｿ','邏・痩縺ｫ遏ｭ蜀・,'邏・痩','邏・痩',
+    '譟ｳ縺ｫ蟆城㍽驕馴｢ｨ','譟ｳ縺ｫ辯・,'譟ｳ縺ｫ遏ｭ蜀・,'譟ｳ',
+    '譯舌↓魑ｳ蜃ｰ','譯・,'譯・,'譯・
+  ];
+
+  // 驥崎､・き繧ｹ譛ｭ縺ｫ隴伜挨蟄舌ｒ莉倅ｸ弱＠縺滄・蛻励ｒ逕ｨ諢擾ｼ井ｾ・ 譚ｾ 竊・譚ｾ, 譚ｾ(2)・・
+  const RENAMED
+

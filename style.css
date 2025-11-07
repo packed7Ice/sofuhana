@@ -199,7 +199,29 @@ body.modal-open {
 
 /* --- テキスト類 --- */
 .area-title { font-size: 28px; margin: 10px 0; }
-.game-message { font-size: 28px; }
+.game-message {
+  font-size: 28px;
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  text-align: center;
+  padding: 12px 16px;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  z-index: 1000;
+  pointer-events: none; /* 下の操作を邪魔しない */
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+.game-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
 .result-info { font-size: 28px; }
 
 /* --- 盤面・手札 --- */
@@ -284,6 +306,32 @@ body.modal-open {
   margin: 16px auto;
   position: relative;
   z-index: 2;
+}
+
+/* --- 固定配置: 手札・場札・山札・引いた札のエリア高さを確保 --- */
+/* 手札が空でもエリアが潰れないよう最小高さを設定 */
+.hand {
+  min-height: 160px;
+}
+#app.size-small .hand {
+  min-height: 135px;
+}
+#app.size-tiny .hand {
+  min-height: 110px;
+}
+
+/* 山札/引いた札の表示が無いタイミングでも縦位置を維持 */
+#draw-preview-area,
+#deck-area {
+  min-height: 180px; /* 札1枚相当の高さ+ラベル余白 */
+}
+#app.size-small #draw-preview-area,
+#app.size-small #deck-area {
+  min-height: 150px;
+}
+#app.size-tiny #draw-preview-area,
+#app.size-tiny #deck-area {
+  min-height: 120px;
 }
 
 /* --- カード --- */

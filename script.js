@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
   // --- 要素取得 ---
   const titleScreen = document.getElementById('title-screen');
   const roundsScreen = document.getElementById('rounds-screen');
@@ -233,7 +233,20 @@ overrides: {
   function createMessageArea(){
     const el = document.createElement('div');
     el.className = 'game-message'; el.id = 'message';
+    el.setAttribute('role','status');
+    el.setAttribute('aria-live','polite');
     gameScreen.appendChild(el); return el;
+  }
+  // 画面下部のメッセージを強調表示（数秒で自動フェード）
+  let __bottomMsgTimer = null;
+  function showBottomMessage(text, duration = 2500){
+    if (!messageArea) return;
+    messageArea.textContent = text;
+    messageArea.classList.add('show');
+    if (__bottomMsgTimer) clearTimeout(__bottomMsgTimer);
+    __bottomMsgTimer = setTimeout(()=>{
+      messageArea.classList.remove('show');
+    }, duration);
   }
   function normalizeCardFileName(cardName){
     return cardName
@@ -519,6 +532,7 @@ function endRound(winner){
     nextDealer = 'player';
 
   } else if (winner === 'cpu') {
+    showBottomMessage('相手が上がりました');
     cpuGain = C.basePoints;
 
     if (cpuGain >= 7) cpuGain *= 2;
@@ -746,6 +760,7 @@ async function drawAndResolveDelayed(){
           return;
         } else {
           cpuKoikoi = true;
+          showBottomMessage('相手は「こいこい」！');
           messageArea.textContent='相手がこいこいを宣言しました。あなたの番です。';
           playerTurn=true; return;
         }
@@ -791,6 +806,7 @@ async function drawAndResolveDelayed(){
         return;
       } else {
         cpuKoikoi = true;
+        showBottomMessage('相手は「こいこい」！');
         messageArea.textContent='相手がこいこいを宣言しました。あなたの番です。';
         playerTurn=true; return;
       }
@@ -868,6 +884,7 @@ async function drawAndResolveDelayed(){
     actionButtons.style.display='none';
     playerKoikoi=true; playerHandArea.addEventListener('click', playerHandClickHandler);
     messageArea.textContent='こいこいを宣言しました。続行します。';
+    showBottomMessage('あなたは「こいこい」！');
     playerTurn=false; setTimeout(cpuTurnHandler, 900);
   });
 
