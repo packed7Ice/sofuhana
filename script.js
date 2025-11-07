@@ -36,7 +36,7 @@ function initGame(){
 
   function maybeNagare(){
     if (state.playerHand.length === 0 && state.cpuHand.length === 0){
-      showBottomMessage('\u6d41\u308c\uff08\u30ce\u30fc\u30b2\u30fc\u30e0\uff09');
+      showBottomMessage('æµã‚Œã€‚2å›æˆ¦ã¸ç§»ã‚Šã¾ã™ã€‚');
       endRound('none');
       return true;
     }
@@ -57,7 +57,7 @@ function initGame(){
         return false;
       }
       hideTooltip();
-      showBottomMessage(`–ğ‚ª‚Å‚«‚Ü‚µ‚½i${yaku.join('A')}jBis•û–@‚ğ‘I‚ñ‚Å‚­‚¾‚³‚¢B`);
+      showBottomMessage(`å½¹ãŒã§ãã¾ã—ãŸï¼ˆ${yaku.join('ã€')}ï¼‰ã€‚é€²è¡Œæ–¹æ³•ã‚’é¸ã‚“ã§ãã ã•ã„ã€‚`);
       if (actionButtons) actionButtons.style.display = 'flex';
       playerHandArea?.removeEventListener('click', playerHandClickHandler);
       updateUI();
@@ -133,7 +133,7 @@ function initGame(){
       };
 
       boardArea?.addEventListener('click', onClick);
-      if (messageArea) messageArea.textContent = '‚Ç‚¿‚ç‚ğæ‚é‚©‘I‚ñ‚Å‚­‚¾‚³‚¢B';
+      if (messageArea) messageArea.textContent = 'ã©ã¡ã‚‰ã‚’å–ã‚‹ã‹é¸ã‚“ã§ãã ã•ã„ã€‚';
     });
   }
   function postPlayerAction(){
@@ -141,7 +141,7 @@ function initGame(){
     if (maybeNagare()) return;
     if (actionButtons && actionButtons.style.display !== 'flex'){
       state.playerTurn = false;
-      showBottomMessage('\u76f8\u624b\u306e\u756a\u3067\u3059');
+      showBottomMessage('ç›¸æ‰‹ã®ç•ªã§ã™');
       setTimeout(cpuTurnHandler, 900);
     }
   }
@@ -204,7 +204,7 @@ function initGame(){
     }
 
     if (matches.length === 2){
-      messageArea.textContent = '‚Ç‚¿‚ç‚ÌD‚ğæ‚é‚©‘I‚ñ‚Å‚­‚¾‚³‚¢B';
+      messageArea.textContent = 'ã©ã¡ã‚‰ã®æœ­ã‚’å–ã‚‹ã‹é¸ã‚“ã§ãã ã•ã„ã€‚';
       highlightAndAwaitBoardChoice(matches, card);
       return;
     }
@@ -222,7 +222,7 @@ function initGame(){
   async function cpuTurnHandler(){
     hideTooltip();
     if (actionButtons) actionButtons.style.display = 'none';
-    showBottomMessage('\u76f8\u624b\u304c\u601d\u8003\u4e2d...');
+    showBottomMessage('ç›¸æ‰‹ãŒæ€è€ƒä¸­...');
 
     let played = null;
     let matches = [];
@@ -257,20 +257,20 @@ function initGame(){
         else cpuEnds = Math.random() < 0.5;
 
         if (cpuEnds){
-          showBottomMessage('\u76f8\u624b\u304c\u52dd\u8ca0\u3092\u304b\u3051\u307e\u3057\u305f');
+          showBottomMessage('ç›¸æ‰‹ãŒå‹è² ã‚’ã‹ã‘ã¾ã—ãŸ');
           endRound('cpu');
           return;
         }
 
         state.cpuKoikoi = true;
-        showBottomMessage('‘Šè‚Íu‚±‚¢‚±‚¢vI');
-        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
+        showBottomMessage('ç›¸æ‰‹ã¯ã€Œã“ã„ã“ã„ã€ï¼');
+        showBottomMessage('ã‚ãªãŸã®ç•ªã§ã™');
         state.playerTurn = true;
         return;
       }
 
       state.playerTurn = true;
-        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
+        showBottomMessage('ã‚ãªãŸã®ç•ªã§ã™');
       return;
     }
 
@@ -304,20 +304,20 @@ function initGame(){
       else cpuEnds = Math.random() < 0.5;
 
       if (cpuEnds){
-          showBottomMessage('\u76f8\u624b\u304c\u52dd\u8ca0\u3092\u304b\u3051\u307e\u3057\u305f');
+          showBottomMessage('ç›¸æ‰‹ãŒå‹è² ã‚’ã‹ã‘ã¾ã—ãŸ');
         endRound('cpu');
         return;
       }
 
       state.cpuKoikoi = true;
-      showBottomMessage('‘Šè‚Íu‚±‚¢‚±‚¢vI');
-        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
+      showBottomMessage('ç›¸æ‰‹ã¯ã€Œã“ã„ã“ã„ã€ï¼');
+        showBottomMessage('ã‚ãªãŸã®ç•ªã§ã™');
       state.playerTurn = true;
       return;
     }
 
     state.playerTurn = true;
-        showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
+        showBottomMessage('ã‚ãªãŸã®ç•ªã§ã™');
   }
 
   function endRound(winner){
@@ -334,18 +334,18 @@ function initGame(){
       if (playerGain >= 7) playerGain *= 2;
       if (state.cpuKoikoi) playerGain *= 2;
       state.playerScore += playerGain;
-      messageArea.textContent = `‚ ‚È‚½‚ÌŸ‚¿I ${playerGain}“_Šl“¾i–ğ: ${playerResult.yakuList.join('A') || '‚È‚µ'}jB`;
+      messageArea.textContent = `ã‚ãªãŸã®å‹ã¡ï¼ ${playerGain}ç‚¹ç²å¾—ï¼ˆå½¹: ${playerResult.yakuList.join('ã€') || 'ãªã—'}ï¼‰ã€‚`;
       nextDealer = 'player';
     } else if (winner === 'cpu'){
-       showBottomMessage('\u76f8\u624b\u304c\u4e0a\u304c\u308a\u307e\u3057\u305f');
+       showBottomMessage('ç›¸æ‰‹ãŒä¸ŠãŒã‚Šã¾ã—ãŸ');
       cpuGain = cpuResult.basePoints;
       if (cpuGain >= 7) cpuGain *= 2;
       if (state.playerKoikoi) cpuGain *= 2;
       state.cpuScore += cpuGain;
-      messageArea.textContent = `‘Šè‚ÌŸ‚¿B${cpuGain}“_Šl“¾i–ğ: ${cpuResult.yakuList.join('A') || '‚È‚µ'}jB`;
+      messageArea.textContent = `ç›¸æ‰‹ã®å‹ã¡ã€‚${cpuGain}ç‚¹ç²å¾—ï¼ˆå½¹: ${cpuResult.yakuList.join('ã€') || 'ãªã—'}ï¼‰ã€‚`;
       nextDealer = 'cpu';
     } else {
-      messageArea.textContent = '—¬‹Çiˆø‚«•ª‚¯j‚Å‚·BŸ‚Ìe‚ÍŒğ‘ã‚µ‚Ü‚·B';
+      messageArea.textContent = 'æµå±€ï¼ˆå¼•ãåˆ†ã‘ï¼‰ã§ã™ã€‚æ¬¡ã®è¦ªã¯äº¤ä»£ã—ã¾ã™ã€‚';
       nextDealer = state.currentDealer === 'player' ? 'cpu' : 'player';
     }
 
@@ -356,9 +356,9 @@ function initGame(){
         if (finalPlayerScoreElement) finalPlayerScoreElement.textContent = state.playerScore;
         if (finalCpuScoreElement) finalCpuScoreElement.textContent = state.cpuScore;
         if (resultMessageElement){
-          if (state.playerScore > state.cpuScore) resultMessageElement.textContent = '‚ ‚È‚½‚ÌŸ—˜I';
-          else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = '‘Šè‚ÌŸ‚¿...';
-          else resultMessageElement.textContent = 'ˆø‚«•ª‚¯';
+          if (state.playerScore > state.cpuScore) resultMessageElement.textContent = 'ã‚ãªãŸã®å‹åˆ©ï¼';
+          else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = 'ç›¸æ‰‹ã®å‹ã¡...';
+          else resultMessageElement.textContent = 'å¼•ãåˆ†ã‘';
         }
         state.playerScore = 0;
         state.cpuScore = 0;
@@ -383,13 +383,13 @@ function initGame(){
       if (playerBonus && !cpuBonus){
         state.playerScore += 6;
         state.currentDealer = 'player';
-        messageArea.textContent = '•½‰Æi‚ ‚È‚½j‚ªeèl–‡I 6“_Šl“¾B';
+        messageArea.textContent = 'å¹³å®¶ï¼ˆã‚ãªãŸï¼‰ãŒè¦ªæ‰‹å››æšï¼ 6ç‚¹ç²å¾—ã€‚';
       } else if (cpuBonus && !playerBonus){
         state.cpuScore += 6;
         state.currentDealer = 'cpu';
-        messageArea.textContent = '‘Šè‚ªeèl–‡I 6“_Šl“¾B';
+        messageArea.textContent = 'ç›¸æ‰‹ãŒè¦ªæ‰‹å››æšï¼ 6ç‚¹ç²å¾—ã€‚';
       } else {
-        messageArea.textContent = '—¼Ò‚Æ‚àeèl–‡I 6“_‚¸‚ÂB';
+        messageArea.textContent = 'ä¸¡è€…ã¨ã‚‚è¦ªæ‰‹å››æšï¼ 6ç‚¹ãšã¤ã€‚';
       }
 
       if (state.currentRound >= state.totalRounds){
@@ -398,9 +398,9 @@ function initGame(){
           if (finalPlayerScoreElement) finalPlayerScoreElement.textContent = state.playerScore;
           if (finalCpuScoreElement) finalCpuScoreElement.textContent = state.cpuScore;
           if (resultMessageElement){
-            if (state.playerScore > state.cpuScore) resultMessageElement.textContent = '‚ ‚È‚½‚ÌŸ—˜I';
-            else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = '‘Šè‚ÌŸ‚¿...';
-            else resultMessageElement.textContent = 'ˆø‚«•ª‚¯';
+            if (state.playerScore > state.cpuScore) resultMessageElement.textContent = 'ã‚ãªãŸã®å‹åˆ©ï¼';
+            else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = 'ç›¸æ‰‹ã®å‹ã¡...';
+            else resultMessageElement.textContent = 'å¼•ãåˆ†ã‘';
           }
           state.playerScore = 0;
           state.cpuScore = 0;
@@ -419,10 +419,10 @@ function initGame(){
 
     if (state.currentDealer === 'player'){
       state.playerTurn = true;
-      messageArea.textContent = `‘æ${state.currentRound}‰ñíF‚ ‚È‚½‚Ì”Ô‚Å‚·B`;
+      messageArea.textContent = `ç¬¬${state.currentRound}å›æˆ¦ï¼šã‚ãªãŸã®ç•ªã§ã™ã€‚`;
     } else {
       state.playerTurn = false;
-      messageArea.textContent = `‘æ${state.currentRound}‰ñíF‘Šè‚Ì”Ô‚Å‚·B`;
+      messageArea.textContent = `ç¬¬${state.currentRound}å›æˆ¦ï¼šç›¸æ‰‹ã®ç•ªã§ã™ã€‚`;
       setTimeout(cpuTurnHandler, 900);
     }
 
@@ -460,8 +460,8 @@ function initGame(){
     const evalNow = scoreFromCaptured(state.playerCaptured);
     state.playerKoikoiBasePoints = evalNow.basePoints || 0;
     playerHandArea?.addEventListener('click', playerHandClickHandler);
-    messageArea.textContent = '‘±s‚ğ‘I‚Ñ‚Ü‚µ‚½B‚±‚¢‚±‚¢I';
-    showBottomMessage('‚ ‚È‚½‚Íu‚±‚¢‚±‚¢vI');
+    messageArea.textContent = 'ç¶šè¡Œã‚’é¸ã³ã¾ã—ãŸã€‚ã“ã„ã“ã„ï¼';
+    showBottomMessage('ã‚ãªãŸã¯ã€Œã“ã„ã“ã„ã€ï¼');
     state.playerTurn = false;
     setTimeout(cpuTurnHandler, 900);
   });
