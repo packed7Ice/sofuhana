@@ -215,6 +215,14 @@ overrides: {
   let totalRounds = 0, currentRound = 1;
   let playerScore = 0, cpuScore = 0;
   let playerKoikoi = false, cpuKoikoi = false;
+  
+  // --- 動作ディレイ設定とユーティリティ ---
+  const DELAYS = {
+    playToBoard: 450,            // 手札→場札 の見せ間
+    afterCaptureBeforeDraw: 500, // 取り終わり→山札処理 の間
+    drawToBoard: 1200            // 山札→場札 の見せ間（引いた札プレビュー表示時間）
+  };
+  const sleep = (ms)=> new Promise(res=> setTimeout(res, ms));
 
   // 先手（親）※流れでも据え置き
   let currentDealer = 'player';
@@ -461,6 +469,22 @@ function initialHandBonus(hand){
     playerScoreSpan.textContent = playerScore;
     cpuScoreSpan.textContent = cpuScore;
     currentRoundSpan.textContent = `第${currentRound}回戦`;
+
+    // 山札表示の更新
+    const cnt = document.getElementById('deck-count');
+    if (cnt) cnt.textContent = String(deck.length);
+    const img = document.getElementById('deck-image');
+    if (img) {
+      const back = (typeof getCardBackImage === 'function' && getCardBackImage()) || 'images/back.png';
+      img.src = back;
+      img.style.opacity = deck.length > 0 ? '1' : '0.35';
+    }
+
+    // 引いた札のプレビューが残っていたら、画像サイズがレイアウトに合うよう反映
+    const prev = document.getElementById('draw-preview-image');
+    if (prev && prev.src === '') {
+      prev.removeAttribute('src');
+    }
   }
 
   // ===== ラウンド終了／流れ =====
@@ -527,7 +551,7 @@ function endRound(winner){
 }
 
   // ===== プレイヤー手番 =====
-  function playerTurnHandler(card){
+  async function playerTurnHandler(card){
     if (pendingSelection) return;
     const month = getCardMonth(card);
 
@@ -536,13 +560,17 @@ function endRound(winner){
 
     if (matchIdxs.length===0){
       removeFromHand(card); board.push(card);
-      drawAndResolve(); postPlayerAction(); return;
+      updateUI();
+      await sleep(DELAYS.playToBoard);
+      await drawAndResolveDelayed(); postPlayerAction(); return;
     }
     if (matchIdxs.length===1){
       removeFromHand(card);
       const taken = [card, board.splice(matchIdxs[0],1)[0]];
       resolveCapture(playerCaptured, taken);
-      drawAndResolve(); postPlayerAction(true); return;
+      updateUI();
+      await sleep(DELAYS.afterCaptureBeforeDraw);
+      await drawAndResolveDelayed(); postPlayerAction(true); return;
     }
     if (matchIdxs.length===2){
       messageArea.textContent = 'どちらの札を取るか選んでください。';
@@ -553,7 +581,9 @@ function endRound(winner){
     const same = board.filter(c=>getCardMonth(c)===month);
     board = board.filter(c=>getCardMonth(c)!==month);
     resolveCapture(playerCaptured, [card, ...same]);
-    drawAndResolve(); postPlayerAction(true);
+    updateUI();
+    await sleep(DELAYS.afterCaptureBeforeDraw);
+    await drawAndResolveDelayed(); postPlayerAction(true);
   }
 
   function removeFromHand(card){ const i=playerHand.indexOf(card); if(i>-1) playerHand.splice(i,1); }
@@ -600,6 +630,51 @@ function drawAndResolve(){
   }
 }
 
+// 山札→場札の処理に見せ間を入れた版
+async function drawAndResolveDelayed(){
+  if (deck.length===0) { updateUI(); return; }
+  const d = deck.shift();
+  // 先に山札の枚数だけ更新し、引いた札を左側プレビューに表示
+  updateUI();
+  try {
+    const area = document.getElementById('draw-preview-area');
+    const img = document.getElementById('draw-preview-image');
+    if (area && img) {
+      img.src = getCardImage(d);
+      area.classList.add('visible');
+    }
+  } catch(_){}
+  // 少し見せてから場に適用
+  await sleep(DELAYS.drawToBoard);
+
+  const m = getCardMonth(d);
+  const idxs = [];
+  board.forEach((b,i)=>{ if(getCardMonth(b)===m) idxs.push(i); });
+
+  if (idxs.length===0){
+    board.push(d);
+  } else if (idxs.length===1){
+    const taken=[d, board.splice(idxs[0],1)[0]];
+    resolveCapture(playerTurn ? playerCaptured : cpuCaptured, taken);
+  } else if (idxs.length===2){
+    // 2枚なら“どちらか1枚”だけ取る（簡易処理）
+    const chosen = idxs[0];
+    const taken=[d, board.splice(chosen,1)[0]];
+    resolveCapture(playerTurn ? playerCaptured : cpuCaptured, taken);
+  } else {
+    // 3枚以上は総取り
+    const same = board.filter(c=>getCardMonth(c)===m);
+    board = board.filter(c=>getCardMonth(c)!==m);
+    resolveCapture(playerTurn ? playerCaptured : cpuCaptured, [d, ...same]);
+  }
+  // プレビューを消してから更新
+  try {
+    const area = document.getElementById('draw-preview-area');
+    if (area) area.classList.remove('visible');
+  } catch(_){}
+  updateUI();
+}
+
 
   function postPlayerAction(){
     updateUI();
@@ -614,7 +689,7 @@ function drawAndResolve(){
   function highlightAndAwaitBoardChoice(matchIdxs, handCard){
     pendingSelection = { handCard };
     [...boardArea.children].forEach((el,i)=> el.classList.toggle('selectable', matchIdxs.includes(i)));
-    const onClick = (e)=>{
+    const onClick = async (e)=>{
       const el=e.target.closest('.card'); if(!el) return;
       const idx=Array.from(boardArea.children).indexOf(el);
       if(!matchIdxs.includes(idx)) return;
@@ -627,13 +702,17 @@ function drawAndResolve(){
       resolveCapture(playerCaptured, taken);
       pendingSelection=null;
 
-      drawAndResolve(); postPlayerAction();
+      // 取り終わりを見せてから、山札処理へ
+      updateUI();
+      await sleep(DELAYS.afterCaptureBeforeDraw);
+      await drawAndResolveDelayed();
+      postPlayerAction();
     };
     boardArea.addEventListener('click', onClick);
   }
 
   // ===== CPU手番（簡易） =====
-  function cpuTurnHandler(){
+  async function cpuTurnHandler(){
     hideTooltip();
     if (actionButtons) actionButtons.style.display='none';
     messageArea.textContent='相手が考えています...';
@@ -648,7 +727,9 @@ function drawAndResolve(){
       const r=Math.floor(Math.random()*cpuHand.length);
       played=cpuHand.splice(r,1)[0];
       board.push(played);
-      drawAndResolve(); updateUI();
+      updateUI();
+      await sleep(DELAYS.playToBoard);
+      await drawAndResolveDelayed(); updateUI();
       if (maybeNagare()) return;
 
       // CPU: 役判定 → あがり or こいこい
@@ -690,7 +771,10 @@ function drawAndResolve(){
       }
     }
 
-    drawAndResolve(); updateUI();
+    // 取り終わりの間を少し置いてから山札処理
+    updateUI();
+    await sleep(DELAYS.afterCaptureBeforeDraw);
+    await drawAndResolveDelayed(); updateUI();
     if (maybeNagare()) return;
 
     // CPU: 役判定 → あがり or こいこい

@@ -59,7 +59,17 @@
               <div id="cpu-hand-area" class="hand"></div>
             </div>
 
-            <div id="board-area" class="board"></div>
+            <div class="board-and-deck">
+              <div id="draw-preview-area" class="draw-preview" aria-label="山札から引いた札">
+                <img id="draw-preview-image" alt="引いた札" />
+                <div class="draw-label">引いた札</div>
+              </div>
+              <div id="board-area" class="board"></div>
+              <div id="deck-area" class="deck" aria-label="山札">
+                <img id="deck-image" src="images/back.png" alt="山札" />
+                <div id="deck-count">24</div>
+              </div>
+            </div>
 
             <div class="player-controls-container">
               <div class="hand-area player-area">

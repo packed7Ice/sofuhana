@@ -218,6 +218,65 @@ body.modal-open {
   z-index: 2;
 }
 
+/* ボードの横に山札を配置 */
+.board-and-deck {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.draw-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+.draw-preview.visible { opacity: 1; transform: translateY(0); }
+
+.draw-label {
+  font-size: 16px;
+  opacity: .85;
+}
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+#draw-preview-image,
+#deck-image {
+  width: 96px;
+  aspect-ratio: 660 / 1080;
+  height: auto;
+  border: 1px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.5);
+  pointer-events: none;
+}
+
+#deck-count {
+  font-size: 20px;
+  line-height: 1;
+  background: rgba(0,0,0,0.35);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* 縮小レイアウト時の山札サイズ */
+#app.size-small #deck-image { width: 80px; }
+#app.size-tiny  #deck-image { width: 64px; }
+
+#app.size-small #draw-preview-image { width: 80px; }
+#app.size-tiny  #draw-preview-image { width: 64px; }
+
 .hand {
   display: flex;
   justify-content: center;
