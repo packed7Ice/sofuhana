@@ -16,8 +16,11 @@ export const state = {
   cpuScore: 0,
   playerKoikoi: false,
   cpuKoikoi: false,
+  playerKoikoiBasePoints: 0,
+  cpuKoikoiBasePoints: 0,
   currentDealer: 'player',
-  pendingSelection: null
+  pendingSelection: null,
+  roundEnding: false
 };
 
 export const DELAYS = {

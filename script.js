@@ -1,4 +1,4 @@
-ï»¿import { elements, messageArea, showBottomMessage, showScreen, fitApp } from './js/dom-elements.js';
+import { elements, messageArea, showBottomMessage, showScreen, fitApp } from './js/dom-elements.js';
 import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
 import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured } from './js/card-data.js';
@@ -48,8 +48,16 @@ function initGame(){
     captured.push(...taken);
     const yaku = checkYaku(captured);
     if (captured === state.playerCaptured && yaku.length > 0){
+      if (state.playerKoikoi){
+        const evalNow = scoreFromCaptured(state.playerCaptured);
+        if (evalNow.basePoints > (state.playerKoikoiBasePoints || 0)){
+          endRound('player');
+          return true;
+        }
+        return false;
+      }
       hideTooltip();
-      showBottomMessage(`å½¹ãŒã§ãã¾ã—ãŸï¼ˆ${yaku.join('ã€')}ï¼‰ã€‚é€²è¡Œæ–¹æ³•ã‚’é¸ã‚“ã§ãã ã•ã„ã€‚`);
+      showBottomMessage(`–ğ‚ª‚Å‚«‚Ü‚µ‚½i${yaku.join('A')}jBis•û–@‚ğ‘I‚ñ‚Å‚­‚¾‚³‚¢B`);
       if (actionButtons) actionButtons.style.display = 'flex';
       playerHandArea?.removeEventListener('click', playerHandClickHandler);
       updateUI();
@@ -83,9 +91,13 @@ function initGame(){
       const taken = [drawn, state.board.splice(matches[0],1)[0]];
       resolveCapture(state.playerTurn ? state.playerCaptured : state.cpuCaptured, taken);
     } else if (matches.length === 2){
-      const chosen = matches[0];
-      const taken = [drawn, state.board.splice(chosen,1)[0]];
-      resolveCapture(state.playerTurn ? state.playerCaptured : state.cpuCaptured, taken);
+      if (state.playerTurn){
+        await highlightAndAwaitBoardChoiceForDraw(matches, drawn);
+      } else {
+        const chosen = matches[0];
+        const taken = [drawn, state.board.splice(chosen,1)[0]];
+        resolveCapture(state.cpuCaptured, taken);
+      }
     } else {
       const sameMonth = state.board.filter(card => getCardMonth(card) === month);
       state.board = state.board.filter(card => getCardMonth(card) !== month);
@@ -96,6 +108,34 @@ function initGame(){
     updateUI();
   }
 
+  function highlightAndAwaitBoardChoiceForDraw(matchIdxs, drawnCard){
+    return new Promise((resolve) => {
+      state.pendingSelection = { drawCard: drawnCard };
+      const boardCards = Array.from(boardArea?.children || []);
+      boardCards.forEach((el, idx) => el.classList.toggle('selectable', matchIdxs.includes(idx)));
+
+      const onClick = (event) => {
+        const el = event.target.closest('.card');
+        if (!el) return;
+        const idx = Array.from(boardArea?.children || []).indexOf(el);
+        if (!matchIdxs.includes(idx)) return;
+
+        boardArea?.removeEventListener('click', onClick);
+        boardCards.forEach(cardEl => cardEl.classList.remove('selectable'));
+
+        const taken = [state.pendingSelection.drawCard, state.board.splice(idx,1)[0]];
+        resolveCapture(state.playerCaptured, taken);
+        state.pendingSelection = null;
+
+        if (drawPreviewArea) drawPreviewArea.classList.remove('visible');
+        updateUI();
+        resolve();
+      };
+
+      boardArea?.addEventListener('click', onClick);
+      if (messageArea) messageArea.textContent = '‚Ç‚¿‚ç‚ğæ‚é‚©‘I‚ñ‚Å‚­‚¾‚³‚¢B';
+    });
+  }
   function postPlayerAction(){
     updateUI();
     if (maybeNagare()) return;
@@ -164,7 +204,7 @@ function initGame(){
     }
 
     if (matches.length === 2){
-      messageArea.textContent = 'ã©ã¡ã‚‰ã®æœ­ã‚’å–ã‚‹ã‹é¸ã‚“ã§ãã ã•ã„ã€‚';
+      messageArea.textContent = '‚Ç‚¿‚ç‚ÌD‚ğæ‚é‚©‘I‚ñ‚Å‚­‚¾‚³‚¢B';
       highlightAndAwaitBoardChoice(matches, card);
       return;
     }
@@ -223,7 +263,7 @@ function initGame(){
         }
 
         state.cpuKoikoi = true;
-        showBottomMessage('ç›¸æ‰‹ã¯ã€Œã“ã„ã“ã„ã€ï¼');
+        showBottomMessage('‘Šè‚Íu‚±‚¢‚±‚¢vI');
         showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
         state.playerTurn = true;
         return;
@@ -270,7 +310,7 @@ function initGame(){
       }
 
       state.cpuKoikoi = true;
-      showBottomMessage('ç›¸æ‰‹ã¯ã€Œã“ã„ã“ã„ã€ï¼');
+      showBottomMessage('‘Šè‚Íu‚±‚¢‚±‚¢vI');
         showBottomMessage('\u3042\u306a\u305f\u306e\u756a\u3067\u3059');
       state.playerTurn = true;
       return;
@@ -294,7 +334,7 @@ function initGame(){
       if (playerGain >= 7) playerGain *= 2;
       if (state.cpuKoikoi) playerGain *= 2;
       state.playerScore += playerGain;
-      messageArea.textContent = `ã‚ãªãŸã®å‹ã¡ï¼ ${playerGain}ç‚¹ç²å¾—ï¼ˆå½¹: ${playerResult.yakuList.join('ã€') || 'ãªã—'}ï¼‰ã€‚`;
+      messageArea.textContent = `‚ ‚È‚½‚ÌŸ‚¿I ${playerGain}“_Šl“¾i–ğ: ${playerResult.yakuList.join('A') || '‚È‚µ'}jB`;
       nextDealer = 'player';
     } else if (winner === 'cpu'){
        showBottomMessage('\u76f8\u624b\u304c\u4e0a\u304c\u308a\u307e\u3057\u305f');
@@ -302,10 +342,10 @@ function initGame(){
       if (cpuGain >= 7) cpuGain *= 2;
       if (state.playerKoikoi) cpuGain *= 2;
       state.cpuScore += cpuGain;
-      messageArea.textContent = `ç›¸æ‰‹ã®å‹ã¡ã€‚${cpuGain}ç‚¹ç²å¾—ï¼ˆå½¹: ${cpuResult.yakuList.join('ã€') || 'ãªã—'}ï¼‰ã€‚`;
+      messageArea.textContent = `‘Šè‚ÌŸ‚¿B${cpuGain}“_Šl“¾i–ğ: ${cpuResult.yakuList.join('A') || '‚È‚µ'}jB`;
       nextDealer = 'cpu';
     } else {
-      messageArea.textContent = 'æµå±€ï¼ˆå¼•ãåˆ†ã‘ï¼‰ã§ã™ã€‚æ¬¡ã®è¦ªã¯äº¤ä»£ã—ã¾ã™ã€‚';
+      messageArea.textContent = '—¬‹Çiˆø‚«•ª‚¯j‚Å‚·BŸ‚Ìe‚ÍŒğ‘ã‚µ‚Ü‚·B';
       nextDealer = state.currentDealer === 'player' ? 'cpu' : 'player';
     }
 
@@ -316,9 +356,9 @@ function initGame(){
         if (finalPlayerScoreElement) finalPlayerScoreElement.textContent = state.playerScore;
         if (finalCpuScoreElement) finalCpuScoreElement.textContent = state.cpuScore;
         if (resultMessageElement){
-          if (state.playerScore > state.cpuScore) resultMessageElement.textContent = 'ã‚ãªãŸã®å‹åˆ©ï¼';
-          else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = 'ç›¸æ‰‹ã®å‹ã¡...';
-          else resultMessageElement.textContent = 'å¼•ãåˆ†ã‘';
+          if (state.playerScore > state.cpuScore) resultMessageElement.textContent = '‚ ‚È‚½‚ÌŸ—˜I';
+          else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = '‘Šè‚ÌŸ‚¿...';
+          else resultMessageElement.textContent = 'ˆø‚«•ª‚¯';
         }
         state.playerScore = 0;
         state.cpuScore = 0;
@@ -343,13 +383,13 @@ function initGame(){
       if (playerBonus && !cpuBonus){
         state.playerScore += 6;
         state.currentDealer = 'player';
-        messageArea.textContent = 'å¹³å®¶ï¼ˆã‚ãªãŸï¼‰ãŒè¦ªæ‰‹å››æšï¼ 6ç‚¹ç²å¾—ã€‚';
+        messageArea.textContent = '•½‰Æi‚ ‚È‚½j‚ªeèl–‡I 6“_Šl“¾B';
       } else if (cpuBonus && !playerBonus){
         state.cpuScore += 6;
         state.currentDealer = 'cpu';
-        messageArea.textContent = 'ç›¸æ‰‹ãŒè¦ªæ‰‹å››æšï¼ 6ç‚¹ç²å¾—ã€‚';
+        messageArea.textContent = '‘Šè‚ªeèl–‡I 6“_Šl“¾B';
       } else {
-        messageArea.textContent = 'ä¸¡è€…ã¨ã‚‚è¦ªæ‰‹å››æšï¼ 6ç‚¹ãšã¤ã€‚';
+        messageArea.textContent = '—¼Ò‚Æ‚àeèl–‡I 6“_‚¸‚ÂB';
       }
 
       if (state.currentRound >= state.totalRounds){
@@ -358,9 +398,9 @@ function initGame(){
           if (finalPlayerScoreElement) finalPlayerScoreElement.textContent = state.playerScore;
           if (finalCpuScoreElement) finalCpuScoreElement.textContent = state.cpuScore;
           if (resultMessageElement){
-            if (state.playerScore > state.cpuScore) resultMessageElement.textContent = 'ã‚ãªãŸã®å‹åˆ©ï¼';
-            else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = 'ç›¸æ‰‹ã®å‹ã¡...';
-            else resultMessageElement.textContent = 'å¼•ãåˆ†ã‘';
+            if (state.playerScore > state.cpuScore) resultMessageElement.textContent = '‚ ‚È‚½‚ÌŸ—˜I';
+            else if (state.cpuScore > state.playerScore) resultMessageElement.textContent = '‘Šè‚ÌŸ‚¿...';
+            else resultMessageElement.textContent = 'ˆø‚«•ª‚¯';
           }
           state.playerScore = 0;
           state.cpuScore = 0;
@@ -379,10 +419,10 @@ function initGame(){
 
     if (state.currentDealer === 'player'){
       state.playerTurn = true;
-      messageArea.textContent = `ç¬¬${state.currentRound}å›æˆ¦ï¼šã‚ãªãŸã®ç•ªã§ã™ã€‚`;
+      messageArea.textContent = `‘æ${state.currentRound}‰ñíF‚ ‚È‚½‚Ì”Ô‚Å‚·B`;
     } else {
       state.playerTurn = false;
-      messageArea.textContent = `ç¬¬${state.currentRound}å›æˆ¦ï¼šç›¸æ‰‹ã®ç•ªã§ã™ã€‚`;
+      messageArea.textContent = `‘æ${state.currentRound}‰ñíF‘Šè‚Ì”Ô‚Å‚·B`;
       setTimeout(cpuTurnHandler, 900);
     }
 
@@ -417,9 +457,11 @@ function initGame(){
   koikoiButton?.addEventListener('click', () => {
     if (actionButtons) actionButtons.style.display = 'none';
     state.playerKoikoi = true;
+    const evalNow = scoreFromCaptured(state.playerCaptured);
+    state.playerKoikoiBasePoints = evalNow.basePoints || 0;
     playerHandArea?.addEventListener('click', playerHandClickHandler);
-    messageArea.textContent = 'ç¶šè¡Œã‚’é¸ã³ã¾ã—ãŸã€‚ã“ã„ã“ã„ï¼';
-    showBottomMessage('ã‚ãªãŸã¯ã€Œã“ã„ã“ã„ã€ï¼');
+    messageArea.textContent = '‘±s‚ğ‘I‚Ñ‚Ü‚µ‚½B‚±‚¢‚±‚¢I';
+    showBottomMessage('‚ ‚È‚½‚Íu‚±‚¢‚±‚¢vI');
     state.playerTurn = false;
     setTimeout(cpuTurnHandler, 900);
   });
