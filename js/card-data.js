@@ -147,6 +147,9 @@ const YAKU_POINTS = {
   'タネ': 1, '短冊': 1, 'カス': 1
 };
 
+const RED_TAN_CARDS = ['松に短冊','梅に短冊','桜に短冊'];
+const BLUE_TAN_CARDS = ['牡丹に短冊','菊に短冊','紅葉に短冊'];
+
 export function normalizeCardFileName(cardName){
   return cardName
     .normalize('NFKC')
@@ -215,15 +218,17 @@ export function getCardType(name){
 
 export function checkYaku(cards){
   const yakuList = [];
+  const capturedSet = new Set(cards);
+  const containsAll = (names) => names.every(name => capturedSet.has(name));
 
   const inoshikacho = ['萩に猪','紅葉に鹿','牡丹に蝶'];
-  if (inoshikacho.every(c => cards.includes(c))) yakuList.push('猪鹿蝶');
+  if (containsAll(inoshikacho)) yakuList.push('猪鹿蝶');
 
-  if (['松に短冊','梅に短冊','桜に短冊'].every(c => cards.includes(c))) yakuList.push('赤短');
-  if (['牡丹に短冊','菊に短冊','柳に短冊'].every(c => cards.includes(c))) yakuList.push('青短');
+  if (containsAll(RED_TAN_CARDS)) yakuList.push('赤短');
+  if (containsAll(BLUE_TAN_CARDS)) yakuList.push('青短');
 
-  if (cards.includes('芒に月') && cards.includes('菊に盃')) yakuList.push('月見酒');
-  if (cards.includes('桜に幕') && cards.includes('菊に盃')) yakuList.push('花見酒');
+  if (capturedSet.has('芒に月') && capturedSet.has('菊に盃')) yakuList.push('月見酒');
+  if (capturedSet.has('桜に幕') && capturedSet.has('菊に盃')) yakuList.push('花見酒');
 
   const lights = cards.filter(c => getCardType(c)==='光' || c==='柳に小野道風');
   const tane = cards.filter(c => getCardType(c)==='タネ');
