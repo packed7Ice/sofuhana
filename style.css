@@ -27,7 +27,7 @@
   height: var(--appH, 1080px);  /* ← 可変 */
   transform-origin: center center;
   transform: scale(var(--scale, 1));
-  background-image: url('images/background.jpg');
+  /*background-image: url('images/background.jpg');*/
   background-size: cover;
   background-position: center;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
