@@ -15,8 +15,8 @@ This repository contains source code and image materials used for research and d
 
 ### Image Attribution
 
-- Illustrations © 2025 [Author Name] — used under permission.  
-- Logo © [Organization Name] — used with authorization.  
+- Illustrations © 2025 [nu_tsumi] — used under permission.  
+- Logo © [cit_sofume] — used with authorization.  
 - All images are included in this repository for display only.  
   Redistribution or modification is **not allowed**.
 
