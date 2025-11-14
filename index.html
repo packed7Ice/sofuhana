@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    /* FOUC防止用の最小限スタイル。外部CSS読み込み前でも画面切替状態を維持する */
+    .screen { display: none; }
+    .screen.active { display: flex; }
+  </style>
   <title>そふ花</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="help.css"/>
@@ -17,7 +22,7 @@
   <div id="fit">
     <div id="app">
       <!-- タイトル -->
-      <div id="title-screen" class="screen">
+      <div id="title-screen" class="screen active">
         <h1 class="game-title">そふ花</h1>
         <button id="start-game-button" class="action-button">ゲームスタート</button>
         <div class="title-secondary-actions">
