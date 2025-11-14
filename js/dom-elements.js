@@ -60,7 +60,18 @@ export function showBottomMessage(text, duration = 2500){
   if (bottomMessageTimer) clearTimeout(bottomMessageTimer);
   bottomMessageTimer = setTimeout(() => {
     messageArea.classList.remove('show');
+    bottomMessageTimer = null;
   }, duration);
+}
+
+export function showPersistentMessage(text){
+  if (!messageArea) return;
+  messageArea.textContent = text;
+  messageArea.classList.add('show');
+  if (bottomMessageTimer){
+    clearTimeout(bottomMessageTimer);
+    bottomMessageTimer = null;
+  }
 }
 
 export function showScreen(id){

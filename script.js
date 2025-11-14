@@ -1,4 +1,4 @@
-import { elements, messageArea, showBottomMessage, showScreen, fitApp } from './js/dom-elements.js';
+import { elements, messageArea, showBottomMessage, showPersistentMessage, showScreen, fitApp } from './js/dom-elements.js';
 import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
 import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured } from './js/card-data.js';
@@ -36,7 +36,7 @@ function initGame(){
 
   function maybeNagare(){
     if (state.playerHand.length === 0 && state.cpuHand.length === 0){
-      showBottomMessage('流れ。2回戦へ移ります。');
+      showBottomMessage('流れ。次戦へ移ります。');
       endRound('none');
       return true;
     }
@@ -57,7 +57,7 @@ function initGame(){
         return false;
       }
       hideTooltip();
-      showBottomMessage(`役ができました（${yaku.join('、')}）。進行方法を選んでください。`);
+      showBottomMessage(`役ができました（${yaku.join('、')}）。こいこいしますか？`);
       if (actionButtons) actionButtons.style.display = 'flex';
       playerHandArea?.removeEventListener('click', playerHandClickHandler);
       updateUI();
@@ -328,26 +328,29 @@ function initGame(){
     let playerGain = 0;
     let cpuGain = 0;
     let nextDealer = state.currentDealer;
+    let roundMessage = '';
 
     if (winner === 'player'){
       playerGain = playerResult.basePoints;
       if (playerGain >= 7) playerGain *= 2;
       if (state.cpuKoikoi) playerGain *= 2;
       state.playerScore += playerGain;
-      messageArea.textContent = `あなたの勝ち！ ${playerGain}点獲得（役: ${playerResult.yakuList.join('、') || 'なし'}）。`;
+      roundMessage = `あなたの勝ち！ ${playerGain}点獲得（役: ${playerResult.yakuList.join('、') || 'なし'}）。`;
       nextDealer = 'player';
     } else if (winner === 'cpu'){
-       showBottomMessage('相手が上がりました');
+      showBottomMessage('相手が上がりました');
       cpuGain = cpuResult.basePoints;
       if (cpuGain >= 7) cpuGain *= 2;
       if (state.playerKoikoi) cpuGain *= 2;
       state.cpuScore += cpuGain;
-      messageArea.textContent = `相手の勝ち。${cpuGain}点獲得（役: ${cpuResult.yakuList.join('、') || 'なし'}）。`;
+      roundMessage = `相手の勝ち。${cpuGain}点獲得（役: ${cpuResult.yakuList.join('、') || 'なし'}）。`;
       nextDealer = 'cpu';
     } else {
-      messageArea.textContent = '流局（引き分け）です。次の親は交代します。';
+      roundMessage = '流れ（引き分け）です。次の親は交代します。';
       nextDealer = state.currentDealer === 'player' ? 'cpu' : 'player';
     }
+
+    if (roundMessage) showPersistentMessage(roundMessage);
 
     const nextDelay = (winner === 'cpu') ? 2200 : 1200;
     if (state.currentRound >= state.totalRounds){
