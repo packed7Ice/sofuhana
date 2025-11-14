@@ -1,0 +1,41 @@
+All rights reserved.
+
+All images, illustrations, and visual assets in this repository
+(located under the /images directory) are protected by copyright.
+They are included here with permission from their respective rights holders
+for display and demonstration purposes only.
+
+---
+
+### 1. Artwork and Illustrations
+The following materials are the exclusive property of:
+
+    © 2025 [nu_tsumi]
+    (Original illustrator and copyright holder)
+
+These materials are used in this repository under permission granted to:
+    Yorikawa Aise
+
+You may NOT:
+- Copy, redistribute, or reupload the images in any form
+- Modify, remix, or create derivative works from them
+- Use the images for commercial or non-commercial projects
+- Use them outside this repository without the explicit written consent
+  of the original author
+
+---
+
+### 2. Organization Logo
+The logo file(s) located under `/logo` or similar directories
+are the official property of the following organization:
+
+    © [cit_sofume]
+    (Used under permission as part of this repository)
+
+The logo is a registered trademark or symbol of the organization.
+It may NOT be reused, redistributed, or modified without explicit
+authorization from [cit_sofume].
+
+---
+
+Any rights not expressly granted herein are reserved by their respective owners.
