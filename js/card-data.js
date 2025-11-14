@@ -1,4 +1,4 @@
-const DEFAULT_CARD_IMAGE_CONFIG = {
+﻿const DEFAULT_CARD_IMAGE_CONFIG = {
   /**
    * カード画像のベースディレクトリ。
    * 画像を変更することで配置の構成を保ったまま差し替え可能。
@@ -141,10 +141,9 @@ export const RENAMED_CARD_NAMES = (() => {
 })();
 
 const YAKU_POINTS = {
-  '五光': 15, '四光': 8, '雨四光': 7, '三光': 5,
+  '五光': 10, '四光': 8, '雨四光': 7, '三光': 5,
   '猪鹿蝶': 5, '赤短': 5, '青短': 5,
   '月見酒': 5, '花見酒': 5,
-  'タネ': 1, '短冊': 1, 'カス': 1
 };
 
 const RED_TAN_CARDS = ['松に短冊','梅に短冊','桜に短冊'];
