@@ -36,9 +36,16 @@ const elements = {
   deckImage: document.getElementById('deck-image'),
   helpButton: document.getElementById('help-button'),
   helpButtonGame: document.getElementById('help-button-game'),
+  reportButton: document.getElementById('report-button'),
+  reportButtonGame: document.getElementById('report-button-game'),
   helpModal: document.getElementById('help-modal'),
-  helpCloseButton: document.getElementById('help-close')
+  helpCloseButton: document.getElementById('help-close'),
+  reportConfirmModal: document.getElementById('report-confirm-modal'),
+  reportConfirmYesButton: document.getElementById('report-confirm-yes'),
+  reportConfirmNoButton: document.getElementById('report-confirm-no')
 };
+
+const REPORT_FORM_URL = 'https://forms.gle/pQR1UkhBo3bot6Gf7';
 
 function createMessageArea(){
   const el = document.createElement('div');
@@ -125,7 +132,63 @@ function setupHelpModal(){
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeHelp(); });
 }
 
+function openReportForm(){
+  window.open(REPORT_FORM_URL, '_blank', 'noopener,noreferrer');
+}
+
+function showReportConfirmModal(){
+  const { reportConfirmModal } = elements;
+  if (!reportConfirmModal) return false;
+  reportConfirmModal.style.display = 'flex';
+  reportConfirmModal.setAttribute('aria-hidden', 'false');
+  return true;
+}
+
+function hideReportConfirmModal(){
+  const { reportConfirmModal } = elements;
+  if (!reportConfirmModal) return;
+  reportConfirmModal.style.display = 'none';
+  reportConfirmModal.setAttribute('aria-hidden', 'true');
+}
+
+function setupReportConfirmModal(){
+  const { reportConfirmModal, reportConfirmYesButton, reportConfirmNoButton } = elements;
+  if (!reportConfirmModal) return;
+  const closeModal = () => hideReportConfirmModal();
+
+  reportConfirmNoButton?.addEventListener('click', closeModal);
+  reportConfirmYesButton?.addEventListener('click', () => {
+    closeModal();
+    openReportForm();
+  });
+
+  reportConfirmModal.addEventListener('click', (event) => {
+    if (event.target === reportConfirmModal) closeModal();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && reportConfirmModal.style.display === 'flex') {
+      closeModal();
+    }
+  });
+}
+
+function setupReportButtons(){
+  const { reportButton, reportButtonGame } = elements;
+  if (!reportButton && !reportButtonGame) return;
+  const handleClick = (event) => {
+    event?.preventDefault?.();
+    if (!showReportConfirmModal()) {
+      openReportForm();
+    }
+  };
+  reportButton?.addEventListener('click', handleClick);
+  reportButtonGame?.addEventListener('click', handleClick);
+}
+
 setupHelpModal();
+setupReportConfirmModal();
+setupReportButtons();
 
 export { elements };
 

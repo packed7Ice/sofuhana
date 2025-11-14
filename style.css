@@ -101,6 +101,43 @@
   display: inline-block;
 }
 
+/* ==== Report Confirm Modal ==== */
+#report-confirm-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 100001;
+}
+
+#report-confirm-modal[aria-hidden="false"] {
+  display: flex;
+}
+
+#report-confirm-modal .modal-content {
+  max-width: min(520px, 90vw);
+  background: #1d1d1d;
+  color: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+
+.report-confirm-message {
+  margin: 16px 0 24px;
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+.report-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
 /* モーダルを開いている間はページスクロールを止める */
 body.modal-open {
   overflow: hidden;
@@ -194,6 +231,11 @@ body.modal-open {
 
 #game-info { font-size: 24px; }
 #game-info .game-stat { font-weight: 600; }
+
+#hud .hud-buttons {
+  display: flex;
+  gap: 12px;
+}
 
 #hud .action-button {
   font-size: 22px;
@@ -504,7 +546,17 @@ body.modal-open {
 }
 
 #title-screen #start-game-button { margin-top: 2vh; }
-#title-screen #help-button { margin-top: 1vh; }
+#title-screen .title-secondary-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1vh;
+}
+#title-screen .title-secondary-actions .action-button {
+  margin: 16px 8px;
+  min-width: 280px;
+}
 
 #result-screen h2 {
   font-size: 64px;

@@ -20,7 +20,10 @@
       <div id="title-screen" class="screen">
         <h1 class="game-title">そふ花</h1>
         <button id="start-game-button" class="action-button">ゲームスタート</button>
-        <button id="help-button" class="action-button">ヘルプ</button>
+        <div class="title-secondary-actions">
+          <button id="help-button" class="action-button">ヘルプ</button>
+          <button id="report-button" class="action-button">バグ・要望報告</button>
+        </div>
         <p class="credits">©Yorikawa Aise, nu_tsumi, cit_sofume</p>
       </div>
 
@@ -43,7 +46,10 @@
             あなたの点数: <span id="player-score" class="game-stat">0</span>点 |
             相手の点数: <span id="cpu-score" class="game-stat">0</span>点
           </div>
-          <button id="help-button-game" class="action-button">ヘルプ</button>
+          <div class="hud-buttons">
+            <button id="help-button-game" class="action-button">ヘルプ</button>
+            <button id="report-button-game" class="action-button">バグ・要望報告</button>
+          </div>
         </div>
 
         <!-- ツールチップ（JSがbody直下にも生成するが、初期描画用） -->
@@ -173,6 +179,18 @@
     </div>
   </div>
 
+  <div id="report-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="report-confirm-title" aria-hidden="true">
+    <div class="modal-content">
+      <h2 id="report-confirm-title">バグ・要望報告</h2>
+      <p class="report-confirm-message">
+        Google フォームへアクセスします。Google アカウントへのログインが必要ですが移動しますか？
+      </p>
+      <div class="report-confirm-actions">
+        <button id="report-confirm-no" class="action-button">いいえ</button>
+        <button id="report-confirm-yes" class="action-button">はい</button>
+      </div>
+    </div>
+  </div>
   <script type="module" src="./script.js"></script>
 </body>
 </html>
