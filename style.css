@@ -76,6 +76,31 @@
   word-break: break-word;        /* はみ出し防止（URL/長文対策） */
 }
 
+.help-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+#help-close {
+  padding: 10px 22px;
+  font-size: 24px;
+  border-radius: 14px;
+}
+
+.sofume-logo {
+  width: 300px;
+  height: 200px;
+  background-image: url('logo/SofumeLogo_WhiteTextAlpha_1920x1080.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
 /* モーダルを開いている間はページスクロールを止める */
 body.modal-open {
   overflow: hidden;
