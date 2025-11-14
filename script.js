@@ -24,6 +24,12 @@ function initGame(){
     drawPreviewArea,
     drawPreviewImage
   } = elements;
+  const ROUND_TRANSITION_DELAY = {
+    // 各種遷移時間(ms)。演出を少し長くして状況を把握しやすくする。
+    playerOrNagare: 1800,
+    cpu: 2600,
+    bonus: 1500
+  };
 
   showScreen('title-screen');
   fitApp();
@@ -352,7 +358,9 @@ function initGame(){
 
     if (roundMessage) showPersistentMessage(roundMessage);
 
-    const nextDelay = (winner === 'cpu') ? 2200 : 1200;
+    const nextDelay = (winner === 'cpu')
+      ? ROUND_TRANSITION_DELAY.cpu
+      : ROUND_TRANSITION_DELAY.playerOrNagare;
     if (state.currentRound >= state.totalRounds){
       setTimeout(() => {
         showScreen('result-screen');
@@ -386,7 +394,7 @@ function initGame(){
       if (playerBonus && !cpuBonus){
         state.playerScore += 6;
         state.currentDealer = 'player';
-        messageArea.textContent = '平家（あなた）が親手四枚！ 6点獲得。';
+        messageArea.textContent = 'あなたが親手四枚！ 6点獲得。';
       } else if (cpuBonus && !playerBonus){
         state.cpuScore += 6;
         state.currentDealer = 'cpu';
@@ -408,10 +416,10 @@ function initGame(){
           state.playerScore = 0;
           state.cpuScore = 0;
           state.currentRound = 1;
-        }, 800);
+        }, ROUND_TRANSITION_DELAY.bonus);
       } else {
         state.currentRound += 1;
-        setTimeout(() => startGame(state.currentDealer), 800);
+        setTimeout(() => startGame(state.currentDealer), ROUND_TRANSITION_DELAY.bonus);
       }
       return;
     }
@@ -440,7 +448,7 @@ function initGame(){
     if (!state.playerTurn) return;
     const el = event.target.closest('.card');
     if (!el) return;
-    const card = el.textContent;
+    const card = el.dataset?.card || el.textContent;
     if (!card) return;
     playerTurnHandler(card);
   }

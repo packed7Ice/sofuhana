@@ -11,6 +11,14 @@
   overflow: hidden;
 }
 
+:root {
+  --accent: #288d1f;
+  --accent-highlight: #3ec428;
+  --accent-shadow: #1e6117;
+  --text-muted: rgba(255, 255, 255, 0.72);
+  --surface-border: rgba(255, 255, 255, 0.12);
+}
+
 #fit {
   width: 100vw;
   height: 100vh;
@@ -127,9 +135,11 @@
 }
 
 .report-confirm-message {
-  margin: 16px 0 24px;
-  font-size: 24px;
-  line-height: 1.6;
+  margin: 12px auto 20px;
+  font-size: clamp(16px, 1.35vw, 20px);
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 90%;
 }
 
 .report-confirm-actions {
@@ -176,19 +186,46 @@ body.modal-open {
 }
 
 .action-button {
-  padding: 20px 40px;
-  font-size: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+  padding: 18px 42px;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  background-color: #288d1f;
-  color: white;
-  border: none;
-  border-radius: 20px;
+  background: linear-gradient(135deg, var(--accent-highlight), var(--accent));
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
   margin: 16px;
-  transition: background-color 0.3s;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 18px 35px rgba(40, 141, 31, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .action-button:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 22px 40px rgba(40, 141, 31, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.action-button:active {
+  transform: translateY(1px);
+  filter: brightness(0.97);
+  box-shadow: 0 12px 22px rgba(40, 141, 31, 0.35);
+}
+
+.action-button:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 3px;
+}
+
+.action-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 .credits {
@@ -572,17 +609,43 @@ body.modal-open {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 20px;
-  border-radius: 16px;
+  min-width: min(420px, 85vw);
+  padding: 28px 36px;
+  background: linear-gradient(145deg, rgba(18, 18, 18, 0.92), rgba(32, 32, 32, 0.82));
+  color: #fff;
+  border-radius: 28px;
   text-align: center;
   z-index: 9999;
-  font-size: 28px;
+  font-size: 26px;
   pointer-events: none;
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-#card-info-box p { 
-  margin: 8px 0; 
+
+#card-info-box p {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+#card-info-box p:first-child {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent-highlight);
+}
+
+#card-info-box p:nth-child(2) {
+  font-size: 28px;
+  color: #fff;
+}
+
+#card-info-box p:last-child {
+  font-size: 24px;
 }
 
 /* ==== リンク色をボタンと統一 ==== */

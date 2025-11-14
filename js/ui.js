@@ -53,9 +53,13 @@ function renderCards(area, cards, isFaceDown = false){
       const backImage = getCardBackImage();
       el.style.backgroundImage = backImage ? `url('${backImage}')` : '';
       el.textContent = '';
+      el.removeAttribute('data-card');
+      el.removeAttribute('aria-label');
     } else {
       el.style.backgroundImage = `url('${getCardImage(card)}')`;
-      el.textContent = card;
+      el.dataset.card = card;
+      el.setAttribute('aria-label', card);
+      el.textContent = '';
       el.addEventListener('mouseenter', () => showTooltipForCard(card, el));
       el.addEventListener('mouseleave', hideTooltip);
       el.addEventListener('mousemove', () => positionTooltipAbove(el));
