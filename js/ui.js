@@ -103,7 +103,4 @@ export function updateUI(){
     elements.deckImage.style.opacity = state.deck.length > 0 ? '1' : '0.35';
   }
 
-  if (elements.drawPreviewImage && !elements.drawPreviewImage.src) {
-    elements.drawPreviewImage.removeAttribute('src');
-  }
 }

@@ -388,6 +388,19 @@ body.modal-open {
   pointer-events: none;
 }
 
+.draw-preview img {
+  opacity: 0;
+  transition: opacity .2s ease;
+}
+
+.draw-preview.visible img.preview-ready {
+  opacity: 1;
+}
+
+.draw-preview img:not([src]) {
+  opacity: 0;
+}
+
 #deck-count {
   font-size: 20px;
   line-height: 1;

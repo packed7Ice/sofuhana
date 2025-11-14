@@ -1,13 +1,15 @@
 import { elements, messageArea, showBottomMessage, showPersistentMessage, showScreen, fitApp } from './js/dom-elements.js';
 import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
-import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured } from './js/card-data.js';
+import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured, preloadCardImages } from './js/card-data.js';
 
 if (typeof window !== 'undefined'){
   window.addEventListener('beforeunload', () => {
     document.body?.setAttribute('data-boot','preload');
   });
 }
+
+preloadCardImages();
 
 document.addEventListener('DOMContentLoaded', () => {
   try {
@@ -34,6 +36,8 @@ function initGame(){
     drawPreviewArea,
     drawPreviewImage
   } = elements;
+  let drawPreviewLoadHandler = null;
+
   const ROUND_TRANSITION_DELAY = {
     // 各種遷移時間(ms)。演出を少し長くして状況を把握しやすくする。
     playerOrNagare: 1800,
@@ -44,6 +48,42 @@ function initGame(){
   showScreen('title-screen');
   fitApp();
   window.addEventListener('resize', fitApp);
+
+  function detachDrawPreviewHandler(){
+    if (!drawPreviewImage || !drawPreviewLoadHandler) return;
+    drawPreviewImage.removeEventListener('load', drawPreviewLoadHandler);
+    drawPreviewImage.removeEventListener('error', drawPreviewLoadHandler);
+    drawPreviewLoadHandler = null;
+  }
+
+  function clearDrawPreview(){
+    if (!drawPreviewArea || !drawPreviewImage) return;
+    detachDrawPreviewHandler();
+    drawPreviewArea.classList.remove('visible');
+    drawPreviewImage.classList.remove('preview-ready');
+    drawPreviewImage.removeAttribute('src');
+  }
+
+  function showDrawPreview(cardName){
+    if (!drawPreviewArea || !drawPreviewImage) return;
+    clearDrawPreview();
+    const nextSrc = getCardImage(cardName);
+    if (!nextSrc){
+      drawPreviewArea.classList.add('visible');
+      return;
+    }
+    drawPreviewLoadHandler = () => {
+      drawPreviewImage.classList.add('preview-ready');
+      drawPreviewArea.classList.add('visible');
+      detachDrawPreviewHandler();
+    };
+    drawPreviewImage.addEventListener('load', drawPreviewLoadHandler);
+    drawPreviewImage.addEventListener('error', drawPreviewLoadHandler);
+    drawPreviewImage.src = nextSrc;
+    if (drawPreviewImage.complete && drawPreviewImage.naturalWidth > 0){
+      drawPreviewLoadHandler();
+    }
+  }
 
   function removeFromHand(card){
     const idx = state.playerHand.indexOf(card);
@@ -89,10 +129,7 @@ function initGame(){
     }
     const drawn = state.deck.shift();
     updateUI();
-    if (drawPreviewArea && drawPreviewImage){
-      drawPreviewImage.src = getCardImage(drawn);
-      drawPreviewArea.classList.add('visible');
-    }
+    showDrawPreview(drawn);
     await sleep(DELAYS.drawToBoard);
 
     const month = getCardMonth(drawn);
@@ -120,7 +157,7 @@ function initGame(){
       resolveCapture(state.playerTurn ? state.playerCaptured : state.cpuCaptured, [drawn, ...sameMonth]);
     }
 
-    if (drawPreviewArea) drawPreviewArea.classList.remove('visible');
+    clearDrawPreview();
     updateUI();
   }
 
@@ -143,7 +180,7 @@ function initGame(){
         resolveCapture(state.playerCaptured, taken);
         state.pendingSelection = null;
 
-        if (drawPreviewArea) drawPreviewArea.classList.remove('visible');
+        clearDrawPreview();
         updateUI();
         resolve();
       };

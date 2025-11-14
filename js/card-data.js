@@ -198,6 +198,23 @@ export function getCardMonth(cardName){
   return base.split('に')[0];
 }
 
+const preloadedImagePaths = new Set();
+export function preloadCardImages(){
+  if (typeof Image === 'undefined') return;
+  const uniqueCards = new Set(RENAMED_CARD_NAMES);
+  uniqueCards.forEach(name => queueCardImage(getCardImage(name)));
+  queueCardImage(getCardBackImage());
+}
+
+function queueCardImage(path){
+  if (!path || preloadedImagePaths.has(path)) return;
+  const img = new Image();
+  img.decoding = 'async';
+  img.loading = 'eager';
+  img.src = path;
+  preloadedImagePaths.add(path);
+}
+
 export function shuffle(arr){
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
