@@ -7,7 +7,24 @@
     /* FOUC防止用の最小限スタイル。外部CSS読み込み前でも画面切替状態を維持する */
     .screen { display: none; }
     .screen.active { display: flex; }
+    #app { transition: opacity .25s ease; }
+    body[data-boot="preload"] #app {
+      opacity: 0;
+      visibility: hidden;
+    }
+    body[data-boot="ready"] #app {
+      opacity: 1;
+      visibility: visible;
+    }
   </style>
+  <noscript>
+    <style>
+      body[data-boot="preload"] #app {
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+    </style>
+  </noscript>
   <title>そふ花</title>
   <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="help.css"/>
@@ -18,7 +35,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="./images/Title_transparency.png" />
 </head>
-<body>
+<body data-boot="preload">
   <div id="fit">
     <div id="app">
       <!-- タイトル -->
@@ -33,7 +50,7 @@
       </div>
 
       <!-- 回戦選択 -->
-      <div id="rounds-screen" class="screen" hidden>
+      <div id="rounds-screen" class="screen">
         <h2 class="scene-title">回戦数を選んでください</h2>
         <div class="round-buttons-container">
           <button class="round-button action-button" data-rounds="3">3回戦</button>
@@ -43,7 +60,7 @@
       </div>
 
       <!-- ゲーム -->
-      <div id="game-screen" class="screen" hidden>
+      <div id="game-screen" class="screen">
         <!-- HUD（上部バー） -->
         <div id="hud">
           <div id="game-info">
@@ -119,7 +136,7 @@
       </div>
     </div>
     <!-- リザルト -->
-    <div id="result-screen" class="screen" hidden>
+    <div id="result-screen" class="screen">
       <h2 id="result-message" class="scene-title"></h2>
       <div class="result-info">
         <p>最終得点</p>

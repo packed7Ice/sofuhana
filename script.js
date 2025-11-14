@@ -3,8 +3,18 @@ import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
 import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured } from './js/card-data.js';
 
+if (typeof window !== 'undefined'){
+  window.addEventListener('beforeunload', () => {
+    document.body?.setAttribute('data-boot','preload');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  initGame();
+  try {
+    initGame();
+  } finally {
+    document.body?.setAttribute('data-boot','ready');
+  }
 });
 
 function initGame(){

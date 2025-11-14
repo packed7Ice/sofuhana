@@ -86,11 +86,9 @@ export function showScreen(id){
     screen.classList.remove('active');
     screen.style.opacity = '0';
     screen.style.zIndex = '1';
-    screen.hidden = true;
   });
   const target = document.getElementById(id);
   if (target){
-    target.hidden = false;
     target.classList.add('active');
     target.style.opacity = '1';
     target.style.zIndex = '100';
