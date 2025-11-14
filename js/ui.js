@@ -94,7 +94,7 @@ export function updateUI(){
 
   if (elements.deckCount) elements.deckCount.textContent = String(state.deck.length);
   if (elements.deckImage) {
-    const back = getCardBackImage() || 'images/back.png';
+    const back = getCardBackImage() || './images/back.png';
     elements.deckImage.src = back;
     elements.deckImage.style.opacity = state.deck.length > 0 ? '1' : '0.35';
   }

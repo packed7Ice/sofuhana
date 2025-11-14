@@ -27,7 +27,7 @@
   height: var(--appH, 1080px);  /* ← 可変 */
   transform-origin: center center;
   transform: scale(var(--scale, 1));
-  /*background-image: url('images/background.jpg');*/
+  /*background-image: url('./images/background.jpg');*/
   background-size: cover;
   background-position: center;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -93,7 +93,7 @@
 .sofume-logo {
   width: 300px;
   height: 200px;
-  background-image: url('logo/SofumeLogo_WhiteTextAlpha_1920x1080.png');
+  background-image: url('./logo/SofumeLogo_WhiteTextAlpha_1920x1080.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -126,7 +126,7 @@ body.modal-open {
 
 /* --- タイトル画面 --- */
 #title-screen {
-  background-image: url('images/Back_title.png');
+  background-image: url('./images/Back_title.png');
   background-size: cover;
   background-position: center;
   padding: 20vh 0;
@@ -164,7 +164,7 @@ body.modal-open {
 
 /* --- 回戦数選択画面 --- */
 #rounds-screen {
-  background-image: url('images/Back_1.png');
+  background-image: url('./images/Back_1.png');
   background-size: cover;
   background-position: center;
 }
@@ -414,7 +414,7 @@ body.modal-open {
 }
 
 .card.back {
-  background-image: url('images/back.png');
+  background-image: url('./images/back.png');
 }
 
 /* --- アクションボタン --- */
@@ -476,14 +476,14 @@ body.modal-open {
 
 /* --- リザルト画面 --- */
 #result-screen {
-  background-image: url('images/result_background.jpg');
+  background-image: url('./images/result_background.jpg');
   background-size: cover;
   background-position: center;
 }
 
 /* --- ゲームプレイ背景 --- */
 #game-screen {
-  background-image: url('images/Back_1.png');
+  background-image: url('./images/Back_1.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -491,7 +491,7 @@ body.modal-open {
 
 /* ==== タイトル画面: 画像ロゴ適用とボタン位置調整 ==== */
 #title-screen .game-title {
-  background-image: url('images/Title_transparency.png');
+  background-image: url('./images/Title_transparency.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 750px 550px;
