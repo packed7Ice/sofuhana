@@ -6,7 +6,7 @@ This repository contains source code and image materials used for research and d
 
 ## 遊び方
 
-1. Chrome や Edge などの最新ブラウザで [このリンク](https://packed7ice.github.io/sofuhana/) にアクセスするとタイトル画面が表示されます。
+1. Chrome や Edge などの最新ブラウザで [このリンク](https://packed7ice.github.io/sofuhana/){:target="_blank"} にアクセスするとタイトル画面が表示されます。
 2. 「ゲームスタート」を押して希望の回戦数（3・6・12 回戦）を選ぶと、自動的に第 1 回戦が始まります。
 3. 自分の手番では手札（自分の列に並ぶ札）から 1 枚をクリックし、同じ月の場札（中央に公開されている札）と組み合わせます。該当札がなければ札は場に残ります。
 4. 札を出した直後に山札（引札）から 1 枚が自動で公開され、同じ月の場札と照合されます。その後は CPU が行動し、手番を交互に繰り返します。
