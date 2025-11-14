@@ -342,7 +342,7 @@ function renderYakuExamples(){
   container.innerHTML = '';
 
   const EXAMPLES = [
-    { title: '五光', points: '（15点）', cards: ['松に鶴','桜に幕','芒に月','柳に小野道風','桐に鳳凰'] },
+    { title: '五光', points: '（10点）', cards: ['松に鶴','桜に幕','芒に月','柳に小野道風','桐に鳳凰'] },
     { title: '四光', points: '（8点）', cards: ['松に鶴','桜に幕','芒に月','桐に鳳凰'] },
     { title: '雨四光', points: '（7点）', cards: ['松に鶴','桜に幕','柳に小野道風','桐に鳳凰'] },
     { title: '三光', points: '（5点）', cards: ['松に鶴','桜に幕','芒に月'] },
