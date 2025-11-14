@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package",
-  "name": "hanahuda",
+  "name": "sofuhana",
   "version": "1.0.0",
   "description": "",
   "main": "./script.js",
@@ -9,13 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/packed7Ice/hanahuda.git"
+    "url": "git+https://github.com/packed7Ice/sofuhana.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/packed7Ice/hanahuda/issues"
+    "url": "https://github.com/packed7Ice/sofuhana/issues"
   },
-  "homepage": "https://github.com/packed7Ice/hanahuda#readme"
+  "homepage": "https://packed7ice.github.io/sofuhana/"
+  
 }
