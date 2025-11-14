@@ -1,6 +1,6 @@
 ## そふ花
 
-This repository contains source code and image materials used for research and demonstration purposes.
+This repository contains source code and image materials used for research and demonstration purposes, and is currently under active development.
 
 ---
 
