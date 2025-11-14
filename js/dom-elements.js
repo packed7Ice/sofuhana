@@ -38,6 +38,10 @@ const elements = {
   helpButtonGame: document.getElementById('help-button-game'),
   reportButton: document.getElementById('report-button'),
   reportButtonGame: document.getElementById('report-button-game'),
+  reportDestinationModal: document.getElementById('report-destination-modal'),
+  reportDestinationGoogleButton: document.getElementById('report-select-google'),
+  reportDestinationGithubButton: document.getElementById('report-select-github'),
+  reportDestinationCloseButton: document.getElementById('report-destination-close'),
   helpModal: document.getElementById('help-modal'),
   helpCloseButton: document.getElementById('help-close'),
   reportConfirmModal: document.getElementById('report-confirm-modal'),
@@ -46,6 +50,7 @@ const elements = {
 };
 
 const REPORT_FORM_URL = 'https://forms.gle/pQR1UkhBo3bot6Gf7';
+const REPORT_GITHUB_URL = 'https://github.com/packed7Ice/sofuhana/issues';
 
 function createMessageArea(){
   const el = document.createElement('div');
@@ -136,6 +141,66 @@ function openReportForm(){
   window.open(REPORT_FORM_URL, '_blank', 'noopener,noreferrer');
 }
 
+function openGithubIssues(){
+  window.open(REPORT_GITHUB_URL, '_blank', 'noopener,noreferrer');
+}
+
+function openReportDestinationModal(){
+  const { reportDestinationModal } = elements;
+  if (!reportDestinationModal) return false;
+  reportDestinationModal.style.display = 'flex';
+  reportDestinationModal.setAttribute('aria-hidden', 'false');
+  return true;
+}
+
+function hideReportDestinationModal(){
+  const { reportDestinationModal } = elements;
+  if (!reportDestinationModal) return;
+  reportDestinationModal.style.display = 'none';
+  reportDestinationModal.setAttribute('aria-hidden', 'true');
+}
+
+function setupReportDestinationModal(){
+  const {
+    reportDestinationModal,
+    reportDestinationGoogleButton,
+    reportDestinationGithubButton,
+    reportDestinationCloseButton
+  } = elements;
+
+  if (!reportDestinationModal) return;
+
+  const closeModal = () => hideReportDestinationModal();
+
+  const handleGoogleSelect = (event) => {
+    event?.preventDefault?.();
+    closeModal();
+    if (!showReportConfirmModal()) {
+      openReportForm();
+    }
+  };
+
+  const handleGithubSelect = (event) => {
+    event?.preventDefault?.();
+    closeModal();
+    openGithubIssues();
+  };
+
+  reportDestinationGoogleButton?.addEventListener('click', handleGoogleSelect);
+  reportDestinationGithubButton?.addEventListener('click', handleGithubSelect);
+  reportDestinationCloseButton?.addEventListener('click', closeModal);
+
+  reportDestinationModal.addEventListener('click', (event) => {
+    if (event.target === reportDestinationModal) closeModal();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && reportDestinationModal.style.display === 'flex') {
+      closeModal();
+    }
+  });
+}
+
 function showReportConfirmModal(){
   const { reportConfirmModal } = elements;
   if (!reportConfirmModal) return false;
@@ -178,8 +243,10 @@ function setupReportButtons(){
   if (!reportButton && !reportButtonGame) return;
   const handleClick = (event) => {
     event?.preventDefault?.();
-    if (!showReportConfirmModal()) {
-      openReportForm();
+    if (!openReportDestinationModal()) {
+      if (!showReportConfirmModal()) {
+        openReportForm();
+      }
     }
   };
   reportButton?.addEventListener('click', handleClick);
@@ -187,6 +254,7 @@ function setupReportButtons(){
 }
 
 setupHelpModal();
+setupReportDestinationModal();
 setupReportConfirmModal();
 setupReportButtons();
 

@@ -109,7 +109,8 @@
   display: inline-block;
 }
 
-/* ==== Report Confirm Modal ==== */
+/* ==== Report Modals ==== */
+#report-destination-modal,
 #report-confirm-modal {
   position: fixed;
   inset: 0;
@@ -120,20 +121,31 @@
   z-index: 100001;
 }
 
+#report-destination-modal[aria-hidden="false"],
 #report-confirm-modal[aria-hidden="false"] {
   display: flex;
 }
 
+#report-destination-modal .modal-content,
 #report-confirm-modal .modal-content {
-  max-width: min(520px, 90vw);
+  max-width: min(420px, 85vw);
   background: #1d1d1d;
   color: #fff;
-  padding: 32px;
+  padding: 24px;
   border-radius: 16px;
   text-align: center;
   box-shadow: 0 12px 30px rgba(0,0,0,0.5);
 }
 
+#report-destination-modal h2 {
+  font-size: 30px;
+}
+
+#report-confirm-modal h2 {
+  font-size: 30px;
+}
+
+.report-destination-message,
 .report-confirm-message {
   margin: 12px auto 20px;
   font-size: clamp(16px, 1.35vw, 20px);
@@ -142,10 +154,38 @@
   max-width: 90%;
 }
 
+.report-destination-message {
+  font-size: clamp(14px, 1.2vw, 18px);
+}
+
+.report-confirm-message {
+  font-size: clamp(14px, 1.2vw, 18px);
+}
+
+.report-destination-actions,
 .report-confirm-actions {
   display: flex;
   justify-content: center;
   gap: 16px;
+  flex-wrap: wrap;
+}
+
+.report-destination-actions .action-button {
+  flex: 1 1 220px;
+  min-width: 220px;
+  font-size: 26px;
+  padding: 12px 28px;
+}
+
+#report-destination-close.action-button {
+  font-size: 26px;
+  padding: 12px 28px;
+  margin-top: 12px;
+}
+
+.report-confirm-actions .action-button {
+  font-size: 26px;
+  padding: 12px 28px;
 }
 
 /* モーダルを開いている間はページスクロールを止める */
