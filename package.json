@@ -3,9 +3,11 @@
   "name": "sofuhana",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "./script.js",
-    "scripts": {
-    "start": "http-server . -p 3000 -a 0.0.0.0 -c-1"
+  "scripts": {
+    "start": "http-server . -p 3000 -a 0.0.0.0 -c-1",
+    "test": "node --test"
   },
   "repository": {
     "type": "git",
