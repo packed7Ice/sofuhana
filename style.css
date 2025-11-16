@@ -1,4 +1,4 @@
-body {
+﻿body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
   margin: 0;
   padding: 0;
@@ -51,11 +51,10 @@ body.zoomed #fit {
 /* ここだけ置き換え（または追記） */
 #app {
   position: relative;
-  width: var(--appW, 1920px);   /* ← 可変 */
-  height: var(--appH, 1080px);  /* ← 可変 */
+  width: 1920px;   /* ← 可変 */
+  height: 1080px;  /* ← 可変 */
   transform-origin: center center;
   transform: scale(var(--scale, 1));
-  /*background-image: url('./images/background.jpg');*/
   background-size: cover;
   background-position: center;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -242,9 +241,16 @@ body.modal-open {
   justify-content: space-around;
 }
 
-.game-title {
-  font-size: 96px; /* 5vw → 固定px */
-  text-shadow: 2px 2px 4px #000;
+.game-logo {
+    background-image: url('./images/Title_transparency.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  width: clamp(780px, calc(var(--appW, 1920px) * 0.65), 1250px);
+  aspect-ratio: 4093 / 2894;
+  display: block;
+  margin: calc(var(--appH, 1080px) * 0.04) auto calc(var(--appH, 1080px) * 0.02);
+  overflow: hidden;
 }
 
 .action-button {
@@ -642,21 +648,6 @@ body.modal-open {
   background-position: center;
   background-repeat: no-repeat;
 }
-
-/* ==== タイトル画面: 画像ロゴ適用とボタン位置調整 ==== */
-#title-screen .game-title {
-  background-image: url('./images/Title_transparency.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  width: clamp(780px, calc(var(--appW, 1920px) * 0.65), 1250px);
-  aspect-ratio: 4093 / 2894;
-  display: block;
-  margin: calc(var(--appH, 1080px) * 0.04) auto calc(var(--appH, 1080px) * 0.02);
-  text-indent: -9999px; /* Hide text visually */
-  overflow: hidden;
-}
-
 
 #title-screen #start-game-button { margin-top: calc(var(--appH, 1080px) * 0.02); }
 #title-screen .title-secondary-actions {
