@@ -1,4 +1,4 @@
-﻿body {
+body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
   margin: 0;
   padding: 0;
@@ -11,12 +11,32 @@
   overflow: hidden;
 }
 
+body.zoomed {
+  overflow: auto;
+  height: auto;
+  min-height: 100vh;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+body.zoomed #fit {
+  margin: 24px auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: var(--appW, 1920px);
+  min-height: var(--appH, 1080px);
+  padding: 0 24px 24px;
+  box-sizing: border-box;
+}
+
 :root {
   --accent: #288d1f;
   --accent-highlight: #3ec428;
   --accent-shadow: #1e6117;
   --text-muted: rgba(255, 255, 255, 0.72);
   --surface-border: rgba(255, 255, 255, 0.12);
+  --appW: 1920px;
+  --appH: 1080px;
 }
 
 #fit {
@@ -72,8 +92,9 @@
 }
 
 #help-modal .modal-content {
-  max-width: min(900px, 92vw);
-  max-height: 80vh;
+  width: min(900px, calc(var(--appW, 1920px) * 0.48));
+  max-width: calc(100% - 48px);
+  max-height: min(calc(var(--appH, 1080px) * 0.8), calc(100% - 48px));
   overflow: auto;
   background: #1d1d1d;
   color: #fff;
@@ -128,7 +149,8 @@
 
 #report-destination-modal .modal-content,
 #report-confirm-modal .modal-content {
-  max-width: min(420px, 85vw);
+  width: min(420px, calc(var(--appW, 1920px) * 0.22));
+  max-width: calc(100% - 32px);
   background: #1d1d1d;
   color: #fff;
   padding: 24px;
@@ -148,18 +170,18 @@
 .report-destination-message,
 .report-confirm-message {
   margin: 12px auto 20px;
-  font-size: clamp(16px, 1.35vw, 20px);
+  font-size: 18px;
   line-height: 1.5;
   color: var(--text-muted);
   max-width: 90%;
 }
 
 .report-destination-message {
-  font-size: clamp(14px, 1.2vw, 18px);
+  font-size: 16px;
 }
 
 .report-confirm-message {
-  font-size: clamp(14px, 1.2vw, 18px);
+  font-size: 16px;
 }
 
 .report-destination-actions,
@@ -216,7 +238,7 @@ body.modal-open {
   background-image: url('./images/Back_title.png');
   background-size: cover;
   background-position: center;
-  padding: 20vh 0;
+  padding: calc(var(--appH, 1080px) * 0.2) 0;
   justify-content: space-around;
 }
 
@@ -270,7 +292,7 @@ body.modal-open {
 
 .credits {
   position: absolute;
-  bottom: 2vh;
+  bottom: calc(var(--appH, 1080px) * 0.02);
   font-size: 20px;
   margin-right: 40px;
   color: rgba(255, 255, 255, 0.7);
@@ -377,7 +399,7 @@ body.modal-open {
   border: 2px dashed #999;
   padding: 19px;
   background-color: rgba(0, 0, 0, 0.2);
-  min-height: 15vh;
+  min-height: calc(var(--appH, 1080px) * 0.15);
   margin-top: 12px;
   margin-bottom: 24px;
   position: relative;
@@ -589,7 +611,7 @@ body.modal-open {
   border: 1px solid #ccc;
   padding: 10px;
   background-color: rgba(0, 0, 0, 0.1);
-  min-height: 10vh;
+  min-height: calc(var(--appH, 1080px) * 0.1);
   width: 100%;
 }
 
@@ -626,22 +648,23 @@ body.modal-open {
   background-image: url('./images/Title_transparency.png');
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 750px 550px;
-  /* ロゴ表示領域（必要に応じて調整） */
-  width: 1000% ;
-  height: 1000% ;
-  margin: 4vh 0 2vh;
-  text-indent: -9999px; /* 文字は視覚的に非表示 */
+  background-size: contain;
+  width: clamp(780px, calc(var(--appW, 1920px) * 0.65), 1250px);
+  aspect-ratio: 4093 / 2894;
+  display: block;
+  margin: calc(var(--appH, 1080px) * 0.04) auto calc(var(--appH, 1080px) * 0.02);
+  text-indent: -9999px; /* Hide text visually */
   overflow: hidden;
 }
 
-#title-screen #start-game-button { margin-top: 2vh; }
+
+#title-screen #start-game-button { margin-top: calc(var(--appH, 1080px) * 0.02); }
 #title-screen .title-secondary-actions {
   display: flex;
   gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-top: 1vh;
+  margin-top: calc(var(--appH, 1080px) * 0.01);
 }
 #title-screen .title-secondary-actions .action-button {
   margin: 16px 8px;
@@ -650,11 +673,11 @@ body.modal-open {
 
 #result-screen h2 {
   font-size: 64px;
-  margin-bottom: 3vh;
+  margin-bottom: calc(var(--appH, 1080px) * 0.03);
   text-shadow: 2px 2px 4px #000;
 }
 
-.result-actions { margin-top: 5vh; }
+.result-actions { margin-top: calc(var(--appH, 1080px) * 0.05); }
 
 /* --- カード情報ボックス --- */
 #card-info-box {
@@ -662,7 +685,8 @@ body.modal-open {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  min-width: min(420px, 85vw);
+  width: min(420px, calc(var(--appW, 1920px) * 0.22));
+  max-width: calc(100% - 32px);
   padding: 28px 36px;
   background: linear-gradient(145deg, rgba(18, 18, 18, 0.92), rgba(32, 32, 32, 0.82));
   color: #fff;

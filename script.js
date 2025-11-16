@@ -48,6 +48,7 @@ function initGame(){
   showScreen('title-screen');
   fitApp();
   window.addEventListener('resize', fitApp);
+  window.visualViewport?.addEventListener('resize', fitApp);
 
   function detachDrawPreviewHandler(){
     if (!drawPreviewImage || !drawPreviewLoadHandler) return;
