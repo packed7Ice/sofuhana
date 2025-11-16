@@ -5,29 +5,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  /* min-height: 1080px;
+  min-width: 1920px; */
+  min-height: 100vh;
+  min-width: 100vh;
   background-color: #333;
   color: #fff;
-  overflow: hidden;
-}
-
-body.zoomed {
   overflow: auto;
-  height: auto;
-  min-height: 100vh;
-  justify-content: flex-start;
-  align-items: flex-start;
 }
 
-body.zoomed #fit {
-  margin: 24px auto;
-  align-items: flex-start;
-  justify-content: flex-start;
-  min-width: var(--appW, 1920px);
-  min-height: var(--appH, 1080px);
-  padding: 0 24px 24px;
-  box-sizing: border-box;
-}
 
 :root {
   --accent: #288d1f;
