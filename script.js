@@ -1,4 +1,4 @@
-import { elements, messageArea, showBottomMessage, showPersistentMessage, showScreen, fitApp } from './js/dom-elements.js';
+import { elements, messageArea, showBottomMessage, showPersistentMessage, showScreen } from './js/dom-elements.js';
 import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
 import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured, preloadCardImages } from './js/card-data.js';
@@ -46,10 +46,6 @@ function initGame(){
   };
 
   showScreen('title-screen');
-  fitApp();
-  window.addEventListener('resize', fitApp);
-  window.visualViewport?.addEventListener('resize', fitApp);
-
   function detachDrawPreviewHandler(){
     if (!drawPreviewImage || !drawPreviewLoadHandler) return;
     drawPreviewImage.removeEventListener('load', drawPreviewLoadHandler);

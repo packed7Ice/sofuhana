@@ -103,39 +103,11 @@ export function showScreen(id){
 export function fitApp(){
   const app = elements.appRoot;
   if (!app) return;
-  const baseW = 1920;
-  const baseH = 1080;
-  const viewport = window.visualViewport;
-  const zoom = viewport?.scale || 1;
-  const viewportWidth = viewport?.width || window.innerWidth;
-  const viewportHeight = viewport?.height || window.innerHeight;
-  const logicalWidth = viewportWidth * zoom;
-  const logicalHeight = viewportHeight * zoom;
-  const scaleX = logicalWidth / baseW;
-  const scaleY = logicalHeight / baseH;
-  const scale = Math.min(scaleX, scaleY, 1);
-
-  app.style.transform = `scale(${scale})`;
-  app.style.transformOrigin = 'center center';
-  app.style.setProperty('--scale', String(scale));
-  app.style.setProperty('--zoom-factor', String(Math.max(zoom, 0.01)));
-
-  if (document && document.body){
-    if (zoom > 1.02) {
-      document.body.classList.add('zoomed');
-    } else {
-      document.body.classList.remove('zoomed');
-    }
-  }
-
+  app.style.transform = 'none';
+  app.style.removeProperty('--scale');
+  app.style.removeProperty('--zoom-factor');
+  document.body?.classList.remove('zoomed');
   app.classList.remove('size-small', 'size-tiny');
-  const isTiny = logicalWidth < 1100 || logicalHeight < 650;
-  const isSmall = logicalWidth < 1400 || logicalHeight < 800;
-  if (isTiny) {
-    app.classList.add('size-tiny');
-  } else if (isSmall) {
-    app.classList.add('size-small');
-  }
 }
 
 function setupHelpModal(){
