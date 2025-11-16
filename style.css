@@ -8,10 +8,14 @@
   /* min-height: 1080px;
   min-width: 1920px; */
   min-height: 100vh;
-  min-width: 100vh;
+  min-width: 100vw;
   background-color: #333;
   color: #fff;
   overflow: auto;
+}
+
+body.zoomed {
+  overflow: hidden;
 }
 
 
@@ -36,10 +40,11 @@
 /* ここだけ置き換え（または追記） */
 #app {
   position: relative;
-  width: 1920px;
-  height: 1080px;
+  width: var(--appW, 1920px);
+  height: var(--appH, 1080px);
   transform-origin: center center;
   transform: none;
+  transition: transform 0.2s ease-out;
   background-size: cover;
   background-position: center;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -231,11 +236,10 @@ body.modal-open {
     background-image: url('./images/Title_transparency.png');
   background-repeat: no-repeat;
   background-position: center;
-  background-size: contain;
-  width: clamp(780px, calc(var(--appW, 1920px) * 0.65), 1250px);
+  background-size: cover;
+  width: 655px;
   aspect-ratio: 4093 / 2894;
   display: block;
-  margin: calc(var(--appH, 1080px) * 0.04) auto calc(var(--appH, 1080px) * 0.02);
   overflow: hidden;
 }
 

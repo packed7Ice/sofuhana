@@ -1,5 +1,10 @@
 import { RENAMED_CARD_NAMES, getCardMonth, getCardImage } from './card-data.js';
 
+const APP_FALLBACK_WIDTH = 1920;
+const APP_FALLBACK_HEIGHT = 1080;
+const VIEWPORT_PADDING = 32;
+const MIN_SAFE_DIMENSION = 320;
+
 const elements = {
   appRoot: document.getElementById('app'),
   titleScreen: document.getElementById('title-screen'),
@@ -100,14 +105,46 @@ export function showScreen(id){
   }
 }
 
+function readBaseAppSize(){
+  if (typeof window === 'undefined') {
+    return { width: APP_FALLBACK_WIDTH, height: APP_FALLBACK_HEIGHT };
+  }
+  const rootStyles = getComputedStyle(document.documentElement);
+  const width = parseFloat(rootStyles.getPropertyValue('--appW')) || APP_FALLBACK_WIDTH;
+  const height = parseFloat(rootStyles.getPropertyValue('--appH')) || APP_FALLBACK_HEIGHT;
+  return { width, height };
+}
+
 export function fitApp(){
   const app = elements.appRoot;
-  if (!app) return;
-  app.style.transform = 'none';
-  app.style.removeProperty('--scale');
-  app.style.removeProperty('--zoom-factor');
-  document.body?.classList.remove('zoomed');
+  if (!app || typeof window === 'undefined') return 1;
+
+  const { width: baseWidth, height: baseHeight } = readBaseAppSize();
+  const paddedWidth = Math.max(window.innerWidth - VIEWPORT_PADDING * 2, MIN_SAFE_DIMENSION);
+  const paddedHeight = Math.max(window.innerHeight - VIEWPORT_PADDING * 2, MIN_SAFE_DIMENSION);
+  const computedScale = Math.min(
+    1,
+    paddedWidth / baseWidth,
+    paddedHeight / baseHeight
+  );
+  const scale = Number.isFinite(computedScale) && computedScale > 0 ? computedScale : 1;
+
   app.classList.remove('size-small', 'size-tiny');
+
+  if (scale >= 0.999){
+    app.style.transform = 'none';
+    app.style.removeProperty('--scale');
+    app.style.removeProperty('--zoom-factor');
+    document.body?.classList.remove('zoomed');
+    return scale;
+  }
+
+  app.style.transformOrigin = 'center center';
+  app.style.transform = `scale(${scale})`;
+  app.style.setProperty('--scale', String(scale));
+  app.style.setProperty('--zoom-factor', String(scale));
+  document.body?.classList.add('zoomed');
+  return scale;
 }
 
 function setupHelpModal(){

@@ -1,12 +1,36 @@
-import { elements, messageArea, showBottomMessage, showPersistentMessage, showScreen } from './js/dom-elements.js';
+import { elements, messageArea, showBottomMessage, showPersistentMessage, showScreen, fitApp } from './js/dom-elements.js';
 import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
 import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured, preloadCardImages } from './js/card-data.js';
+
+const scheduleFitApp = (() => {
+  let rafId = null;
+  return () => {
+    if (typeof window === 'undefined') return;
+    if (rafId !== null && typeof window.cancelAnimationFrame === 'function') {
+      window.cancelAnimationFrame(rafId);
+    }
+    const runner = () => {
+      rafId = null;
+      fitApp();
+    };
+    if (typeof window.requestAnimationFrame === 'function') {
+      rafId = window.requestAnimationFrame(runner);
+    } else {
+      runner();
+    }
+  };
+})();
 
 if (typeof window !== 'undefined'){
   window.addEventListener('beforeunload', () => {
     document.body?.setAttribute('data-boot','preload');
   });
+  window.addEventListener('resize', scheduleFitApp);
+  window.addEventListener('orientationchange', scheduleFitApp);
+  if (window.visualViewport){
+    window.visualViewport.addEventListener('resize', scheduleFitApp);
+  }
 }
 
 preloadCardImages();
@@ -15,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     initGame();
   } finally {
+    fitApp();
     document.body?.setAttribute('data-boot','ready');
   }
 });
