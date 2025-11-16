@@ -38,4 +38,20 @@ authorization from [cit_sofume].
 
 ---
 
+### 3. Prohibition of AI and Machine Learning Use
+The images in this repository may NOT be used for training, fine-tuning,
+evaluation, dataset creation, or any other purpose involving machine learning
+or artificial intelligence models.
+
+This includes, but is not limited to:
+- Generative AI systems (e.g., Stable Diffusion, Midjourney, DALL·E, etc.)
+- Neural networks for image recognition or classification
+- Dataset scraping, automated dataset ingestion, or bulk data collection
+- Any direct or indirect use of the images as inputs, prompts, or training samples
+
+Any such use is strictly prohibited without explicit written consent from
+the original copyright holder(s).
+
+---
+
 Any rights not expressly granted herein are reserved by their respective owners.
