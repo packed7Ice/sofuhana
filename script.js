@@ -62,6 +62,7 @@ function initGame(){
     drawPreviewImage
   } = elements;
   let drawPreviewLoadHandler = null;
+  let drawPreviewResetToken = 0;
 
   const ROUND_TRANSITION_DELAY = {
     // 各種遷移時間(ms)。演出を少し長くして状況を把握しやすくする。
@@ -78,17 +79,41 @@ function initGame(){
     drawPreviewLoadHandler = null;
   }
 
-  function clearDrawPreview(){
+  function clearDrawPreview(options = {}){
     if (!drawPreviewArea || !drawPreviewImage) return;
+    const { waitForHide = true } = options;
     detachDrawPreviewHandler();
     drawPreviewArea.classList.remove('visible');
     drawPreviewImage.classList.remove('preview-ready');
-    drawPreviewImage.removeAttribute('src');
+
+    drawPreviewResetToken += 1;
+    const resetToken = drawPreviewResetToken;
+    const removeImageSrc = () => {
+      if (drawPreviewResetToken !== resetToken) return;
+      drawPreviewImage.removeAttribute('src');
+    };
+
+    if (!waitForHide || typeof window === 'undefined'){
+      removeImageSrc();
+      return;
+    }
+
+    const handleTransitionEnd = (event) => {
+      if (event.target !== drawPreviewArea) return;
+      drawPreviewArea.removeEventListener('transitionend', handleTransitionEnd);
+      removeImageSrc();
+    };
+
+    drawPreviewArea.addEventListener('transitionend', handleTransitionEnd);
+    setTimeout(() => {
+      drawPreviewArea?.removeEventListener('transitionend', handleTransitionEnd);
+      removeImageSrc();
+    }, 350);
   }
 
   function showDrawPreview(cardName){
     if (!drawPreviewArea || !drawPreviewImage) return;
-    clearDrawPreview();
+    clearDrawPreview({ waitForHide: false });
     const nextSrc = getCardImage(cardName);
     if (!nextSrc){
       drawPreviewArea.classList.add('visible');
