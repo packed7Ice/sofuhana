@@ -118,6 +118,7 @@ export function fitApp(){
   app.style.transform = `scale(${scale})`;
   app.style.transformOrigin = 'center center';
   app.style.setProperty('--scale', String(scale));
+  app.style.setProperty('--zoom-factor', String(Math.max(zoom, 0.01)));
 
   if (document && document.body){
     if (zoom > 1.02) {

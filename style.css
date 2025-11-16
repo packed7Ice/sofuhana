@@ -61,6 +61,7 @@ body.zoomed #fit {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 0 0 auto;
 }
 
 /* きつい画面用：余白を少し詰める */
