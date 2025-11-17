@@ -721,12 +721,12 @@ body.modal-open {
 /* --- カード情報ボックス --- */
 #card-info-box {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(420px, calc(var(--appW, 1920px) * 0.22));
+  top: 0;
+  left: 0;
+  transform: none;
+  width: min(320px, calc(var(--appW, 1920px) * 0.18));
   max-width: calc(100% - 32px);
-  padding: 28px 36px;
+  padding: 24px 28px;
   background: linear-gradient(145deg, rgba(18, 18, 18, 0.92), rgba(32, 32, 32, 0.82));
   color: #fff;
   border-radius: 28px;

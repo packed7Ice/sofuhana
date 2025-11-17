@@ -37,7 +37,8 @@ function positionTooltipAbove(el){
   const cardRect = el.getBoundingClientRect();
   const tipRect = cardInfoBox.getBoundingClientRect();
   const x = cardRect.left + cardRect.width / 2 - tipRect.width / 2;
-  const y = cardRect.top - tipRect.height - 8;
+  const offsetY = 16;
+  const y = cardRect.top - tipRect.height - offsetY;
   cardInfoBox.style.left = `${Math.max(8, Math.min(window.innerWidth - tipRect.width - 8, x))}px`;
   cardInfoBox.style.top = `${Math.max(8, y)}px`;
 }

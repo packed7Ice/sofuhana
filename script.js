@@ -246,7 +246,10 @@ function initGame(){
 
   function removeFromHand(card){
     const idx = state.playerHand.indexOf(card);
-    if (idx > -1) state.playerHand.splice(idx,1);
+    if (idx > -1){
+      state.playerHand.splice(idx,1);
+      hideTooltip();
+    }
   }
 
   function maybeNagare(){
