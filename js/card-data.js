@@ -140,7 +140,7 @@ export const RENAMED_CARD_NAMES = (() => {
   });
 })();
 
-const YAKU_POINTS = {
+export const YAKU_POINTS = {
   '五光': 10, '四光': 8, '雨四光': 7, '三光': 5,
   '猪鹿蝶': 5, '赤短': 5, '青短': 5,
   '月見酒': 5, '花見酒': 5,

@@ -1,7 +1,7 @@
 import { elements, messageArea, showBottomMessage, showPersistentMessage, showScreen, fitApp } from './js/dom-elements.js';
 import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
-import { getCardMonth, getCardImage, checkYaku, scoreFromCaptured, preloadCardImages } from './js/card-data.js';
+import { getCardMonth, getCardImage, getCardType, checkYaku, scoreFromCaptured, preloadCardImages, YAKU_POINTS } from './js/card-data.js';
 
 const scheduleFitApp = (() => {
   let rafId = null;
@@ -72,6 +72,7 @@ function initGame(){
   };
 
   showScreen('title-screen');
+  resetDeclarations();
   function detachDrawPreviewHandler(){
     if (!drawPreviewImage || !drawPreviewLoadHandler) return;
     drawPreviewImage.removeEventListener('load', drawPreviewLoadHandler);
@@ -130,6 +131,117 @@ function initGame(){
     if (drawPreviewImage.complete && drawPreviewImage.naturalWidth > 0){
       drawPreviewLoadHandler();
     }
+  }
+
+  function declarationTargets(side){
+    if (side === 'player'){
+      return {
+        status: elements.playerDeclarationStatus,
+        detail: elements.playerDeclarationDetail
+      };
+    }
+    return {
+      status: elements.cpuDeclarationStatus,
+      detail: elements.cpuDeclarationDetail
+    };
+  }
+
+  function setDeclaration(side, payload = null){
+    const target = declarationTargets(side);
+    if (!target.status || !target.detail) return;
+    if (!payload){
+      target.status.textContent = '―';
+      target.detail.replaceChildren?.();
+      if (!target.detail.replaceChildren){
+        target.detail.innerHTML = '';
+      }
+      return;
+    }
+
+    target.status.textContent = payload.text;
+    if (target.detail.replaceChildren){
+      target.detail.replaceChildren();
+    } else {
+      target.detail.innerHTML = '';
+    }
+
+    const lines = payload.lines || [];
+    const baseText = payload.baseText || '';
+    const totalText = payload.totalText || '';
+
+    if (lines.length){
+      const list = document.createElement('ul');
+      lines.forEach(line => {
+        const li = document.createElement('li');
+        li.textContent = line;
+        list.appendChild(li);
+      });
+      target.detail.appendChild(list);
+    }
+
+    if (baseText){
+      const baseEl = document.createElement('p');
+      baseEl.className = 'declaration-base';
+      baseEl.textContent = baseText;
+      target.detail.appendChild(baseEl);
+    }
+
+    if (totalText){
+      const totalEl = document.createElement('p');
+      totalEl.className = 'declaration-total';
+      totalEl.textContent = totalText;
+      target.detail.appendChild(totalEl);
+    }
+  }
+
+  function resetDeclarations(){
+    setDeclaration('player');
+    setDeclaration('cpu');
+  }
+
+  function buildYakuLines(result, capturedCards){
+    const lines = [];
+    result.yakuList.forEach(yaku => {
+      if (yaku === '短冊' || yaku === 'タネ' || yaku === 'カス') return;
+      const pts = YAKU_POINTS[yaku] ?? 0;
+      lines.push(`${yaku}：${pts}点`);
+    });
+
+    const tanCount = capturedCards.filter(card => getCardType(card) === '短冊').length;
+    if (tanCount >= 5){
+      lines.push(`短冊（${tanCount}枚）：${tanCount - 4}点`);
+    }
+
+    const taneCount = capturedCards.filter(card => getCardType(card) === 'タネ').length;
+    if (taneCount >= 5){
+      lines.push(`タネ（${taneCount}枚）：${taneCount - 4}点`);
+    }
+
+    let kasuCount = capturedCards.filter(card => getCardType(card) === 'カス').length;
+    if (capturedCards.includes('菊に盃')) kasuCount += 1;
+    if (kasuCount >= 10){
+      lines.push(`カス（${kasuCount}枚）：${kasuCount - 9}点`);
+    }
+
+    if (!lines.length){
+      lines.push('役なし');
+    }
+
+    return lines;
+  }
+
+  function showKoikoiDeclaration(side){
+    setDeclaration(side, { text: 'こいこい' });
+  }
+
+  function showAgariDeclaration(side, result, capturedCards, totalGain){
+    const lines = buildYakuLines(result, capturedCards);
+    setDeclaration(side, {
+      text: '上がり',
+      lines,
+      baseText: `基本点: ${result.basePoints}点`,
+      totalText: `この回の獲得合計: ${totalGain}点`
+    });
   }
 
   function removeFromHand(card){
@@ -363,6 +475,7 @@ function initGame(){
         }
 
         state.cpuKoikoi = true;
+        showKoikoiDeclaration('cpu');
         showBottomMessage('相手は「こいこい」！');
         showBottomMessage('あなたの番です');
         state.playerTurn = true;
@@ -410,6 +523,7 @@ function initGame(){
       }
 
       state.cpuKoikoi = true;
+      showKoikoiDeclaration('cpu');
       showBottomMessage('相手は「こいこい」！');
         showBottomMessage('あなたの番です');
       state.playerTurn = true;
@@ -435,6 +549,7 @@ function initGame(){
       if (playerGain >= 7) playerGain *= 2;
       if (state.cpuKoikoi) playerGain *= 2;
       state.playerScore += playerGain;
+      showAgariDeclaration('player', playerResult, state.playerCaptured, playerGain);
       roundMessage = `あなたの勝ち！ ${playerGain}点獲得（役: ${playerResult.yakuList.join('、') || 'なし'}）。`;
       nextDealer = 'player';
     } else if (winner === 'cpu'){
@@ -443,11 +558,13 @@ function initGame(){
       if (cpuGain >= 7) cpuGain *= 2;
       if (state.playerKoikoi) cpuGain *= 2;
       state.cpuScore += cpuGain;
+      showAgariDeclaration('cpu', cpuResult, state.cpuCaptured, cpuGain);
       roundMessage = `相手の勝ち。${cpuGain}点獲得（役: ${cpuResult.yakuList.join('、') || 'なし'}）。`;
       nextDealer = 'cpu';
     } else {
       roundMessage = '流れ（引き分け）です。次の親は交代します。';
       nextDealer = state.currentDealer === 'player' ? 'cpu' : 'player';
+      resetDeclarations();
     }
 
     if (roundMessage) showPersistentMessage(roundMessage);
@@ -481,6 +598,7 @@ function initGame(){
     state.pendingSelection = null;
     dealCards();
     updateUI();
+    resetDeclarations();
 
     const playerBonus = initialHandBonus(state.playerHand);
     const cpuBonus = initialHandBonus(state.cpuHand);
@@ -562,6 +680,7 @@ function initGame(){
   koikoiButton?.addEventListener('click', () => {
     if (actionButtons) actionButtons.style.display = 'none';
     state.playerKoikoi = true;
+    showKoikoiDeclaration('player');
     const evalNow = scoreFromCaptured(state.playerCaptured);
     state.playerKoikoiBasePoints = evalNow.basePoints || 0;
     playerHandArea?.addEventListener('click', playerHandClickHandler);
