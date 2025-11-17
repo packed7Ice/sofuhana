@@ -568,11 +568,22 @@ body.modal-open {
 }
 
 /* --- アクションボタン --- */
+.player-controls-container {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
 .action-buttons-container {
   position: relative;
-  margin-top: 12px;
+  margin-top: 0;
   display: none;
   gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
   z-index: 50;
 }
 .action-buttons-container.active { display: flex; }
@@ -582,6 +593,9 @@ body.modal-open {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  max-height: calc(var(--appH, 1080px) * 0.23);
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .declaration-card {
@@ -633,6 +647,18 @@ body.modal-open {
   margin: 8px 0 0;
   color: var(--text-muted);
   font-size: 16px;
+}
+
+#app.compact .declaration-panel {
+  max-height: 180px;
+}
+
+#app.size-small .declaration-panel {
+  max-height: 150px;
+}
+
+#app.size-tiny .declaration-panel {
+  max-height: 120px;
 }
 
 /* --- 持ち札エリア --- */
