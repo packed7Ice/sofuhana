@@ -244,6 +244,33 @@ function initGame(){
     });
   }
 
+  function showPlayerYakuReady(){
+    const result = scoreFromCaptured(state.playerCaptured);
+    setDeclaration('player', {
+      text: '役成立',
+      lines: buildYakuLines(result, state.playerCaptured),
+      baseText: `基本点: ${result.basePoints}点`
+    });
+  }
+
+  function handlePlayerYakuAfterCapture(){
+    const yaku = checkYaku(state.playerCaptured);
+    if (!yaku.length) return false;
+    if (state.playerKoikoi){
+      const evalNow = scoreFromCaptured(state.playerCaptured);
+      if (evalNow.basePoints > (state.playerKoikoiBasePoints || 0)){
+        endRound('player');
+        return true;
+      }
+      return false;
+    }
+    hideTooltip();
+    showPlayerYakuReady();
+    if (actionButtons) actionButtons.style.display = 'flex';
+    playerHandArea?.removeEventListener('click', playerHandClickHandler);
+    return true;
+  }
+
   function removeFromHand(card){
     const idx = state.playerHand.indexOf(card);
     if (idx > -1){
@@ -264,30 +291,13 @@ function initGame(){
   function resolveCapture(captured, taken){
     if (!taken.length) return false;
     captured.push(...taken);
-    const yaku = checkYaku(captured);
-    if (captured === state.playerCaptured && yaku.length > 0){
-      if (state.playerKoikoi){
-        const evalNow = scoreFromCaptured(state.playerCaptured);
-        if (evalNow.basePoints > (state.playerKoikoiBasePoints || 0)){
-          endRound('player');
-          return true;
-        }
-        return false;
-      }
-      hideTooltip();
-      showBottomMessage(`役ができました（${yaku.join('、')}）。こいこいしますか？`);
-      if (actionButtons) actionButtons.style.display = 'flex';
-      playerHandArea?.removeEventListener('click', playerHandClickHandler);
-      updateUI();
-      return true;
-    }
-    return false;
+    return captured === state.playerCaptured;
   }
 
   async function drawAndResolveDelayed(){
     if (state.deck.length === 0) {
       updateUI();
-      return;
+      return false;
     }
     const drawn = state.deck.shift();
     updateUI();
@@ -300,14 +310,18 @@ function initGame(){
       if (getCardMonth(boardCard) === month) matches.push(idx);
     });
 
+    let playerCapturedFromDraw = false;
+
     if (matches.length === 0){
       state.board.push(drawn);
     } else if (matches.length === 1){
       const taken = [drawn, state.board.splice(matches[0],1)[0]];
-      resolveCapture(state.playerTurn ? state.playerCaptured : state.cpuCaptured, taken);
+      const capturedPlayer = resolveCapture(state.playerTurn ? state.playerCaptured : state.cpuCaptured, taken);
+      playerCapturedFromDraw = playerCapturedFromDraw || capturedPlayer;
     } else if (matches.length === 2){
       if (state.playerTurn){
-        await highlightAndAwaitBoardChoiceForDraw(matches, drawn);
+        const capturedPlayer = await highlightAndAwaitBoardChoiceForDraw(matches, drawn);
+        playerCapturedFromDraw = playerCapturedFromDraw || capturedPlayer;
       } else {
         const chosen = matches[0];
         const taken = [drawn, state.board.splice(chosen,1)[0]];
@@ -316,11 +330,16 @@ function initGame(){
     } else {
       const sameMonth = state.board.filter(card => getCardMonth(card) === month);
       state.board = state.board.filter(card => getCardMonth(card) !== month);
-      resolveCapture(state.playerTurn ? state.playerCaptured : state.cpuCaptured, [drawn, ...sameMonth]);
+      const capturedPlayer = resolveCapture(state.playerTurn ? state.playerCaptured : state.cpuCaptured, [drawn, ...sameMonth]);
+      playerCapturedFromDraw = playerCapturedFromDraw || capturedPlayer;
     }
 
     clearDrawPreview();
     updateUI();
+    if (playerCapturedFromDraw){
+      return handlePlayerYakuAfterCapture();
+    }
+    return false;
   }
 
   function highlightAndAwaitBoardChoiceForDraw(matchIdxs, drawnCard){
@@ -339,12 +358,12 @@ function initGame(){
         boardCards.forEach(cardEl => cardEl.classList.remove('selectable'));
 
         const taken = [state.pendingSelection.drawCard, state.board.splice(idx,1)[0]];
-        resolveCapture(state.playerCaptured, taken);
+        const capturedPlayer = resolveCapture(state.playerCaptured, taken);
         state.pendingSelection = null;
 
         clearDrawPreview();
         updateUI();
-        resolve();
+        resolve(capturedPlayer);
       };
 
       boardArea?.addEventListener('click', onClick);
@@ -362,31 +381,31 @@ function initGame(){
   }
 
   function highlightAndAwaitBoardChoice(matchIdxs, handCard){
-    state.pendingSelection = { handCard };
-    const boardCards = Array.from(boardArea?.children || []);
-    boardCards.forEach((el, idx) => el.classList.toggle('selectable', matchIdxs.includes(idx)));
+    return new Promise((resolve) => {
+      state.pendingSelection = { handCard };
+      const boardCards = Array.from(boardArea?.children || []);
+      boardCards.forEach((el, idx) => el.classList.toggle('selectable', matchIdxs.includes(idx)));
 
-    const onClick = async (event) => {
-      const el = event.target.closest('.card');
-      if (!el) return;
-      const idx = Array.from(boardArea?.children || []).indexOf(el);
-      if (!matchIdxs.includes(idx)) return;
+      const onClick = async (event) => {
+        const el = event.target.closest('.card');
+        if (!el) return;
+        const idx = Array.from(boardArea?.children || []).indexOf(el);
+        if (!matchIdxs.includes(idx)) return;
 
-      boardArea?.removeEventListener('click', onClick);
-      boardCards.forEach(cardEl => cardEl.classList.remove('selectable'));
+        boardArea?.removeEventListener('click', onClick);
+        boardCards.forEach(cardEl => cardEl.classList.remove('selectable'));
 
-      removeFromHand(state.pendingSelection.handCard);
-      const taken = [state.pendingSelection.handCard, state.board.splice(idx,1)[0]];
-      resolveCapture(state.playerCaptured, taken);
-      state.pendingSelection = null;
+        removeFromHand(state.pendingSelection.handCard);
+        const taken = [state.pendingSelection.handCard, state.board.splice(idx,1)[0]];
+        const capturedPlayer = resolveCapture(state.playerCaptured, taken);
+        state.pendingSelection = null;
 
-      updateUI();
-      await sleep(DELAYS.afterCaptureBeforeDraw);
-      await drawAndResolveDelayed();
-      postPlayerAction();
-    };
+        updateUI();
+        resolve(capturedPlayer);
+      };
 
-    boardArea?.addEventListener('click', onClick);
+      boardArea?.addEventListener('click', onClick);
+    });
   }
 
   async function playerTurnHandler(card){
@@ -402,7 +421,8 @@ function initGame(){
       state.board.push(card);
       updateUI();
       await sleep(DELAYS.playToBoard);
-      await drawAndResolveDelayed();
+      const handled = await drawAndResolveDelayed();
+      if (handled) return;
       postPlayerAction();
       return;
     }
@@ -410,27 +430,36 @@ function initGame(){
     if (matches.length === 1){
       removeFromHand(card);
       const taken = [card, state.board.splice(matches[0],1)[0]];
-      resolveCapture(state.playerCaptured, taken);
+      const playerCaptured = resolveCapture(state.playerCaptured, taken);
       updateUI();
+      if (playerCaptured && handlePlayerYakuAfterCapture()) return;
       await sleep(DELAYS.afterCaptureBeforeDraw);
-      await drawAndResolveDelayed();
+      const handled = await drawAndResolveDelayed();
+      if (handled) return;
       postPlayerAction();
       return;
     }
 
     if (matches.length === 2){
       messageArea.textContent = 'どちらの札を取るか選んでください。';
-      highlightAndAwaitBoardChoice(matches, card);
+      const playerCaptured = await highlightAndAwaitBoardChoice(matches, card);
+      if (playerCaptured && handlePlayerYakuAfterCapture()) return;
+      await sleep(DELAYS.afterCaptureBeforeDraw);
+      const handled = await drawAndResolveDelayed();
+      if (handled) return;
+      postPlayerAction();
       return;
     }
 
     removeFromHand(card);
     const sameMonth = state.board.filter(c => getCardMonth(c) === month);
     state.board = state.board.filter(c => getCardMonth(c) !== month);
-    resolveCapture(state.playerCaptured, [card, ...sameMonth]);
+    const playerCaptured = resolveCapture(state.playerCaptured, [card, ...sameMonth]);
     updateUI();
+    if (playerCaptured && handlePlayerYakuAfterCapture()) return;
     await sleep(DELAYS.afterCaptureBeforeDraw);
-    await drawAndResolveDelayed();
+    const handled = await drawAndResolveDelayed();
+    if (handled) return;
     postPlayerAction();
   }
 
@@ -460,7 +489,8 @@ function initGame(){
       state.board.push(played);
       updateUI();
       await sleep(DELAYS.playToBoard);
-      await drawAndResolveDelayed();
+      const handled = await drawAndResolveDelayed();
+      if (handled) return;
       updateUI();
       if (maybeNagare()) return;
 
@@ -508,7 +538,8 @@ function initGame(){
 
     updateUI();
     await sleep(DELAYS.afterCaptureBeforeDraw);
-    await drawAndResolveDelayed();
+    const handledDraw = await drawAndResolveDelayed();
+    if (handledDraw) return;
     updateUI();
     if (maybeNagare()) return;
 
@@ -553,7 +584,7 @@ function initGame(){
       if (state.cpuKoikoi) playerGain *= 2;
       state.playerScore += playerGain;
       showAgariDeclaration('player', playerResult, state.playerCaptured, playerGain);
-      roundMessage = `あなたの勝ち！ ${playerGain}点獲得（役: ${playerResult.yakuList.join('、') || 'なし'}）。`;
+      roundMessage = 'あなたの勝ち！';
       nextDealer = 'player';
     } else if (winner === 'cpu'){
       showBottomMessage('相手が上がりました');
@@ -562,7 +593,7 @@ function initGame(){
       if (state.playerKoikoi) cpuGain *= 2;
       state.cpuScore += cpuGain;
       showAgariDeclaration('cpu', cpuResult, state.cpuCaptured, cpuGain);
-      roundMessage = `相手の勝ち。${cpuGain}点獲得（役: ${cpuResult.yakuList.join('、') || 'なし'}）。`;
+      roundMessage = '相手の勝ち。';
       nextDealer = 'cpu';
     } else {
       roundMessage = '流れ（引き分け）です。次の親は交代します。';
