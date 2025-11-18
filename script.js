@@ -281,6 +281,20 @@ function initGame(){
 
   function maybeNagare(){
     if (state.playerHand.length === 0 && state.cpuHand.length === 0){
+      if (state.playerKoikoi){
+        const playerEval = scoreFromCaptured(state.playerCaptured);
+        if (playerEval.basePoints > (state.playerKoikoiBasePoints || 0)){
+          endRound('player');
+          return true;
+        }
+      }
+      if (state.cpuKoikoi){
+        const cpuEval = scoreFromCaptured(state.cpuCaptured);
+        if (cpuEval.basePoints > (state.cpuKoikoiBasePoints || 0)){
+          endRound('cpu');
+          return true;
+        }
+      }
       showBottomMessage('流れ。次戦へ移ります。');
       endRound('none');
       return true;
@@ -508,6 +522,7 @@ function initGame(){
         }
 
         state.cpuKoikoi = true;
+        state.cpuKoikoiBasePoints = cpuEvaluation.basePoints || 0;
         showKoikoiDeclaration('cpu');
         showBottomMessage('相手は「こいこい」！');
         showBottomMessage('あなたの番です');
@@ -557,6 +572,7 @@ function initGame(){
       }
 
       state.cpuKoikoi = true;
+      state.cpuKoikoiBasePoints = cpuEvaluation.basePoints || 0;
       showKoikoiDeclaration('cpu');
       showBottomMessage('相手は「こいこい」！');
         showBottomMessage('あなたの番です');
@@ -685,6 +701,8 @@ function initGame(){
 
     state.playerKoikoi = false;
     state.cpuKoikoi = false;
+    state.playerKoikoiBasePoints = 0;
+    state.cpuKoikoiBasePoints = 0;
 
     playerHandArea?.removeEventListener('click', playerHandClickHandler);
     playerHandArea?.addEventListener('click', playerHandClickHandler);

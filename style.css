@@ -575,6 +575,7 @@ body.modal-open {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  position: relative;
 }
 
 .player-area {
@@ -582,15 +583,22 @@ body.modal-open {
 }
 
 .action-buttons-container {
-  position: relative;
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
   margin-top: 0;
   display: none;
   gap: 16px;
   flex-wrap: wrap;
   justify-content: center;
-  z-index: 50;
+  z-index: 300;
+  max-width: min(100%, 960px);
+  width: max-content;
 }
-.action-buttons-container.active { display: flex; }
+.action-buttons-container.active {
+  display: flex;
+}
 
 .declaration-panel {
   margin-top: 18px;
