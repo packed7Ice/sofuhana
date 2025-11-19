@@ -3,6 +3,7 @@ import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
 import { getCardMonth, getCardImage, getCardType, checkYaku, scoreFromCaptured, preloadCardImages, YAKU_POINTS } from './js/card-data.js';
 import { tutorialManager } from './js/tutorial/tutorial-manager.js';
+import { yakuAssist } from './js/yaku-assist.js';
 
 const scheduleFitApp = (() => {
   let rafId = null;
@@ -439,6 +440,7 @@ function initGame(){
       removeFromHand(card);
       state.board.push(card);
       updateUI();
+      yakuAssist.checkAndShowHint(state);
       await sleep(DELAYS.playToBoard);
       tutorialManager.onPlayerPlayed();
       await tutorialManager.pause();
@@ -458,6 +460,7 @@ function initGame(){
       const taken = [card, state.board.splice(matches[0],1)[0]];
       const playerCaptured = resolveCapture(state.playerCaptured, taken);
       updateUI();
+      yakuAssist.checkAndShowHint(state);
       if (playerCaptured && handlePlayerYakuAfterCapture()) return;
       await sleep(DELAYS.afterCaptureBeforeDraw);
       
@@ -498,6 +501,7 @@ function initGame(){
     state.board = state.board.filter(c => getCardMonth(c) !== month);
     const playerCaptured = resolveCapture(state.playerCaptured, [card, ...sameMonth]);
     updateUI();
+    yakuAssist.checkAndShowHint(state);
     if (playerCaptured && handlePlayerYakuAfterCapture()) return;
     await sleep(DELAYS.afterCaptureBeforeDraw);
     
@@ -516,6 +520,7 @@ function initGame(){
   async function cpuTurnHandler(){
     hideTooltip();
     tutorialManager.onCpuTurnStart();
+    await tutorialManager.pause();
     if (actionButtons) actionButtons.style.display = 'none';
     showBottomMessage('相手が思考中...');
 
@@ -539,10 +544,12 @@ function initGame(){
       played = state.cpuHand.splice(randomIndex,1)[0];
       state.board.push(played);
       updateUI();
+      yakuAssist.checkAndShowHint(state);
       await sleep(DELAYS.playToBoard);
       const handled = await drawAndResolveDelayed();
       if (handled) return;
       updateUI();
+      yakuAssist.checkAndShowHint(state);
       if (maybeNagare()) return;
 
       const cpuEvaluation = scoreFromCaptured(state.cpuCaptured);
@@ -591,10 +598,12 @@ function initGame(){
     }
 
     updateUI();
+    yakuAssist.checkAndShowHint(state);
     await sleep(DELAYS.afterCaptureBeforeDraw);
     const handledDraw = await drawAndResolveDelayed();
     if (handledDraw) return;
     updateUI();
+    yakuAssist.checkAndShowHint(state);
     if (maybeNagare()) return;
 
     const cpuEvaluation = scoreFromCaptured(state.cpuCaptured);
@@ -689,10 +698,13 @@ function initGame(){
     state.pendingSelection = null;
     if (state.isTutorial) {
       tutorialManager.setupTutorialState();
+      yakuAssist.disable();
     } else {
       dealCards();
+      yakuAssist.enable();
     }
     updateUI();
+    yakuAssist.checkAndShowHint(state);
     resetDeclarations();
 
     const playerBonus = initialHandBonus(state.playerHand);

@@ -48,7 +48,7 @@ export function highlightElement(selector) {
   if (el) {
     el.classList.add('tutorial-highlight');
     // 要素が画面外ならスクロール（必要なら）
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 

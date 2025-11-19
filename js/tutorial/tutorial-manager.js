@@ -40,7 +40,15 @@ export class TutorialManager {
     state.isTutorial = false;
     hideTutorialMessage();
     clearHighlight();
-    // タイトルに戻るなどの処理が必要なら呼び出し元で行うか、ここでイベント発火
+    
+    // タイトルに戻る
+    // dom-elements.js の showScreen を使うために動的インポートか、グローバルな関数を使う
+    // ここでは簡易的に window.location.reload() でリセットするか、
+    // あるいは script.js で定義された関数を呼び出したいが、循環参照になる可能性があるため
+    // カスタムイベントを発火して script.js 側で処理するのがきれい
+    
+    // 簡易実装としてリロード
+    window.location.reload();
   }
 
   // ゲームの進行を一時停止させるためのPromiseを返す
@@ -72,7 +80,7 @@ export class TutorialManager {
     const step = TUTORIAL_SCENARIO[this.currentStepIndex];
     if (!step) return;
 
-    const showNext = step.action === 'next' || step.waitForConfirmation;
+    const showNext = step.action === 'next' || step.waitForConfirmation || step.action === 'finish';
     const options = {
       position: step.position,
       buttonText: step.buttonText
@@ -80,7 +88,13 @@ export class TutorialManager {
 
     showTutorialMessage(
       step.message, 
-      showNext ? () => this.nextStep() : null,
+      showNext ? () => {
+        if (step.action === 'finish') {
+          this.endTutorial();
+        } else {
+          this.nextStep();
+        }
+      } : null,
       options
     );
     
@@ -138,17 +152,15 @@ export class TutorialManager {
     if (!this.isActive) return;
     const step = TUTORIAL_SCENARIO[this.currentStepIndex];
     if (step.action === 'auto_draw') {
-      this.nextStep(); // draw_card -> match_explanation
+      // ここで自動で進まず、ユーザーの確認（次へボタン）を待つ
+      // this.nextStep(); 
     }
   }
 
   onCpuTurnStart() {
     if (!this.isActive) return;
-    const step = TUTORIAL_SCENARIO[this.currentStepIndex];
-    if (step.action === 'wait_for_cpu') {
-        // CPUのターン説明中なら、次へ進むボタンを押すまでCPUを待たせる？
-        // あるいは自動で進むか
-    }
+    // script.js 側で pause() されるため、ここでは何もしなくてよい
+    // wait_for_cpu ステップが表示され、ユーザーが「次へ」を押すと pause() が解除されてCPUが動く
   }
   
   // CPUのターンが終わった後に呼ばれる

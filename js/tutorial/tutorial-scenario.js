@@ -42,18 +42,11 @@ export const TUTORIAL_SCENARIO = [
   },
   {
     id: 'draw_card',
-    message: '山札から引いた札も、場の札と同じ月なら取ることができます。<br>取った札は自分の「持ち札」になります。',
+    message: '山札から引いた札も、場の札と同じ月なら取ることができます。<br>取った札は自分の「持ち札」になります。<br><br>このようにして、手札と場札、山札と場札を合わせて札を集めていきます。',
     action: 'auto_draw', // 実際のドロー処理を待つ
     highlight: '.captured-player',
     position: 'top',
-    // ここはドロー後の結果を見せるため、ドロー完了を待つ
-  },
-  {
-    id: 'match_explanation',
-    message: 'このようにして、手札と場札、山札と場札を合わせて札を集めていきます。',
-    action: 'next',
-    highlight: '.captured-player',
-    position: 'top',
+    waitForConfirmation: true,
     buttonText: '次へ'
   },
   {
@@ -61,7 +54,9 @@ export const TUTORIAL_SCENARIO = [
     message: '次は相手の番です。<br>相手も同じように手札を出し、山札を引きます。',
     action: 'wait_for_cpu',
     highlight: '.player-cpu-area',
-    position: 'bottom'
+    position: 'top-left',
+    waitForConfirmation: true,
+    buttonText: '次へ'
   },
   {
     id: 'yaku_explanation',

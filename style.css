@@ -1042,7 +1042,14 @@ a:hover {
 
 #tutorial-overlay.position-bottom {
   justify-content: flex-end;
-  padding-bottom: 180px; /* 手札の上あたり（少し広めに） */
+  padding-bottom: 100px; /* 手札の上あたり（少し広めに） */
+}
+
+#tutorial-overlay.position-top-left {
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 100px;
+  padding-left: 40px;
 }
 
 .tutorial-message-box {
