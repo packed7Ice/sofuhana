@@ -940,7 +940,6 @@ a {
   background-repeat: no-repeat;
 }
 
-#title-screen #start-game-button { margin-top: calc(var(--appH, 1080px) * 0.02); }
 #title-screen .title-secondary-actions {
   display: flex;
   gap: 16px;
