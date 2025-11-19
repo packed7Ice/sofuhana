@@ -20,7 +20,8 @@ export const state = {
   cpuKoikoiBasePoints: 0,
   currentDealer: 'player',
   pendingSelection: null,
-  roundEnding: false
+  roundEnding: false,
+  isTutorial: false
 };
 
 export const DELAYS = {

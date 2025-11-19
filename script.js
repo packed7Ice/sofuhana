@@ -2,6 +2,7 @@ import { elements, messageArea, showBottomMessage, showPersistentMessage, showSc
 import { updateUI, hideTooltip } from './js/ui.js';
 import { state, dealCards, initialHandBonus, DELAYS, sleep } from './js/state.js';
 import { getCardMonth, getCardImage, getCardType, checkYaku, scoreFromCaptured, preloadCardImages, YAKU_POINTS } from './js/card-data.js';
+import { tutorialManager } from './js/tutorial/tutorial-manager.js';
 
 const scheduleFitApp = (() => {
   let rafId = null;
@@ -35,6 +36,7 @@ if (typeof window !== 'undefined'){
 
 preloadCardImages();
 
+
 document.addEventListener('DOMContentLoaded', () => {
   try {
     initGame();
@@ -47,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function initGame(){
   const {
     startGameButton,
+    tutorialButton,
     roundButtons,
     restartButton,
     returnToTitleButton,
@@ -424,6 +427,8 @@ function initGame(){
 
   async function playerTurnHandler(card){
     if (state.pendingSelection) return;
+    if (!tutorialManager.checkPlayerAction(card)) return;
+
     const month = getCardMonth(card);
     const matches = [];
     state.board.forEach((boardCard, idx) => {
@@ -435,8 +440,15 @@ function initGame(){
       state.board.push(card);
       updateUI();
       await sleep(DELAYS.playToBoard);
+      tutorialManager.onPlayerPlayed();
+      await tutorialManager.pause();
+      
       const handled = await drawAndResolveDelayed();
       if (handled) return;
+      
+      tutorialManager.onAfterDraw();
+      await tutorialManager.pause();
+      
       postPlayerAction();
       return;
     }
@@ -448,8 +460,16 @@ function initGame(){
       updateUI();
       if (playerCaptured && handlePlayerYakuAfterCapture()) return;
       await sleep(DELAYS.afterCaptureBeforeDraw);
+      
+      tutorialManager.onPlayerPlayed();
+      await tutorialManager.pause();
+
       const handled = await drawAndResolveDelayed();
       if (handled) return;
+      
+      tutorialManager.onAfterDraw();
+      await tutorialManager.pause();
+
       postPlayerAction();
       return;
     }
@@ -459,8 +479,16 @@ function initGame(){
       const playerCaptured = await highlightAndAwaitBoardChoice(matches, card);
       if (playerCaptured && handlePlayerYakuAfterCapture()) return;
       await sleep(DELAYS.afterCaptureBeforeDraw);
+      
+      tutorialManager.onPlayerPlayed();
+      await tutorialManager.pause();
+
       const handled = await drawAndResolveDelayed();
       if (handled) return;
+      
+      tutorialManager.onAfterDraw();
+      await tutorialManager.pause();
+
       postPlayerAction();
       return;
     }
@@ -472,13 +500,22 @@ function initGame(){
     updateUI();
     if (playerCaptured && handlePlayerYakuAfterCapture()) return;
     await sleep(DELAYS.afterCaptureBeforeDraw);
+    
+    tutorialManager.onPlayerPlayed();
+    await tutorialManager.pause();
+
     const handled = await drawAndResolveDelayed();
     if (handled) return;
+    
+    tutorialManager.onAfterDraw();
+    await tutorialManager.pause();
+
     postPlayerAction();
   }
 
   async function cpuTurnHandler(){
     hideTooltip();
+    tutorialManager.onCpuTurnStart();
     if (actionButtons) actionButtons.style.display = 'none';
     showBottomMessage('相手が思考中...');
 
@@ -527,11 +564,13 @@ function initGame(){
         showBottomMessage('相手は「こいこい」！');
         showBottomMessage('あなたの番です');
         state.playerTurn = true;
+        tutorialManager.onCpuTurnEnd();
         return;
       }
 
       state.playerTurn = true;
         showBottomMessage('あなたの番です');
+        tutorialManager.onCpuTurnEnd();
       return;
     }
 
@@ -575,13 +614,15 @@ function initGame(){
       state.cpuKoikoiBasePoints = cpuEvaluation.basePoints || 0;
       showKoikoiDeclaration('cpu');
       showBottomMessage('相手は「こいこい」！');
-        showBottomMessage('あなたの番です');
+      showBottomMessage('あなたの番です');
       state.playerTurn = true;
+      tutorialManager.onCpuTurnEnd();
       return;
     }
 
     state.playerTurn = true;
-        showBottomMessage('あなたの番です');
+    showBottomMessage('あなたの番です');
+    tutorialManager.onCpuTurnEnd();
   }
 
   function endRound(winner){
@@ -646,23 +687,32 @@ function initGame(){
   function startGame(startingPlayer = 'player'){
     if (actionButtons) actionButtons.style.display = 'none';
     state.pendingSelection = null;
-    dealCards();
+    if (state.isTutorial) {
+      tutorialManager.setupTutorialState();
+    } else {
+      dealCards();
+    }
     updateUI();
     resetDeclarations();
 
     const playerBonus = initialHandBonus(state.playerHand);
     const cpuBonus = initialHandBonus(state.cpuHand);
     if (playerBonus || cpuBonus){
-      if (playerBonus && !cpuBonus){
+      if (playerBonus && cpuBonus){
+        state.playerScore += 6;
+        state.cpuScore += 6;
+        // 親はそのまま（あるいはルールによるが、ここでは変更なしとするか、playerにするか）
+        // 通常は親権は移動しない、または親が優先などあるが、元のコードの意図が不明確。
+        // 元のコードのelse（両者）ではdealer変更していないのでそのままにします。
+        messageArea.textContent = '両者とも親手四枚！ 6点ずつ。';
+      } else if (playerBonus){
         state.playerScore += 6;
         state.currentDealer = 'player';
         messageArea.textContent = 'あなたが親手四枚！ 6点獲得。';
-      } else if (cpuBonus && !playerBonus){
+      } else {
         state.cpuScore += 6;
         state.currentDealer = 'cpu';
         messageArea.textContent = '相手が親手四枚！ 6点獲得。';
-      } else {
-        messageArea.textContent = '両者とも親手四枚！ 6点ずつ。';
       }
 
       if (state.currentRound >= state.totalRounds){
@@ -718,6 +768,12 @@ function initGame(){
   }
 
   startGameButton?.addEventListener('click', () => showScreen('rounds-screen'));
+  
+  tutorialButton?.addEventListener('click', () => {
+    showScreen('game-screen');
+    tutorialManager.startTutorial();
+    startGame('player');
+  });
 
   Array.from(roundButtons || []).forEach(btn => {
     btn.addEventListener('click', (event) => {
@@ -750,5 +806,3 @@ function initGame(){
   restartButton?.addEventListener('click', () => showScreen('rounds-screen'));
   returnToTitleButton?.addEventListener('click', () => showScreen('title-screen'));
 }
-
-

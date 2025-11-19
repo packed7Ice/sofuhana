@@ -12,6 +12,7 @@ const elements = {
   gameScreen: document.getElementById('game-screen'),
   resultScreen: document.getElementById('result-screen'),
   startGameButton: document.getElementById('start-game-button'),
+  tutorialButton: document.getElementById('tutorial-button'),
   roundButtons: document.querySelectorAll('.round-button'),
   restartButton: document.getElementById('restart-button'),
   returnToTitleButton: document.getElementById('return-to-title-button'),

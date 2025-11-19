@@ -241,6 +241,7 @@ body.modal-open {
   aspect-ratio: 4093 / 2894;
   display: block;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .action-button {
@@ -735,6 +736,210 @@ body.modal-open {
   background-repeat: no-repeat;
 }
 
+.title-main-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: calc(var(--appH, 1080px) * 0.02);
+}
+
+#title-screen .title-secondary-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: calc(var(--appH, 1080px) * 0.01);
+}
+#title-screen .title-secondary-actions .action-button {
+  margin: 16px 8px;
+  min-width: 280px;
+}
+
+#result-screen h2 {
+  font-size: 64px;
+  margin-bottom: calc(var(--appH, 1080px) * 0.03);
+  text-shadow: 2px 2px 4px #000;
+}
+
+.result-actions { margin-top: calc(var(--appH, 1080px) * 0.05); }
+
+/* --- カード情報ボックス --- */
+#card-info-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  transform: none;
+  width: min(320px, calc(var(--appW, 1920px) * 0.18));
+  max-width: calc(100% - 32px);
+  padding: 24px 28px;
+  background: linear-gradient(145deg, rgba(18, 18, 18, 0.92), rgba(32, 32, 32, 0.82));
+  color: #fff;
+  border-radius: 28px;
+  text-align: center;
+  z-index: 9999;
+  font-size: 26px;
+  pointer-events: none;
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#card-info-box p {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+#card-info-box p:first-child {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent-highlight);
+}
+
+#card-info-box p:nth-child(2) {
+  font-size: 28px;
+  color: #fff;
+}
+
+#card-info-box p:last-child {
+  font-size: 24px;
+}
+
+/* ==== リンク色をボタンと統一 ==== */
+a {
+  color: #288d1f;
+  text-decoration: underline;
+}
+
+.declaration-box {
+  min-width: 240px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.declaration-heading {
+  font-size: 20px;
+  margin: 0 0 6px;
+  color: var(--text-muted);
+}
+
+.declaration-status {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: 0.08em;
+  min-height: 40px;
+}
+
+.declaration-detail {
+  font-size: 18px;
+  line-height: 1.4;
+  min-height: 24px;
+}
+
+.declaration-detail ul {
+  margin: 0 0 8px;
+  padding-left: 20px;
+  color: #fff;
+}
+
+.declaration-detail li {
+  margin: 2px 0;
+}
+
+.declaration-total {
+  margin: 8px 0 0;
+  font-weight: 600;
+}
+
+.declaration-base {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+#app.compact .declaration-panel {
+  max-height: 180px;
+}
+
+#app.size-small .declaration-panel {
+  max-height: 150px;
+}
+
+#app.size-tiny .declaration-panel {
+  max-height: 120px;
+}
+
+/* --- 持ち札エリア --- */
+.captured-container {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.captured-player, .captured-cpu {
+  width: 20%;
+}
+
+/* 相手の持ち札エリアを少し中央側へ */
+.captured-cpu {
+  margin-right: 20px; /* わずかに内側へ */
+}
+
+.captured-player h3, .captured-cpu h3 {
+  font-size: 22px;
+  margin-bottom: 8px;
+}
+
+.captured-cards-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  min-height: calc(var(--appH, 1080px) * 0.1);
+  width: 100%;
+}
+
+.captured-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.captured-row .card {
+  width: 58px;
+  height: 86px;
+  font-size: 13px;
+}
+
+/* --- リザルト画面 --- */
+#result-screen {
+  background-image: url('./images/result_background.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* --- ゲームプレイ背景 --- */
+#game-screen {
+  background-image: url('./images/Back_1.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 #title-screen #start-game-button { margin-top: calc(var(--appH, 1080px) * 0.02); }
 #title-screen .title-secondary-actions {
   display: flex;
@@ -814,4 +1019,84 @@ a:visited {
 
 a:hover {
   opacity: 0.8; /* 少し薄くしてクリック感 */
+}
+
+/* ==== Tutorial Styles ==== */
+#tutorial-overlay {
+  position: absolute; /* fixed -> absolute (#app内配置のため) */
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  pointer-events: none; /* 下の要素をクリックできるようにする */
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#tutorial-overlay.position-top {
+  justify-content: flex-start;
+  padding-top: 120px; /* HUDの下あたり */
+}
+
+#tutorial-overlay.position-bottom {
+  justify-content: flex-end;
+  padding-bottom: 180px; /* 手札の上あたり（少し広めに） */
+}
+
+.tutorial-message-box {
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid var(--accent-highlight);
+  border-radius: 16px;
+  padding: 24px 32px;
+  max-width: 600px;
+  width: 90%;
+  color: #fff;
+  text-align: center;
+  pointer-events: auto; /* メッセージボックスは操作可能 */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 20%; /* 画面中央より少し上に配置 */
+}
+
+.tutorial-text {
+  font-size: 22px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+#tutorial-next-btn {
+  font-size: 20px;
+  padding: 10px 24px;
+  min-width: 120px;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.tutorial-highlight {
+  position: relative;
+  z-index: 100000 !important; /* オーバーレイより上に表示 */
+  box-shadow: 0 0 0 4px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.8) !important;
+  animation: pulseHighlight 1.5s infinite;
+  transition: all 0.3s ease;
+}
+
+@keyframes pulseHighlight {
+  0% { box-shadow: 0 0 0 4px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.8); }
+  50% { box-shadow: 0 0 0 6px #ffeb3b, 0 0 30px rgba(255, 235, 59, 1); }
+  100% { box-shadow: 0 0 0 4px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.8); }
+}
+
+/* チュートリアル中はハイライト以外の要素を少し暗くする（オプション） */
+body.tutorial-active #app::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99998;
+  pointer-events: none;
 }
