@@ -499,7 +499,7 @@ body.modal-open {
 
 #draw-preview-image,
 #deck-image {
-  width: 96px;
+  width: 106px;
   aspect-ratio: 660 / 1080;
   height: auto;
   border: 1px solid #333;
@@ -573,7 +573,7 @@ body.modal-open {
 
 /* --- カード --- */
 .card {
-  width: 96px;
+  width: 106px;
   aspect-ratio: 660 / 1080;
   height: auto;
   background-color: #f0f0f0;
@@ -609,6 +609,7 @@ body.modal-open {
 }
 #app.size-small .captured-row .card {
   width: 48px;
+  height: 71px;
   font-size: 12px;
 }
 
@@ -618,6 +619,7 @@ body.modal-open {
 }
 #app.size-tiny .captured-row .card {
   width: 40px;
+  height: 62px;
   font-size: 11px;
 }
 
@@ -665,9 +667,10 @@ body.modal-open {
   inset: 0;
   display: none;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
+  gap: 300px;
   pointer-events: none;
+  z-index: 5;
 }
 
 .action-buttons-container .action-button {
@@ -675,89 +678,110 @@ body.modal-open {
   min-width: 140px;
 }
 
-#koikoi-button {
-  margin-right: auto;
-}
+
 
 .declaration-panel {
-  margin-top: 18px;
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: nowrap;
   width: 100%;
-  max-width: 100%;
+  max-width: 55%;
+  height: 12%;
   overflow: visible;
-  padding: 0 8px;
+  padding: 0;
   box-sizing: border-box;
+  z-index: 10;
+  pointer-events: none; /* Allow clicking through if empty/transparent parts */
+}
+
+.declaration-panel > * {
+  pointer-events: auto;
 }
 
 .declaration-card {
   flex: 1 1 0;
   min-width: 0;
-  max-width: calc(50% - 8px);
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.65);
   border: 1px solid var(--surface-border);
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   display: grid;
-  grid-template-rows: auto auto;
   grid-template-columns: auto 1fr;
-  gap: 8px 16px;
+  grid-template-rows: auto auto;
+  gap: 2px 16px;
   box-sizing: border-box;
+  align-items: center;
 }
 
 .declaration-heading {
-  font-size: 20px;
+  font-size: 14px;
   margin: 0;
   color: var(--text-muted);
+  grid-column: 1;
   grid-row: 1;
-  grid-column: 1 / -1;
+  white-space: nowrap;
 }
 
 .declaration-status {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 700;
   margin: 0;
-  letter-spacing: 0.08em;
-  min-width: 120px;
+  letter-spacing: 0.05em;
+  min-width: auto;
   flex-shrink: 0;
   text-align: left;
-  grid-row: 2;
   grid-column: 1;
-  align-self: start;
+  grid-row: 2;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .declaration-detail {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.4;
-  min-height: 24px;
-  grid-row: 2;
   grid-column: 2;
+  grid-row: 1 / -1; /* Span both rows */
   min-width: 0;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding-left: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .declaration-detail ul {
-  margin: 0 0 8px;
-  padding-left: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
 }
 
 .declaration-detail li {
-  margin: 2px 0;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .declaration-total {
-  margin: 8px 0 0;
+  margin: 0;
   font-weight: 600;
+  white-space: nowrap;
+  color: var(--accent-highlight);
 }
 
 .declaration-base {
-  margin: 8px 0 0;
+  margin: 0;
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 #app.compact .declaration-panel {
@@ -772,7 +796,15 @@ body.modal-open {
   max-height: 120px;
 }
 
-/* --- 持ち札エリア --- */
+.captured-player, .captured-cpu {
+  width: 20%;
+}
+
+/* 相手の持ち札エリアを少し中央側へ */
+.captured-cpu {
+  margin-right: 20px; /* わずかに内側へ */
+}
+
 .captured-container {
   position: absolute;
   bottom: 12px;
@@ -782,15 +814,6 @@ body.modal-open {
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
-}
-
-.captured-player, .captured-cpu {
-  width: 20%;
-}
-
-/* 相手の持ち札エリアを少し中央側へ */
-.captured-cpu {
-  margin-right: 20px; /* わずかに内側へ */
 }
 
 .captured-player h3, .captured-cpu h3 {
@@ -809,14 +832,11 @@ body.modal-open {
 .captured-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
 }
 
 .captured-row .card {
-  width: 58px;
-  height: 86px;
-  font-size: 13px;
+  width: 54px;
+  height: 88px;
 }
 
 /* --- リザルト画面 --- */
@@ -914,202 +934,6 @@ a {
   text-decoration: underline;
 }
 
-.declaration-box {
-  min-width: 240px;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid var(--surface-border);
-  border-radius: 12px;
-  padding: 12px 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-.declaration-heading {
-  font-size: 20px;
-  margin: 0 0 6px;
-  color: var(--text-muted);
-}
-
-.declaration-status {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0 0 8px;
-  letter-spacing: 0.08em;
-  min-height: 40px;
-}
-
-.declaration-detail {
-  font-size: 18px;
-  line-height: 1.4;
-  min-height: 24px;
-}
-
-.declaration-detail ul {
-  margin: 0 0 8px;
-  padding-left: 20px;
-  color: #fff;
-}
-
-.declaration-detail li {
-  margin: 2px 0;
-}
-
-.declaration-total {
-  margin: 8px 0 0;
-  font-weight: 600;
-}
-
-.declaration-base {
-  margin: 8px 0 0;
-  color: var(--text-muted);
-  font-size: 16px;
-}
-
-#app.compact .declaration-panel {
-  max-height: 180px;
-}
-
-#app.size-small .declaration-panel {
-  max-height: 150px;
-}
-
-#app.size-tiny .declaration-panel {
-  max-height: 120px;
-}
-
-/* --- 持ち札エリア --- */
-.captured-container {
-  position: absolute;
-  bottom: 12px;
-  left: 16px;
-  right: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-}
-
-.captured-player, .captured-cpu {
-  width: 20%;
-}
-
-/* 相手の持ち札エリアを少し中央側へ */
-.captured-cpu {
-  margin-right: 20px; /* わずかに内側へ */
-}
-
-.captured-player h3, .captured-cpu h3 {
-  font-size: 22px;
-  margin-bottom: 8px;
-}
-
-.captured-cards-container {
-  border: 1px solid #ccc;
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.1);
-  min-height: calc(var(--appH, 1080px) * 0.1);
-  width: 100%;
-}
-
-.captured-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.captured-row .card {
-  width: 58px;
-  height: 86px;
-  font-size: 13px;
-}
-
-/* --- リザルト画面 --- */
-#result-screen {
-  background-image: url('./images/result_background.jpg');
-  background-size: cover;
-  background-position: center;
-}
-
-/* --- ゲームプレイ背景 --- */
-#game-screen {
-  background-image: url('./images/Back_1.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-#title-screen .title-secondary-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: calc(var(--appH, 1080px) * 0.01);
-}
-#title-screen .title-secondary-actions .action-button {
-  margin: 16px 8px;
-  min-width: 280px;
-}
-
-#result-screen h2 {
-  font-size: 64px;
-  margin-bottom: calc(var(--appH, 1080px) * 0.03);
-  text-shadow: 2px 2px 4px #000;
-}
-
-.result-actions { margin-top: calc(var(--appH, 1080px) * 0.05); }
-
-/* --- カード情報ボックス --- */
-#card-info-box {
-  position: fixed;
-  top: 0;
-  left: 0;
-  transform: none;
-  width: min(320px, calc(var(--appW, 1920px) * 0.18));
-  max-width: calc(100% - 32px);
-  padding: 24px 28px;
-  background: linear-gradient(145deg, rgba(18, 18, 18, 0.92), rgba(32, 32, 32, 0.82));
-  color: #fff;
-  border-radius: 28px;
-  text-align: center;
-  z-index: 9999;
-  font-size: 26px;
-  pointer-events: none;
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--surface-border);
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-#card-info-box p {
-  margin: 0;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  color: var(--text-muted);
-}
-
-#card-info-box p:first-child {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--accent-highlight);
-}
-
-#card-info-box p:nth-child(2) {
-  font-size: 28px;
-  color: #fff;
-}
-
-#card-info-box p:last-child {
-  font-size: 24px;
-}
-
-/* ==== リンク色をボタンと統一 ==== */
-a {
-  color: #288d1f;
-  text-decoration: underline;
-}
-
 a:visited {
   color: #288d1f;
 }
@@ -1117,6 +941,13 @@ a:visited {
 a:hover {
   opacity: 0.8; /* 少し薄くしてクリック感 */
 }
+
+
+
+
+
+
+
 
 /* ==== Tutorial Styles ==== */
 #tutorial-overlay {
