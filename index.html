@@ -38,6 +38,7 @@
 <body data-boot="preload">
   <div id="fit">
     <div id="app">
+      
       <!-- タイトル -->
       <div id="title-screen" class="screen active">
         <h1 class="game-logo"></h1>
@@ -122,8 +123,13 @@
                 <div class="player-hand-header">
                   <h2 class="area-title">あなたの手札</h2>
                   <div id="action-buttons" class="action-buttons-container">
-                    <button id="koikoi-button" class="action-button">こいこい</button>
-                    <button id="shobu-button" class="action-button">勝負</button>
+                    <div class="action-dialog">
+                      <p class="action-message">こいこいしますか？</p>
+                      <div class="action-buttons-group">
+                        <button id="koikoi-button" class="action-button">こいこい</button>
+                        <button id="shobu-button" class="action-button">あがる</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div id="player-hand-area" class="hand"></div>
@@ -165,83 +171,85 @@
           </div>
         </div>
       </div>
-    </div>
-    <!-- リザルト -->
-    <div id="result-screen" class="screen">
-      <h2 id="result-message" class="scene-title"></h2>
-      <div class="result-info">
-        <p>最終得点</p>
-        <p>あなた: <span id="final-player-score">0</span>点</p>
-        <p>相手: <span id="final-cpu-score">0</span>点</p>
+
+      <!-- ヘルプモーダル -->
+      <div id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+        <div class="modal-content">
+          <h2 id="help-title">ヘルプ：花札「こいこい」</h2>
+
+          <h3>基本の流れ</h3>
+          <ol>
+            <li>場札8枚、自分と相手に各8枚配り、残りは山札。</li>
+            <li>自分の番：手札1枚を出す。同じ「月」の場札があれば取り、なければ場に残す。</li>
+            <li>続けて山札1枚をめくり、同じ月があれば取り、なければ場に置く。</li>
+            <li>役ができたら「勝負」か、続けて狙う「こいこい」を選ぶ。</li>
+            <li>どちらも手札が0になったら<strong>流れ</strong>（点数なし）。次の先手は据え置き。</li>
+          </ol>
+
+          <h3>各月の札</h3>
+          <div id="help-months" class="months-grid" aria-label="各月に対応する札の一覧"></div>
+
+          <h3>役の例</h3>
+          <div id="yaku-examples" class="yaku-examples" aria-label="役の例のサンプル画像一覧"></div>
+
+          <p class="help-note">
+            ※ 詳細は
+            <a href="https://www.nintendo.com/jp/others/hanafuda_kabufuda/howtoplay/koikoi/index.html" target="_blank" rel="noopener noreferrer">
+            こいこい｜花札の歴史・遊びかた｜花札・株札｜任天堂
+            </a>
+            を参照してください。バリエーションにより点数・細則が異なる場合があります。
+          </p>
+
+          <div class="help-modal-footer">
+            <span class="sofume-logo" aria-hidden="true"></span>
+            <button id="help-close" class="action-button">閉じる</button>
+          </div>
+        </div>
       </div>
-      <div class="result-actions">
-        <button id="restart-button" class="action-button">もう一度プレイ</button>
-        <button id="return-to-title-button" class="action-button">タイトルに戻る</button>
+
+      <!-- リザルト -->
+      <div id="result-screen" class="screen">
+        <h2 id="result-message" class="scene-title"></h2>
+        <div class="result-info">
+          <p>最終得点</p>
+          <p>あなた: <span id="final-player-score">0</span>点</p>
+          <p>相手: <span id="final-cpu-score">0</span>点</p>
+        </div>
+        <div class="result-actions">
+          <button id="restart-button" class="action-button">もう一度プレイ</button>
+          <button id="return-to-title-button" class="action-button">タイトルに戻る</button>
+        </div>
+      </div>
+
+      <!-- バグ・要望報告モーダル -->
+      <div id="report-destination-modal" role="dialog" aria-modal="true" aria-labelledby="report-destination-title" aria-hidden="true">
+        <div class="modal-content">
+          <h2 id="report-destination-title">バグ・要望報告</h2>
+          <p class="report-destination-message">
+            報告方法を選択してください。Google フォームで送信する際は注意書きをご確認ください。
+          </p>
+          <div class="report-destination-actions">
+            <button id="report-select-google" class="action-button">Google フォーム</button>
+            <button id="report-select-github" class="action-button">GitHub</button>
+          </div>
+          <button id="report-destination-close" class="action-button tertiary">閉じる</button>
+        </div>
+      </div>
+      <div id="report-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="report-confirm-title" aria-hidden="true">
+        <div class="modal-content">
+          <h2 id="report-confirm-title">バグ・要望報告</h2>
+          <p class="report-confirm-message">
+            Google フォームへアクセスします。Google アカウントへのログインが必要ですが移動しますか？
+          </p>
+          <div class="report-confirm-actions">
+            <button id="report-confirm-no" class="action-button">いいえ</button>
+            <button id="report-confirm-yes" class="action-button">はい</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ヘルプモーダル -->
-  <div id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
-    <div class="modal-content">
-      <h2 id="help-title">ヘルプ：花札「こいこい」</h2>
-
-      <h3>基本の流れ</h3>
-      <ol>
-        <li>場札8枚、自分と相手に各8枚配り、残りは山札。</li>
-        <li>自分の番：手札1枚を出す。同じ「月」の場札があれば取り、なければ場に残す。</li>
-        <li>続けて山札1枚をめくり、同じ月があれば取り、なければ場に置く。</li>
-        <li>役ができたら「勝負」か、続けて狙う「こいこい」を選ぶ。</li>
-        <li>どちらも手札が0になったら<strong>流れ</strong>（点数なし）。次の先手は据え置き。</li>
-      </ol>
-
-      <h3>各月の札</h3>
-      <div id="help-months" class="months-grid" aria-label="各月に対応する札の一覧"></div>
-
-      <h3>役の例</h3>
-      <div id="yaku-examples" class="yaku-examples" aria-label="役の例のサンプル画像一覧"></div>
-
-      <p class="help-note">
-        ※ 詳細は
-        <a href="https://www.nintendo.com/jp/others/hanafuda_kabufuda/howtoplay/koikoi/index.html" target="_blank" rel="noopener noreferrer">
-        こいこい｜花札の歴史・遊びかた｜花札・株札｜任天堂
-        </a>
-        を参照してください。バリエーションにより点数・細則が異なる場合があります。
-      </p>
-
-      <div class="help-modal-footer">
-        <span class="sofume-logo" aria-hidden="true"></span>
-        <button id="help-close" class="action-button">閉じる</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="report-destination-modal" role="dialog" aria-modal="true" aria-labelledby="report-destination-title" aria-hidden="true">
-    <div class="modal-content">
-      <h2 id="report-destination-title">バグ・要望報告</h2>
-      <p class="report-destination-message">
-        報告方法を選択してください。Google フォームで送信する際は注意書きをご確認ください。
-      </p>
-      <div class="report-destination-actions">
-        <button id="report-select-google" class="action-button">Google フォーム</button>
-        <button id="report-select-github" class="action-button">GitHub</button>
-      </div>
-      <button id="report-destination-close" class="action-button tertiary">閉じる</button>
-    </div>
-  </div>
-
-  <div id="report-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="report-confirm-title" aria-hidden="true">
-    <div class="modal-content">
-      <h2 id="report-confirm-title">バグ・要望報告</h2>
-      <p class="report-confirm-message">
-        Google フォームへアクセスします。Google アカウントへのログインが必要ですが移動しますか？
-      </p>
-      <div class="report-confirm-actions">
-        <button id="report-confirm-no" class="action-button">いいえ</button>
-        <button id="report-confirm-yes" class="action-button">はい</button>
-      </div>
-    </div>
-  </div>
   <script type="module" src="./script.js"></script>
 </body>
 </html>

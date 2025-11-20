@@ -18,7 +18,6 @@ body.zoomed {
   overflow: hidden;
 }
 
-
 :root {
   --accent: #288d1f;
   --accent-highlight: #3ec428;
@@ -68,7 +67,7 @@ body.zoomed {
 
 /* ==== Help Modal ==== */
 #help-modal {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: none;                 /* JSでflexに切替 */
   align-items: center;
@@ -123,7 +122,7 @@ body.zoomed {
 /* ==== Report Modals ==== */
 #report-destination-modal,
 #report-confirm-modal {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: none;
   align-items: center;
@@ -464,7 +463,7 @@ body.modal-open {
   width: 100%;
   overflow-x: auto;
   overflow-y: visible;
-  padding: 0 12px;
+  padding: 20px 12px;
   box-sizing: border-box;
   scrollbar-gutter: stable both-edges; /* スクロールバー出現時の幅ぶれ防止 */
 }
@@ -663,20 +662,99 @@ body.modal-open {
 }
 
 .action-buttons-container {
-  position: absolute;
-  inset: 0;
+  position: fixed;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: none;
   align-items: center;
   justify-content: center;
-  gap: 300px;
   pointer-events: none;
-  z-index: 5;
+  z-index: 10000;
 }
+
+.action-dialog {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  padding: 40px 50px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  min-width: 400px;
+}
+
+.action-dialog::after {
+  content: '';
+  position: absolute;
+  top: 80px;
+  left: 50px;
+  right: 50px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+.action-message {
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  padding-bottom: 24px;
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  opacity: 0.85;
+}
+
+.action-buttons-group {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 
 .action-buttons-container .action-button {
   pointer-events: auto;
-  min-width: 140px;
+  width: 180px;
+  padding: 12px 32px;
+  font-size: 27px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #3ec428, #288d1f);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+  white-space: nowrap;
 }
+
+
+
+.action-buttons-container .action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.action-buttons-container .action-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
 
 
 
@@ -974,6 +1052,10 @@ a:hover {
 #tutorial-overlay.position-bottom {
   justify-content: flex-end;
   padding-bottom: 100px; /* 手札の上あたり（少し広めに） */
+}
+
+#tutorial-overlay.position-bottom .tutorial-message-box {
+  margin-bottom: 0;
 }
 
 #tutorial-overlay.position-top-left {
