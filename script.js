@@ -70,6 +70,7 @@ function initGame(){
   let drawPreviewResetToken = 0;
   let isYakuAssistEnabledByUser = false;
   let isYakuAssistAvailable = true;
+  let isProcessingTurn = false;
 
   const ROUND_TRANSITION_DELAY = {
     // 各種遷移時間(ms)。演出を少し長くして状況を把握しやすくする。
@@ -466,11 +467,25 @@ function initGame(){
 
       const onClick = async (event) => {
         const el = event.target.closest('.card');
-        if (!el) return;
-        const idx = Array.from(boardArea?.children || []).indexOf(el);
-        if (!matchIdxs.includes(idx)) return;
+        let isMatch = false;
+        let idx = -1;
+        
+        if (el && boardArea.contains(el)) {
+          idx = Array.from(boardArea?.children || []).indexOf(el);
+          if (matchIdxs.includes(idx)) isMatch = true;
+        }
 
-        boardArea?.removeEventListener('click', onClick);
+        if (!isMatch) {
+          // Cancel selection
+          window.removeEventListener('click', onClick, true);
+          boardCards.forEach(cardEl => cardEl.classList.remove('selectable'));
+          state.pendingSelection = null;
+          resolve(null);
+          return;
+        }
+
+        // Process selection
+        window.removeEventListener('click', onClick, true);
         boardCards.forEach(cardEl => cardEl.classList.remove('selectable'));
 
         removeFromHand(state.pendingSelection.handCard);
@@ -482,7 +497,10 @@ function initGame(){
         resolve(capturedPlayer);
       };
 
-      boardArea?.addEventListener('click', onClick);
+      // Use setTimeout to attach listener after current event loop to avoid immediate triggering
+      setTimeout(() => {
+        window.addEventListener('click', onClick, true);
+      }, 0);
     });
   }
 
@@ -538,6 +556,10 @@ function initGame(){
     if (matches.length === 2){
       messageArea.textContent = 'どちらの札を取るか選んでください。';
       const playerCaptured = await highlightAndAwaitBoardChoice(matches, card);
+      if (playerCaptured === null) {
+        messageArea.textContent = 'あなたの番です';
+        return;
+      }
       if (playerCaptured && handlePlayerYakuAfterCapture()) return;
       await sleep(DELAYS.afterCaptureBeforeDraw);
       
@@ -748,6 +770,7 @@ function initGame(){
   function startGame(startingPlayer = 'player'){
     if (actionButtons) actionButtons.style.display = 'none';
     state.pendingSelection = null;
+    isProcessingTurn = false;
     if (state.isTutorial) {
       tutorialManager.setupTutorialState();
     } else {
@@ -823,13 +846,19 @@ function initGame(){
     playerHandArea?.addEventListener('click', playerHandClickHandler);
   }
 
-  function playerHandClickHandler(event){
-    if (!state.playerTurn) return;
+  async function playerHandClickHandler(event){
+    if (!state.playerTurn || isProcessingTurn) return;
     const el = event.target.closest('.card');
     if (!el) return;
     const card = el.dataset?.card || el.textContent;
     if (!card) return;
-    playerTurnHandler(card);
+    
+    isProcessingTurn = true;
+    try {
+      await playerTurnHandler(card);
+    } finally {
+      isProcessingTurn = false;
+    }
   }
 
   startGameButton?.addEventListener('click', () => showScreen('rounds-screen'));
