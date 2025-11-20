@@ -798,6 +798,7 @@ body.modal-open {
 
 .captured-player, .captured-cpu {
   width: 20%;
+  pointer-events: auto;
 }
 
 /* 相手の持ち札エリアを少し中央側へ */
@@ -812,8 +813,10 @@ body.modal-open {
   right: 16px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 24px;
+  height: 280px; /* Fixed height to prevent movement */
+  pointer-events: none;
 }
 
 .captured-player h3, .captured-cpu h3 {
