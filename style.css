@@ -407,18 +407,20 @@ body.modal-open {
   align-items: center;
   justify-content: center;
   flex-grow: 1;
+  padding-bottom: calc(var(--appH, 1080px) * 0.15 + 24px);
+  min-height: 0;
 }
 
 /* --- テキスト類 --- */
 .area-title { font-size: 28px; margin: 10px 0; }
 .game-message {
-  font-size: 28px;
+  font-size: 24px;
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  bottom: calc(var(--appH, 1080px) * 0.15 + 40px);
   text-align: center;
-  padding: 12px 16px;
+  padding: 6px 16px;
   background: rgba(0,0,0,0.6);
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 12px;
@@ -426,13 +428,14 @@ body.modal-open {
   z-index: 1000;
   pointer-events: none; /* 下の操作を邪魔しない */
   opacity: 0;
-  transform: translateY(8px);
   transition: opacity .25s ease, transform .25s ease;
+  max-width: 600px;
+  width: max-content;
 }
 
 .game-message.show {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 .result-info { font-size: 28px; }
 
@@ -459,6 +462,15 @@ body.modal-open {
   justify-content: center;
   gap: 24px;
   width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0 12px;
+  box-sizing: border-box;
+  scrollbar-gutter: stable both-edges; /* スクロールバー出現時の幅ぶれ防止 */
+}
+
+.board-and-deck > * {
+  flex-shrink: 0; /* 横幅が足りないときも縮めず、ボード側だけをスクロールさせる */
 }
 
 .draw-preview {
@@ -625,69 +637,106 @@ body.modal-open {
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  position: relative;
 }
 
 .player-area {
   width: 100%;
 }
 
+.player-hand-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 180px;
+  margin-bottom: 8px;
+  min-height: 72px;
+  box-sizing: border-box;
+}
+
+.player-hand-header .area-title {
+  margin: 0;
+  text-align: center;
+}
+
 .action-buttons-container {
   position: absolute;
-  bottom: calc(100% + 12px);
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0;
+  inset: 0;
   display: none;
+  align-items: center;
+  justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-  z-index: 300;
-  max-width: min(100%, 960px);
-  width: max-content;
+  pointer-events: none;
 }
-.action-buttons-container.active {
-  display: flex;
+
+.action-buttons-container .action-button {
+  pointer-events: auto;
+  min-width: 140px;
+}
+
+#koikoi-button {
+  margin-right: auto;
 }
 
 .declaration-panel {
   margin-top: 18px;
   display: flex;
   gap: 16px;
-  flex-wrap: wrap;
-  max-height: calc(var(--appH, 1080px) * 0.23);
-  overflow-y: auto;
-  padding-right: 6px;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
 .declaration-card {
   flex: 1 1 0;
-  min-width: 240px;
+  min-width: 0;
+  max-width: calc(50% - 8px);
   background: rgba(0, 0, 0, 0.45);
   border: 1px solid var(--surface-border);
   border-radius: 12px;
   padding: 12px 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: grid;
+  grid-template-rows: auto auto;
+  grid-template-columns: auto 1fr;
+  gap: 8px 16px;
+  box-sizing: border-box;
 }
 
 .declaration-heading {
   font-size: 20px;
-  margin: 0 0 6px;
+  margin: 0;
   color: var(--text-muted);
+  grid-row: 1;
+  grid-column: 1 / -1;
 }
 
 .declaration-status {
   font-size: 32px;
   font-weight: 700;
-  margin: 0 0 8px;
+  margin: 0;
   letter-spacing: 0.08em;
-  min-height: 40px;
+  min-width: 120px;
+  flex-shrink: 0;
+  text-align: left;
+  grid-row: 2;
+  grid-column: 1;
+  align-self: start;
 }
 
 .declaration-detail {
   font-size: 18px;
   line-height: 1.4;
   min-height: 24px;
+  grid-row: 2;
+  grid-column: 2;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .declaration-detail ul {

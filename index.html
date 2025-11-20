@@ -119,12 +119,14 @@
 
             <div class="player-controls-container">
               <div class="hand-area player-area">
-                <h2 class="area-title">あなたの手札</h2>
+                <div class="player-hand-header">
+                  <h2 class="area-title">あなたの手札</h2>
+                  <div id="action-buttons" class="action-buttons-container">
+                    <button id="koikoi-button" class="action-button">こいこい</button>
+                    <button id="shobu-button" class="action-button">勝負</button>
+                  </div>
+                </div>
                 <div id="player-hand-area" class="hand"></div>
-              </div>
-              <div id="action-buttons" class="action-buttons-container">
-                <button id="koikoi-button" class="action-button">こいこい</button>
-                <button id="shobu-button" class="action-button">勝負</button>
               </div>
               <div id="declaration-panel" class="declaration-panel" aria-live="polite">
                 <div class="declaration-card player">

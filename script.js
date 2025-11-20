@@ -73,8 +73,8 @@ function initGame(){
 
   const ROUND_TRANSITION_DELAY = {
     // 各種遷移時間(ms)。演出を少し長くして状況を把握しやすくする。
-    playerOrNagare: 1800,
-    cpu: 2600,
+    playerOrNagare: 3000,
+    cpu: 4000,
     bonus: 1500
   };
 
@@ -613,7 +613,6 @@ function initGame(){
         else cpuEnds = Math.random() < 0.5;
 
         if (cpuEnds){
-          showBottomMessage('相手が勝負をかけました');
           endRound('cpu');
           return;
         }
@@ -667,7 +666,6 @@ function initGame(){
       else cpuEnds = Math.random() < 0.5;
 
       if (cpuEnds){
-          showBottomMessage('相手が勝負をかけました');
         endRound('cpu');
         return;
       }
@@ -707,16 +705,13 @@ function initGame(){
       if (state.cpuKoikoi) playerGain *= 2;
       state.playerScore += playerGain;
       showAgariDeclaration('player', playerResult, state.playerCaptured, playerGain);
-      roundMessage = 'あなたの勝ち！';
       nextDealer = 'player';
     } else if (winner === 'cpu'){
-      showBottomMessage('相手が上がりました');
       cpuGain = cpuResult.basePoints;
       if (cpuGain >= 7) cpuGain *= 2;
       if (state.playerKoikoi) cpuGain *= 2;
       state.cpuScore += cpuGain;
       showAgariDeclaration('cpu', cpuResult, state.cpuCaptured, cpuGain);
-      roundMessage = '相手の勝ち。';
       nextDealer = 'cpu';
     } else {
       roundMessage = '流れ（引き分け）です。次の親は交代します。';
