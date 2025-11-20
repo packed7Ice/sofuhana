@@ -56,7 +56,8 @@ const elements = {
   helpCloseButton: document.getElementById('help-close'),
   reportConfirmModal: document.getElementById('report-confirm-modal'),
   reportConfirmYesButton: document.getElementById('report-confirm-yes'),
-  reportConfirmNoButton: document.getElementById('report-confirm-no')
+  reportConfirmNoButton: document.getElementById('report-confirm-no'),
+  yakuAssistToggleButton: document.getElementById('yaku-assist-toggle')
 };
 
 const REPORT_FORM_URL = 'https://forms.gle/pQR1UkhBo3bot6Gf7';

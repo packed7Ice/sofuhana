@@ -63,10 +63,13 @@ function initGame(){
     finalPlayerScoreElement,
     finalCpuScoreElement,
     drawPreviewArea,
-    drawPreviewImage
+    drawPreviewImage,
+    yakuAssistToggleButton
   } = elements;
   let drawPreviewLoadHandler = null;
   let drawPreviewResetToken = 0;
+  let isYakuAssistEnabledByUser = false;
+  let isYakuAssistAvailable = true;
 
   const ROUND_TRANSITION_DELAY = {
     // 各種遷移時間(ms)。演出を少し長くして状況を把握しやすくする。
@@ -74,6 +77,62 @@ function initGame(){
     cpu: 2600,
     bonus: 1500
   };
+
+  const isYakuAssistActive = () => isYakuAssistAvailable && isYakuAssistEnabledByUser;
+
+  function handlePlayerTurnStart(){
+    if (!state.playerTurn) return;
+    if (isYakuAssistActive()){
+      yakuAssist.checkAndShowHint(state);
+    } else if (typeof yakuAssist.clearHint === 'function'){
+      yakuAssist.clearHint();
+    }
+  }
+
+  function handlePlayerTurnEnd(){
+    if (typeof yakuAssist.clearHint === 'function'){
+      yakuAssist.clearHint();
+    }
+  }
+
+  function updateYakuAssistToggleUI(){
+    if (!yakuAssistToggleButton) return;
+    const active = isYakuAssistActive();
+    yakuAssistToggleButton.disabled = !isYakuAssistAvailable;
+    yakuAssistToggleButton.setAttribute('aria-pressed', active ? 'true' : 'false');
+    yakuAssistToggleButton.classList.toggle('is-active', active);
+    let label = '役アシスト';
+    if (!isYakuAssistAvailable){
+      label += '（使用不可）';
+    } else {
+      label += active ? ' ON' : ' OFF';
+    }
+    yakuAssistToggleButton.textContent = label;
+  }
+
+  function applyYakuAssistState({ refreshHint = false } = {}){
+    if (isYakuAssistActive()){
+      yakuAssist.enable();
+    } else {
+      yakuAssist.disable();
+    }
+    updateYakuAssistToggleUI();
+    if (refreshHint){
+      if (state.playerTurn){
+        handlePlayerTurnStart();
+      } else {
+        handlePlayerTurnEnd();
+      }
+    }
+  }
+
+  applyYakuAssistState();
+
+  yakuAssistToggleButton?.addEventListener('click', () => {
+    if (!isYakuAssistAvailable) return;
+    isYakuAssistEnabledByUser = !isYakuAssistEnabledByUser;
+    applyYakuAssistState({ refreshHint: true });
+  });
 
   showScreen('title-screen');
   resetDeclarations();
@@ -393,6 +452,7 @@ function initGame(){
     if (maybeNagare()) return;
     if (actionButtons && actionButtons.style.display !== 'flex'){
       state.playerTurn = false;
+      handlePlayerTurnEnd();
       showBottomMessage('相手の番です');
       setTimeout(cpuTurnHandler, 900);
     }
@@ -440,7 +500,6 @@ function initGame(){
       removeFromHand(card);
       state.board.push(card);
       updateUI();
-      yakuAssist.checkAndShowHint(state);
       await sleep(DELAYS.playToBoard);
       tutorialManager.onPlayerPlayed();
       await tutorialManager.pause();
@@ -460,7 +519,6 @@ function initGame(){
       const taken = [card, state.board.splice(matches[0],1)[0]];
       const playerCaptured = resolveCapture(state.playerCaptured, taken);
       updateUI();
-      yakuAssist.checkAndShowHint(state);
       if (playerCaptured && handlePlayerYakuAfterCapture()) return;
       await sleep(DELAYS.afterCaptureBeforeDraw);
       
@@ -501,7 +559,6 @@ function initGame(){
     state.board = state.board.filter(c => getCardMonth(c) !== month);
     const playerCaptured = resolveCapture(state.playerCaptured, [card, ...sameMonth]);
     updateUI();
-    yakuAssist.checkAndShowHint(state);
     if (playerCaptured && handlePlayerYakuAfterCapture()) return;
     await sleep(DELAYS.afterCaptureBeforeDraw);
     
@@ -544,14 +601,10 @@ function initGame(){
       played = state.cpuHand.splice(randomIndex,1)[0];
       state.board.push(played);
       updateUI();
-      yakuAssist.checkAndShowHint(state);
       await sleep(DELAYS.playToBoard);
       const handled = await drawAndResolveDelayed();
       if (handled) return;
       updateUI();
-      yakuAssist.checkAndShowHint(state);
-      if (maybeNagare()) return;
-
       const cpuEvaluation = scoreFromCaptured(state.cpuCaptured);
       if (cpuEvaluation.basePoints > 0){
         let cpuEnds = false;
@@ -571,13 +624,17 @@ function initGame(){
         showBottomMessage('相手は「こいこい」！');
         showBottomMessage('あなたの番です');
         state.playerTurn = true;
+        handlePlayerTurnStart();
         tutorialManager.onCpuTurnEnd();
         return;
       }
 
+      if (maybeNagare()) return;
+
       state.playerTurn = true;
-        showBottomMessage('あなたの番です');
-        tutorialManager.onCpuTurnEnd();
+      handlePlayerTurnStart();
+      showBottomMessage('あなたの番です');
+      tutorialManager.onCpuTurnEnd();
       return;
     }
 
@@ -598,14 +655,10 @@ function initGame(){
     }
 
     updateUI();
-    yakuAssist.checkAndShowHint(state);
     await sleep(DELAYS.afterCaptureBeforeDraw);
     const handledDraw = await drawAndResolveDelayed();
     if (handledDraw) return;
     updateUI();
-    yakuAssist.checkAndShowHint(state);
-    if (maybeNagare()) return;
-
     const cpuEvaluation = scoreFromCaptured(state.cpuCaptured);
     if (cpuEvaluation.basePoints > 0){
       let cpuEnds = false;
@@ -625,12 +678,16 @@ function initGame(){
       showBottomMessage('相手は「こいこい」！');
       showBottomMessage('あなたの番です');
       state.playerTurn = true;
+      handlePlayerTurnStart();
       tutorialManager.onCpuTurnEnd();
       return;
     }
 
+    if (maybeNagare()) return;
+
     state.playerTurn = true;
     showBottomMessage('あなたの番です');
+    handlePlayerTurnStart();
     tutorialManager.onCpuTurnEnd();
   }
 
@@ -698,13 +755,12 @@ function initGame(){
     state.pendingSelection = null;
     if (state.isTutorial) {
       tutorialManager.setupTutorialState();
-      yakuAssist.disable();
     } else {
       dealCards();
-      yakuAssist.enable();
     }
+    isYakuAssistAvailable = !state.isTutorial;
+    applyYakuAssistState({ refreshHint: true });
     updateUI();
-    yakuAssist.checkAndShowHint(state);
     resetDeclarations();
 
     const playerBonus = initialHandBonus(state.playerHand);
@@ -755,8 +811,10 @@ function initGame(){
     if (state.currentDealer === 'player'){
       state.playerTurn = true;
       messageArea.textContent = `第${state.currentRound}回戦：あなたの番です。`;
+      handlePlayerTurnStart();
     } else {
       state.playerTurn = false;
+      handlePlayerTurnEnd();
       messageArea.textContent = `第${state.currentRound}回戦：相手の番です。`;
       setTimeout(cpuTurnHandler, 900);
     }
@@ -807,6 +865,7 @@ function initGame(){
     messageArea.textContent = '続行を選びました。こいこい！';
     showBottomMessage('あなたは「こいこい」！');
     state.playerTurn = false;
+    handlePlayerTurnEnd();
     setTimeout(cpuTurnHandler, 900);
   });
 

@@ -1,9 +1,9 @@
-import { checkYaku, getCardType, YAKU_POINTS } from './card-data.js';
-import { showPersistentMessage } from './dom-elements.js';
+import { getCardType } from './card-data.js';
 
 export class YakuAssist {
   constructor() {
     this.active = false;
+    this.hintBox = null;
   }
 
   enable() {
@@ -12,10 +12,39 @@ export class YakuAssist {
 
   disable() {
     this.active = false;
+    this.clearHint();
+  }
+
+  clearHint() {
+    const hintBox = this.getHintBox();
+    if (hintBox) {
+      hintBox.textContent = '';
+      hintBox.style.display = 'none';
+    }
+  }
+
+  getHintBox() {
+    if (this.hintBox && document.body.contains(this.hintBox)) {
+      return this.hintBox;
+    }
+    const existing = document.getElementById('yaku-hint-box');
+    if (existing) {
+      this.hintBox = existing;
+      return this.hintBox;
+    }
+    if (typeof document === 'undefined') return null;
+    const fallback = document.createElement('div');
+    fallback.id = 'yaku-hint-box';
+    fallback.style.display = 'none';
+    document.body.appendChild(fallback);
+    this.hintBox = fallback;
+    return this.hintBox;
   }
 
   checkAndShowHint(state) {
     if (!this.active) return;
+    const hintBox = this.getHintBox();
+    if (!hintBox) return;
     
     const captured = state.playerCaptured || [];
     const hand = state.playerHand || [];
@@ -59,35 +88,11 @@ export class YakuAssist {
       }
     }
 
-    // 専用のヒント表示要素を使用（card-info-boxを上書きしない）
-    let hintBox = document.getElementById('yaku-hint-box');
-    if (!hintBox) {
-      hintBox = document.createElement('div');
-      hintBox.id = 'yaku-hint-box';
-      hintBox.style.cssText = `
-        position: fixed;
-        bottom: 120px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.85);
-        color: #ffeb3b;
-        font-weight: bold;
-        padding: 12px 24px;
-        border-radius: 8px;
-        border: 2px solid #ffeb3b;
-        z-index: 1000;
-        font-size: 20px;
-        display: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      `;
-      document.body.appendChild(hintBox);
-    }
-
     if (hint) {
       hintBox.textContent = hint;
       hintBox.style.display = 'block';
     } else {
-      hintBox.style.display = 'none';
+      this.clearHint();
     }
   }
 }
