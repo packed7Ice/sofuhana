@@ -328,6 +328,16 @@ function initGame(){
       }
       return false;
     }
+
+    // 強制上がりチェック (最後の札 または 相手がこいこい中)
+    if (state.playerHand.length === 0 || state.cpuKoikoi) {
+      hideTooltip();
+      // 相手がこいこい中の場合は倍付け処理がendRoundで行われる
+      // 最後の札の場合もここで強制的に上がる
+      endRound('player');
+      return true;
+    }
+
     hideTooltip();
     showPlayerYakuReady();
     if (actionButtons) actionButtons.style.display = 'flex';
@@ -632,6 +642,7 @@ function initGame(){
         let cpuEnds = false;
         if (cpuEvaluation.basePoints >= 7) cpuEnds = true;
         else if (state.deck.length <= 8 && cpuEvaluation.basePoints >= 5) cpuEnds = true;
+        else if (state.cpuHand.length === 0 || state.playerKoikoi) cpuEnds = true; // 強制上がり
         else cpuEnds = Math.random() < 0.5;
 
         if (cpuEnds){
@@ -685,6 +696,7 @@ function initGame(){
       let cpuEnds = false;
       if (cpuEvaluation.basePoints >= 7) cpuEnds = true;
       else if (state.deck.length <= 8 && cpuEvaluation.basePoints >= 5) cpuEnds = true;
+      else if (state.cpuHand.length === 0 || state.playerKoikoi) cpuEnds = true; // 強制上がり
       else cpuEnds = Math.random() < 0.5;
 
       if (cpuEnds){
