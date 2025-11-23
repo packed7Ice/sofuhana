@@ -1,5 +1,5 @@
 ﻿body {
-  font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
   margin: 0;
   padding: 0;
   display: flex;
@@ -54,26 +54,51 @@ body.zoomed {
 }
 
 /* きつい画面用：余白を少し詰める */
-#app.compact #hud { height: 64px; padding: 8px 12px; }
-#app.compact #game-screen { padding: 12px; padding-top: 76px; }
-#app.compact .board { gap: 14px; padding: 14px; margin-bottom: 18px; }
-#app.compact .hand { gap: 14px; margin: 12px auto; }
-#app.compact .action-button { font-size: 32px; padding: 16px 28px; }
-#app.compact #game-info { font-size: 21px; }
-#app.compact .area-title, 
-#app.compact .game-message, 
-#app.compact .result-info { font-size: 24px; }
-#app.compact .captured-container { bottom: 8px; left: 12px; right: 12px; gap: 16px; }
+#app.compact #hud {
+  height: 64px;
+  padding: 8px 12px;
+}
+#app.compact #game-screen {
+  padding: 12px;
+  padding-top: 76px;
+}
+#app.compact .board {
+  gap: 14px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+#app.compact .hand {
+  gap: 14px;
+  margin: 12px auto;
+}
+#app.compact .action-button {
+  font-size: 32px;
+  padding: 16px 28px;
+}
+#app.compact #game-info {
+  font-size: 21px;
+}
+#app.compact .area-title,
+#app.compact .game-message,
+#app.compact .result-info {
+  font-size: 24px;
+}
+#app.compact .captured-container {
+  bottom: 8px;
+  left: 12px;
+  right: 12px;
+  gap: 16px;
+}
 
 /* ==== Help Modal ==== */
 #help-modal {
   position: absolute;
   inset: 0;
-  display: none;                 /* JSでflexに切替 */
+  display: none; /* JSでflexに切替 */
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,.6);
-  z-index: 100000;               /* 充分に上へ（HUDより上） */
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 100000; /* 充分に上へ（HUDより上） */
 }
 
 #help-modal[aria-hidden="false"] {
@@ -89,9 +114,9 @@ body.zoomed {
   color: #fff;
   padding: 24px;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   line-height: 1.6;
-  word-break: break-word;        /* はみ出し防止（URL/長文対策） */
+  word-break: break-word; /* はみ出し防止（URL/長文対策） */
 }
 
 .help-modal-footer {
@@ -111,7 +136,7 @@ body.zoomed {
 .sofume-logo {
   width: 300px;
   height: 200px;
-  background-image: url('./logo/SofumeLogo_WhiteTextAlpha_1920x1080.png');
+  background-image: url("./logo/SofumeLogo_WhiteTextAlpha_1920x1080.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -127,7 +152,7 @@ body.zoomed {
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 100001;
 }
 
@@ -145,7 +170,7 @@ body.zoomed {
   padding: 24px;
   border-radius: 16px;
   text-align: center;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
 }
 
 #report-destination-modal h2 {
@@ -224,7 +249,7 @@ body.modal-open {
 
 /* --- タイトル画面 --- */
 #title-screen {
-  background-image: url('./images/Back_title.png');
+  background-image: url("./images/Back_title.png");
   background-size: cover;
   background-position: center;
   padding: calc(var(--appH, 1080px) * 0.2) 0;
@@ -232,7 +257,7 @@ body.modal-open {
 }
 
 .game-logo {
-    background-image: url('./images/Title_transparency.png');
+  background-image: url("./images/Title_transparency.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -259,14 +284,16 @@ body.modal-open {
   border-radius: 999px;
   margin: 16px;
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
-  box-shadow: 0 18px 35px rgba(40, 141, 31, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  box-shadow: 0 18px 35px rgba(40, 141, 31, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
 }
 
 .action-button:hover {
   transform: translateY(-2px);
   filter: brightness(1.05);
-  box-shadow: 0 22px 40px rgba(40, 141, 31, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: 0 22px 40px rgba(40, 141, 31, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .action-button:active {
@@ -296,7 +323,7 @@ body.modal-open {
 
 /* --- 回戦数選択画面 --- */
 #rounds-screen {
-  background-image: url('./images/Back_1.png');
+  background-image: url("./images/Back_1.png");
   background-size: cover;
   background-position: center;
 }
@@ -314,18 +341,24 @@ body.modal-open {
 /* --- 上部HUDバー（点数・ラウンド・ヘルプ） --- */
 #hud {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
   z-index: 10;
 }
 
-#game-info { font-size: 24px; }
-#game-info .game-stat { font-weight: 600; }
+#game-info {
+  font-size: 24px;
+}
+#game-info .game-stat {
+  font-weight: 600;
+}
 
 #hud .hud-buttons {
   display: flex;
@@ -364,9 +397,9 @@ body.modal-open {
 }
 
 .toggle-button[aria-pressed="false"] {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  border-color: rgba(255,255,255,0.35);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 #yaku-hint-box {
@@ -411,7 +444,10 @@ body.modal-open {
 }
 
 /* --- テキスト類 --- */
-.area-title { font-size: 28px; margin: 10px 0; }
+.area-title {
+  font-size: 28px;
+  margin: 10px 0;
+}
 .game-message {
   font-size: 24px;
   position: absolute;
@@ -420,14 +456,14 @@ body.modal-open {
   bottom: calc(var(--appH, 1080px) * 0.15 + 40px);
   text-align: center;
   padding: 6px 16px;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
   z-index: 1000;
   pointer-events: none; /* 下の操作を邪魔しない */
   opacity: 0;
-  transition: opacity .25s ease, transform .25s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease;
   max-width: 600px;
   width: max-content;
 }
@@ -436,7 +472,9 @@ body.modal-open {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
-.result-info { font-size: 28px; }
+.result-info {
+  font-size: 28px;
+}
 
 /* --- 盤面・手札 --- */
 .board {
@@ -479,13 +517,16 @@ body.modal-open {
   gap: 8px;
   opacity: 0;
   transform: translateY(6px);
-  transition: opacity .25s ease, transform .25s ease;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.draw-preview.visible { opacity: 1; transform: translateY(0); }
+.draw-preview.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 .draw-label {
   font-size: 16px;
-  opacity: .85;
+  opacity: 0.85;
 }
 
 .deck {
@@ -503,13 +544,13 @@ body.modal-open {
   height: auto;
   border: 1px solid #333;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,.5);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
   pointer-events: none;
 }
 
 .draw-preview img {
   opacity: 0;
-  transition: opacity .2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .draw-preview.visible img.preview-ready {
@@ -523,17 +564,25 @@ body.modal-open {
 #deck-count {
   font-size: 20px;
   line-height: 1;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   padding: 4px 10px;
   border-radius: 12px;
 }
 
 /* 縮小レイアウト時の山札サイズ */
-#app.size-small #deck-image { width: 80px; }
-#app.size-tiny  #deck-image { width: 64px; }
+#app.size-small #deck-image {
+  width: 80px;
+}
+#app.size-tiny #deck-image {
+  width: 64px;
+}
 
-#app.size-small #draw-preview-image { width: 80px; }
-#app.size-tiny  #draw-preview-image { width: 64px; }
+#app.size-small #draw-preview-image {
+  width: 80px;
+}
+#app.size-tiny #draw-preview-image {
+  width: 64px;
+}
 
 .hand {
   display: flex;
@@ -627,7 +676,7 @@ body.modal-open {
 }
 
 .card.back {
-  background-image: url('./images/back.png');
+  background-image: url("./images/back.png");
 }
 
 /* --- アクションボタン --- */
@@ -679,9 +728,7 @@ body.modal-open {
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 24px;
   padding: 40px 50px;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.8),
-    0 0 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.5);
   pointer-events: auto;
   display: flex;
   flex-direction: column;
@@ -691,13 +738,18 @@ body.modal-open {
 }
 
 .action-dialog::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 80px;
   left: 50px;
   right: 50px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
 }
 
 .action-message {
@@ -720,7 +772,6 @@ body.modal-open {
   width: 100%;
 }
 
-
 .action-buttons-container .action-button {
   pointer-events: auto;
   width: 180px;
@@ -730,33 +781,25 @@ body.modal-open {
   background: linear-gradient(135deg, #3ec428, #288d1f);
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 999px;
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.4),
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   position: relative;
   white-space: nowrap;
 }
 
-
-
 .action-buttons-container .action-button:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 6px 16px rgba(0, 0, 0, 0.5),
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
 .action-buttons-container .action-button:active {
   transform: translateY(0);
-  box-shadow: 
-    0 2px 6px rgba(0, 0, 0, 0.4),
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-
-
-
 
 .declaration-panel {
   position: absolute;
@@ -874,7 +917,8 @@ body.modal-open {
   max-height: 120px;
 }
 
-.captured-player, .captured-cpu {
+.captured-player,
+.captured-cpu {
   width: 20%;
   pointer-events: auto;
 }
@@ -897,7 +941,8 @@ body.modal-open {
   pointer-events: none;
 }
 
-.captured-player h3, .captured-cpu h3 {
+.captured-player h3,
+.captured-cpu h3 {
   font-size: 22px;
   margin-bottom: 8px;
 }
@@ -922,14 +967,22 @@ body.modal-open {
 
 /* --- リザルト画面 --- */
 #result-screen {
-  background-image: url('./images/result_background.jpg');
+  background-image: url("./images/Result.png");
   background-size: cover;
   background-position: center;
+  align-items: flex-start; /* 左寄せ */
+  text-align: left; /* テキスト左揃え */
+  padding-left: 5%; /* 左側に余白 */
+}
+
+#result-screen .action-button {
+  font-size: 36px;
+  padding-left: 5%;
 }
 
 /* --- ゲームプレイ背景 --- */
 #game-screen {
-  background-image: url('./images/Back_1.png');
+  background-image: url("./images/Back_1.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -961,7 +1014,9 @@ body.modal-open {
   text-shadow: 2px 2px 4px #000;
 }
 
-.result-actions { margin-top: calc(var(--appH, 1080px) * 0.05); }
+.result-actions {
+  margin-top: calc(var(--appH, 1080px) * 0.05);
+}
 
 /* --- カード情報ボックス --- */
 #card-info-box {
@@ -972,7 +1027,11 @@ body.modal-open {
   width: min(320px, calc(var(--appW, 1920px) * 0.18));
   max-width: calc(100% - 32px);
   padding: 24px 28px;
-  background: linear-gradient(145deg, rgba(18, 18, 18, 0.92), rgba(32, 32, 32, 0.82));
+  background: linear-gradient(
+    145deg,
+    rgba(18, 18, 18, 0.92),
+    rgba(32, 32, 32, 0.82)
+  );
   color: #fff;
   border-radius: 28px;
   text-align: center;
@@ -981,7 +1040,8 @@ body.modal-open {
   pointer-events: none;
   backdrop-filter: blur(16px);
   border: 1px solid var(--surface-border);
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1022,13 +1082,6 @@ a:visited {
 a:hover {
   opacity: 0.8; /* 少し薄くしてクリック感 */
 }
-
-
-
-
-
-
-
 
 /* ==== Tutorial Styles ==== */
 #tutorial-overlay {
@@ -1075,7 +1128,7 @@ a:hover {
   color: #fff;
   text-align: center;
   pointer-events: auto; /* メッセージボックスは操作可能 */
-  box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
   animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   margin-bottom: 20%; /* 画面中央より少し上に配置 */
 }
@@ -1093,8 +1146,14 @@ a:hover {
 }
 
 @keyframes popIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .tutorial-highlight {
@@ -1106,17 +1165,23 @@ a:hover {
 }
 
 @keyframes pulseHighlight {
-  0% { box-shadow: 0 0 0 4px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.8); }
-  50% { box-shadow: 0 0 0 6px #ffeb3b, 0 0 30px rgba(255, 235, 59, 1); }
-  100% { box-shadow: 0 0 0 4px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.8); }
+  0% {
+    box-shadow: 0 0 0 4px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 0 6px #ffeb3b, 0 0 30px rgba(255, 235, 59, 1);
+  }
+  100% {
+    box-shadow: 0 0 0 4px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.8);
+  }
 }
 
 /* チュートリアル中はハイライト以外の要素を少し暗くする（オプション） */
 body.tutorial-active #app::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 99998;
   pointer-events: none;
 }
